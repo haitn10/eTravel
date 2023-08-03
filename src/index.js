@@ -1,10 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import AppCenter from "./components/AppCenter";
+import { Provider } from "react-redux";
+import AppRouter from "./components/AppRouter";
+import store from "./store/createStore";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <AppCenter />
-  </React.StrictMode>
+  <Provider store={store}>
+    <AppRouter />
+  </Provider>
 );
