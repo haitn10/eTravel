@@ -15,6 +15,8 @@ export const theme = createTheme({
     text: {
       primary: color.text[100],
       second: color.text[200],
+      third: color.text[300],
+      onStatus: color.text[400],
       active: color.text[600],
     },
   },
@@ -23,5 +25,10 @@ export const theme = createTheme({
     button: {
       textTransform: "none",
     },
+    fontWeightBold: 700,
+    fontWeightSemiBold: 600,
+    fontWeightMedium: 500,
+    fontWeightRegular: 400,
+    fontWeightLight: 300,
   },
 });

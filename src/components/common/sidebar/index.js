@@ -15,7 +15,7 @@ import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
 
 import tabsItem from "../../../constants/tabsItem";
 import SubItems from "./subItems";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({
   isNonMobile,
@@ -25,7 +25,7 @@ const Sidebar = ({
 }) => {
   const theme = useTheme();
   const [active, setActive] = useState("home");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   return (
     <Box component="nav">
       <Drawer
