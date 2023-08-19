@@ -7,12 +7,15 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "../auth/action";
 
 import logo from "../../assets/etravel-logo.png";
 import ErrorModal from "../common/ErrorModal";
 
 const Login = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const [errorState, setErrorState] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,11 +28,21 @@ const Login = () => {
 
     //ANIMATION_LOADING
     setLoading(!loading);
-    setTimeout(() => setLoading(false), 2000);
 
-    //Error message
-    setErrorState(true);
-    setErrorMessage("Invalid login");
+    if (username.length === 0 || password.length === 0) {
+      return;
+    }
+
+    try {
+      await dispatch(login({ username, password }));
+    } catch (e) {
+      setLoading(false);
+      setErrorState(true);
+      setErrorMessage(e);
+    }
+
+    //Close error message
+    setTimeout(() => setErrorState(false), 3000);
   };
   return (
     <Box
@@ -70,6 +83,7 @@ const Login = () => {
             onChange={(e) => setUserName(e.target.value)}
             placeholder="e.g admin123"
             required
+            inputProps={{ maxLength: 50 }}
           />
           <TextField
             fullWidth
@@ -82,6 +96,7 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Type your password"
             required
+            inputProps={{ maxLength: 50 }}
           />
           <Button
             variant="contained"

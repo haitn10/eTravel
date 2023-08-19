@@ -18,7 +18,8 @@
     "react-scripts": "5.0.1",
     "redux": "^4.2.1",
     "redux-reset": "^0.3.0",
-    "redux-thunk": "^2.4.2"
+    "redux-thunk": "^2.4.2",
+    "universal-cookie": "^5.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
