@@ -1,7 +1,7 @@
 import { Box, useTheme } from "@mui/material";
-import React from "react";
+import React from 'react'
 
-const Profile = () => {
+const ManagePlaces = () => {
   const theme = useTheme();
   return (
     <Box
@@ -11,6 +11,6 @@ const Profile = () => {
       borderRadius={5}
     ></Box>
   );
-};
+}
 
-export default Profile;
+export default ManagePlaces

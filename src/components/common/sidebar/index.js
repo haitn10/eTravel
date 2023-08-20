@@ -15,7 +15,7 @@ import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
 
 import tabsItem from "../../../constants/tabsItem";
 import SubItems from "./subItems";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({
   isNonMobile,
@@ -25,7 +25,7 @@ const Sidebar = ({
 }) => {
   const theme = useTheme();
   const [active, setActive] = useState("home");
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <Box component="nav">
       <Drawer
@@ -66,14 +66,16 @@ const Sidebar = ({
           </Box>
 
           <List>
-            {tabsItem.map(({ id, title, icon, options }) => {
+            {tabsItem.map(({ id, title, icon, url, options }) => {
               const lcTitle = title.toLowerCase();
               return (
                 <ListItem
                   key={id}
                   disablePadding
                   onClick={() => {
-                    // navigate(`/${lcTitle}`);
+                    if (options.length === 0) {
+                      navigate(`${url}`);
+                    }
                     setActive(lcTitle);
                   }}
                   sx={{
@@ -136,7 +138,7 @@ const Sidebar = ({
                     ) : null}
                   </Box>
                   {options.length > 0 && active === lcTitle ? (
-                    <SubItems options={options} isNonMobile={isNonMobile} />
+                    <SubItems options={options} isNonMobile={isNonMobile} url={url} />
                   ) : null}
                 </ListItem>
               );

@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { CssBaseline } from "@mui/material";
+
+import { getProfile } from "./auth/action";
+
+import Login from "./login";
 import Layout from "./common/Layout";
 import HomePage from "./home";
-import Login from "./login";
-import { useDispatch, useSelector } from "react-redux";
-import { getProfile } from "./auth/action";
+import Profile from "./auth";
+import ManageTours from "./tours";
+import ManagePlaces from "./places";
+import TransactionsPage from "./transactions";
 
 const AppRouter = () => {
   const state = useSelector((state) => state.auth);
@@ -19,8 +26,6 @@ const AppRouter = () => {
     fetchData();
   }, [dispatch]);
 
-  console.log(state);
-
   if (isFetching) {
     return <div />;
   }
@@ -30,8 +35,8 @@ const AppRouter = () => {
       <div className="app">
         <BrowserRouter>
           <Routes>
-            <Route path="/*" element={<Navigate to="/cms" />} />
-            <Route path="/cms" element={<Login />} exact />
+            <Route path="/*" element={<Navigate to="/" />} />
+            <Route path="/" element={<Login />} exact />
           </Routes>
         </BrowserRouter>
       </div>
@@ -41,11 +46,20 @@ const AppRouter = () => {
   if (state.profile.roleName === "TourOperator") {
     return (
       <div className="app">
-        <BrowserRouter basename="/cms">
+        <BrowserRouter>
+          <CssBaseline />
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/*" element={<Navigate to="/home-page" />} />
+              <Route path="/*" element={<Navigate to="/home-page" />} exact />
               <Route path="/home-page" element={<HomePage />} />
+              <Route path="/home-page" element={<HomePage />} />
+              <Route path="/tours" element={<ManageTours />} />
+              <Route path="/tours/create" element={<ManageTours />} />
+              <Route path="/places/" element={<ManagePlaces />} />
+              <Route path="/places/add" element={<ManagePlaces />} />
+              <Route path="/places/import" element={<ManagePlaces />} />
+              <Route path="/manage-transactions" element={<TransactionsPage />} />
+              <Route path="/settings" element={<Profile />} />
             </Route>
           </Routes>
         </BrowserRouter>
@@ -54,10 +68,10 @@ const AppRouter = () => {
   } else if (state.profile.roleName === "Administrator") {
     return (
       <div className="app">
-        <BrowserRouter basename="/cms">
+        <BrowserRouter>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/*" element={<Navigate to="/home-page" />} />
+              <Route path="/*" element={<Navigate to="/home-page" />} exact />
               <Route path="/home-page" element={<HomePage />} />
             </Route>
           </Routes>
@@ -69,8 +83,8 @@ const AppRouter = () => {
       <div className="app">
         <BrowserRouter>
           <Routes>
-            <Route path="/*" element={<Navigate to="/cms" />} />
-            <Route path="/cms" element={<Login />} exact />
+            <Route path="/*" element={<Navigate to="/" />} />
+            <Route path="/" element={<Login />} exact />
           </Routes>
         </BrowserRouter>
       </div>

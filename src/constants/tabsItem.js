@@ -11,24 +11,24 @@ const tabItems = [
     id: 1,
     title: "Home",
     icon: <HomeRoundedIcon />,
+    url: "/home-page",
     options: [],
   },
   {
     id: 2,
     title: "Tours",
     icon: <AirlineStopsRoundedIcon />,
+    url: "/tours",
     options: [
       {
         subTitle: "List Tours",
         subIcon: <FormatListBulletedRoundedIcon />,
+        subUrl: "/",
       },
       {
         subTitle: "Create Tour",
         subIcon: "",
-      },
-      {
-        subTitle: "Import File",
-        subIcon: "",
+        subUrl: "/create",
       },
     ],
   },
@@ -36,18 +36,22 @@ const tabItems = [
     id: 3,
     title: "Places",
     icon: <PlaceOutlinedIcon />,
+    url: "/places",
     options: [
       {
         subTitle: "List Places",
         subIcon: <FormatListBulletedRoundedIcon />,
+        subUrl: "/",
       },
       {
         subTitle: "Create Place",
         subIcon: "",
+        subUrl: "/add",
       },
       {
         subTitle: "Import File",
         subIcon: "",
+        subUrl: "/import",
       },
     ],
   },
@@ -55,24 +59,28 @@ const tabItems = [
     id: 4,
     title: "Transactions",
     icon: <RequestQuoteOutlinedIcon />,
+    url: "/manage-transactions",
     options: [],
   },
   {
     id: 5,
     title: "Settings",
     icon: <SettingsOutlinedIcon />,
+    url: "/settings",
     options: [],
   },
   {
     id: 6,
     title: "Help & Information",
     icon: <ErrorOutlineOutlinedIcon />,
+    url: "",
     options: [],
   },
   {
     id: 7,
     title: "Log out",
     icon: <LogoutRoundedIcon />,
+    url: "",
     options: [],
   },
 ];
