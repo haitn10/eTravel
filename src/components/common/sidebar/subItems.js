@@ -6,21 +6,24 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 
-const SubItems = ({ options, isNonMobile }) => {
+const SubItems = ({ options, isNonMobile, url }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [subActive, setSubActive] = useState("");
+
   return (
     <List style={{ marginLeft: 10 }}>
       {options &&
-        options.map(({ subTitle, subIcon }) => {
+        options.map(({ subTitle, subIcon, subUrl }) => {
           const lcTitle = subTitle.toLowerCase();
           return (
             <ListItem
               key={subTitle}
               disablePadding
               onClick={() => {
-                // navigate(`/${lcText}`);
+                navigate(`${url}${subUrl}`);
                 setSubActive(lcTitle);
               }}
               sx={{

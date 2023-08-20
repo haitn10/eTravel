@@ -1,7 +1,7 @@
 import { Box, useTheme } from "@mui/material";
 import React from "react";
 
-const Profile = () => {
+const TransactionsPage = () => {
   const theme = useTheme();
   return (
     <Box
@@ -13,4 +13,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default TransactionsPage;
