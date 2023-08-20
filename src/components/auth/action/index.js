@@ -1,6 +1,7 @@
 import axios from "axios";
 import { BASE_URL } from "../../../api";
 import Cookies from "universal-cookie";
+import { ERR_NETWORK } from "../../../constants/status";
 
 export const SET_PROFILE_STATE = "SET_PROFILE_STATE";
 export const UPDATE_PROFILE = "UPDATE_PROFILE";
@@ -58,6 +59,9 @@ export const login = (credential) => async (dispatch, getState) => {
     return Promise.resolve(res.account);
   } catch (e) {
     dispatch(setState({ isLoggingIn: false }));
+    if (e.code === ERR_NETWORK) {
+      return Promise.reject(e.message);
+    }
     const message = e.response.data ? e.response.data.message : e.message;
     return Promise.reject(message);
   }
