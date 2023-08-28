@@ -19,6 +19,7 @@ const Profile = () => {
   const [value, setValue] = useState("1");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -29,18 +30,13 @@ const Profile = () => {
     setLoading(!loading);
   };
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
   return (
     <Box
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
+      minHeight="90vh"
     >
       {/* Title */}
       <Box padding={1} marginLeft={2}>
@@ -91,7 +87,13 @@ const Profile = () => {
                 <TextField
                   fullWidth
                   inputProps={{ style: { height: "1em" } }}
-                  InputProps={{ style: { borderRadius: 10 } }}
+                  InputProps={{
+                    style: {
+                      borderRadius: 10,
+                      backgroundColor: theme.palette.background.secondary,
+                    },
+                  }}
+                  disabled
                 />
               </Box>
               <Box width={600}>
@@ -186,8 +188,8 @@ const Profile = () => {
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
+                        onClick={() => setShowPassword((show) => !show)}
+                        onMouseDown={(e) => e.preventDefault()}
                         edge="end"
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -200,26 +202,29 @@ const Profile = () => {
                 />
               </Box>
               <Box width={600}>
-                <Typography 
+                <Typography
                   textTransform="uppercase"
                   color={theme.palette.text.third}
                   fontWeight="semiBold"
                   marginBottom={1}
-                  
                 >
                   Confirm Password
                 </Typography>
                 <OutlinedInput
-                  type={showPassword ? "text" : "password"}
+                  type={showConfirmPassword ? "text" : "password"}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
+                        onClick={() => setShowConfirmPassword((show) => !show)}
+                        onMouseDown={(e) => e.preventDefault()}
                         edge="end"
                       >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                        {showConfirmPassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
                       </IconButton>
                     </InputAdornment>
                   }
