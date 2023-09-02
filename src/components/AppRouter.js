@@ -12,6 +12,7 @@ import Profile from "./auth";
 import ManageTours from "./tours";
 import ManagePlaces from "./places";
 import TransactionsPage from "./transactions";
+import TransactionDetails from "./transactions/details";
 
 const AppRouter = () => {
   const state = useSelector((state) => state.auth);
@@ -58,7 +59,8 @@ const AppRouter = () => {
               <Route path="/places/" element={<ManagePlaces />} />
               <Route path="/places/add" element={<ManagePlaces />} />
               <Route path="/places/import" element={<ManagePlaces />} />
-              <Route path="/manage-transactions" element={<TransactionsPage />} />
+              <Route path="/transactions" element={<TransactionsPage />} />
+              <Route path="/transactions/details" element={<TransactionDetails />} />
               <Route path="/settings" element={<Profile />} />
             </Route>
           </Routes>

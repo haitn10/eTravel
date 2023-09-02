@@ -1,61 +1,110 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, alpha, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import SearchInput from "../common/toolsupports/SearchInput";
+import FilterData from "../common/toolsupports/FilterData";
+import moment from "moment";
+import { createFakeServer } from "@mui/x-data-grid-generator";
 
 const columns = [
-  { field: "id", headerName: "TransID", width: 90 },
   {
-    field: "firstName",
+    field: "id",
+    headerName: "TransID",
+    align: "center",
+    headerAlign: "center",
+    sortable: false,
+    width: 100,
+  },
+  {
+    field: "name",
     headerName: "Customer name",
     valueGetter: (params) =>
       `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-    width: 200,
+    flex: 1,
+    sortable: false,
   },
   {
-    field: "date",
+    field: "paymentDate",
     headerName: "Payment Date",
     width: 150,
+    sortable: false,
+    renderCell: (params) => (
+      <Typography variant="p" fontWeight="medium">
+        {moment(params.row.paymentDate).format("MMMM D, YYYY")}
+      </Typography>
+    ),
   },
   {
     field: "lastName",
     headerName: "Payment Method",
-    width: 150,
+    width: 200,
+    sortable: false,
   },
   {
-    field: "age",
+    field: "amount",
     headerName: "Amount",
     type: "number",
-    width: 110,
+    width: 150,
+    sortable: false,
   },
   {
     field: "status",
     headerName: "Status",
     description: "This column has a value getter and is not sortable.",
-    width: 160,
-  },{
-    field: "action",
-    headerName: "Action",
-    description: "This column has a value getter and is not sortable.",
+    width: 150,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (params) => (
+      <Box
+        height={30}
+        width={100}
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        borderRadius={20}
+        color={params.row.status === true ? "#4F7942" : "#C40234"}
+        bgcolor={alpha(params.row.status === true ? "#4F7942" : "#C40234", 0.1)}
+      >
+        <Typography variant="p" fontWeight="medium">
+          {params.row.status === true ? "Success" : " Failed"}
+        </Typography>
+      </Box>
+    ),
     sortable: false,
-    showcolumn: true,
-    width: 160,
   },
 ];
 
-const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-];
+const SERVER_OPTIONS = {
+  useCursorPagination: false,
+};
+
+const { useQuery, ...data } = createFakeServer({}, SERVER_OPTIONS);
 
 const TransactionsPage = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const [paginationModel, setPaginationModel] = React.useState({
+    page: 0,
+    pageSize: 10,
+  });
+
+  const { isLoading, rows, pageInfo } = useQuery(paginationModel);
+  const [rowCountState, setRowCountState] = React.useState(
+    pageInfo?.totalRowCount || 0
+  );
+  React.useEffect(() => {
+    setRowCountState((prevRowCountState) =>
+      pageInfo?.totalRowCount !== undefined
+        ? pageInfo?.totalRowCount
+        : prevRowCountState
+    );
+  }, [pageInfo?.totalRowCount, setRowCountState]);
+
+  const handleRowClick = (params) => {
+    navigate("/transactions/details", { data: params.row });
+  };
+
   return (
     <Box
       margin="1.25em"
@@ -64,37 +113,59 @@ const TransactionsPage = () => {
       borderRadius={5}
     >
       {/* Title */}
-      <Box padding={1} marginLeft={2}>
-        <Typography
-          color={theme.palette.text.active}
-          fontWeight="bold"
-          fontSize={36}
-        >
-          Manage Transactions
-        </Typography>
-        <Typography
-          color={theme.palette.text.third}
-          fontWeight="regular"
-          fontSize={18}
-        >
-          Manage all them completed transactions.
-        </Typography>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        padding={1}
+        marginX={2}
+      >
+        <Box>
+          <Typography
+            color={theme.palette.text.active}
+            fontWeight="bold"
+            fontSize={36}
+          >
+            Manage Transactions
+          </Typography>
+          <Typography
+            color={theme.palette.text.third}
+            fontWeight="regular"
+            fontSize={18}
+          >
+            Manage all them completed transactions.
+          </Typography>
+        </Box>
+
+        {/* Search Box*/}
+        <Box display="flex" alignItems="center" gap={1}>
+          <SearchInput />
+          <FilterData />
+        </Box>
       </Box>
 
       {/* Data Table */}
-      <Box paddingX={2} marginTop={3}>
+      <Box height={rows ? "" : 400} paddingX={2} marginTop={3} width="100%">
         <DataGrid
           rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
+          {...data}
+          rowCount={rowCountState}
+          loading={isLoading}
+          pageSizeOptions={[5]}
+          paginationModel={paginationModel}
+          paginationMode="server"
+          onPaginationModelChange={setPaginationModel}
+          disableColumnMenu
+          onRowClick={handleRowClick}
+          sx={{
+            border: 0,
+            "& .MuiDataGrid-row:hover": {
+              cursor: "pointer",
+            },
+            ".MuiDataGrid-cell:focus": {
+              outline: "none",
             },
           }}
-          style={{ border: 0 }}
-          pageSizeOptions={[10]}
         />
       </Box>
     </Box>

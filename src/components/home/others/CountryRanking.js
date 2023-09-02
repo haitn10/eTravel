@@ -10,7 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React from "react";
-import TableSkeletion from "../../common/Skeletion/TableSkeletion";
+import TableSkeletion from "../../common/skeletion/TableSkeletion";
 
 const CountryRanking = ({ loadings, rows }) => {
   const theme = useTheme();

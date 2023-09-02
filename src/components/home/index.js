@@ -8,7 +8,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import React, { useState } from "react";
-import { StyledBadge } from "../common/StyledBadge";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import moment from "moment/moment";
 import indicators from "../../constants/indicatorsItem";
@@ -17,6 +16,7 @@ import ChartCard from "./others/ChartCard";
 import CustomersOrder from "./others/CustomersOrder";
 import CountryRanking from "./others/CountryRanking";
 import ArrowData from "../common/ArrowData";
+import { StyledBadge } from "../common/styled/StyledBadge";
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
