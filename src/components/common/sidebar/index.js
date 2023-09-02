@@ -15,7 +15,7 @@ import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
 
 import tabsItem from "../../../constants/tabsItem";
 import SubItems from "./subItems";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = ({
   isNonMobile,
@@ -24,8 +24,12 @@ const Sidebar = ({
   setIsSidebarOpen,
 }) => {
   const theme = useTheme();
-  const [active, setActive] = useState("home");
+  const location = useLocation();
   const navigate = useNavigate();
+
+  let url = location.pathname.substring(1);
+  const [active, setActive] = useState(url);
+
   return (
     <Box component="nav">
       <Drawer
@@ -138,7 +142,11 @@ const Sidebar = ({
                     ) : null}
                   </Box>
                   {options.length > 0 && active === lcTitle ? (
-                    <SubItems options={options} isNonMobile={isNonMobile} url={url} />
+                    <SubItems
+                      options={options}
+                      isNonMobile={isNonMobile}
+                      url={url}
+                    />
                   ) : null}
                 </ListItem>
               );

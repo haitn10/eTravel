@@ -59,7 +59,7 @@ const tabItems = [
     id: 4,
     title: "Transactions",
     icon: <RequestQuoteOutlinedIcon />,
-    url: "/manage-transactions",
+    url: "/transactions",
     options: [],
   },
   {

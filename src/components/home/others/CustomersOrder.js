@@ -10,7 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React from "react";
-import TableSkeletion from "../../common/Skeletion/TableSkeletion";
+import TableSkeletion from "../../common/skeletion/TableSkeletion";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 

@@ -18,6 +18,7 @@ export const theme = createTheme({
       third: color.text[300],
       onStatus: color.text[400],
       active: color.text[600],
+      buttonText: color.text[700],
     },
   },
   typography: {
