@@ -13,6 +13,8 @@ import ManageTours from "./tours";
 import ManagePlaces from "./places";
 import TransactionsPage from "./transactions";
 import TransactionDetails from "./transactions/details";
+import TourDetails from "./tours/details";
+import CreateNewTour from "./tours/create";
 
 const AppRouter = () => {
   const state = useSelector((state) => state.auth);
@@ -51,16 +53,19 @@ const AppRouter = () => {
           <CssBaseline />
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/*" element={<Navigate to="/home-page" />} exact />
-              <Route path="/home-page" element={<HomePage />} />
-              <Route path="/home-page" element={<HomePage />} />
+              <Route path="/*" element={<Navigate to="/home" />} exact />
+              <Route path="/home" element={<HomePage />} />
               <Route path="/tours" element={<ManageTours />} />
-              <Route path="/tours/create" element={<ManageTours />} />
+              <Route path="/tours/details" element={<TourDetails />} />
+              <Route path="/tours/create" element={<CreateNewTour />} />
               <Route path="/places/" element={<ManagePlaces />} />
               <Route path="/places/add" element={<ManagePlaces />} />
               <Route path="/places/import" element={<ManagePlaces />} />
               <Route path="/transactions" element={<TransactionsPage />} />
-              <Route path="/transactions/details" element={<TransactionDetails />} />
+              <Route
+                path="/transactions/details"
+                element={<TransactionDetails />}
+              />
               <Route path="/settings" element={<Profile />} />
             </Route>
           </Routes>

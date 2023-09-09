@@ -11,7 +11,7 @@ const tabItems = [
     id: 1,
     title: "Home",
     icon: <HomeRoundedIcon />,
-    url: "/home-page",
+    url: "/home",
     options: [],
   },
   {
