@@ -28,15 +28,6 @@ export const getProfile = () => {
       return Promise.resolve();
     }
     dispatch(setState({ isLoggingIn: false, profile: profile }));
-    // return refreshToken()
-    //   .then(profile => {
-    //     dispatch(setState({ isLoggingIn: false }))
-    //     return Promise.resolve()
-    //   })
-    //   .catch(e => {
-    //     dispatch(setState({ isLoggingIn: false }))
-    //     return Promise.reject(e)
-    //   })
     return Promise.resolve();
   };
 };
@@ -50,10 +41,9 @@ export const login = (credential) => async (dispatch, getState) => {
   try {
     dispatch(setState({ isLoggingIn: true }));
     const { data: res } = await axios.post(
-      `${BASE_URL}/auth/admin/login`,
+      `${BASE_URL}/api/auth/admin/login`,
       credential
     );
-    axios.defaults.headers = { Authorization: res.account.accessToken };
     dispatch(setState({ isLoggingIn: false, profile: res.account }));
     cookies.set("profile", res.account, { path: "/" });
     return Promise.resolve(res.account);

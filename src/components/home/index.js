@@ -7,16 +7,20 @@ import {
   Grid,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
-import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getHomePageData } from "./action";
 import moment from "moment/moment";
-import indicators from "../../constants/indicatorsItem";
 
 import ChartCard from "./others/ChartCard";
 import CustomersOrder from "./others/CustomersOrder";
 import CountryRanking from "./others/CountryRanking";
 import ArrowData from "../common/ArrowData";
 import { StyledBadge } from "../common/styled/StyledBadge";
+
+import indicators from "../../constants/indicatorsItem";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarDays } from "@fortawesome/free-regular-svg-icons";
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -32,59 +36,60 @@ const rows = [
 
 const HomePage = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const isNonMobile = useMediaQuery("(min-width: 1200px)");
-  const dayNow = moment(Date.now()).format("DD MMMM, YYYY");
+  const profile = useSelector((state) => state.auth.profile);
   const [loadings, setLoadings] = useState(true);
+
+  const ec = useRef(1);
+
+  useEffect(() => {
+    async function fetchData() {
+      await dispatch(getHomePageData());
+    }
+    fetchData();
+  }, []);
 
   return (
     <Box
-      margin="1.25em"
-      padding={2}
+      margin={2.5}
+      padding={2.5}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
       {/* Header HomePage */}
-      <Box minHeight={250} display="flex" flexDirection="row">
-        <Box flexGrow={2} flexDirection="column" marginX={2}>
-          <Box flexGrow={1} marginRight={2} minHeight={125}>
+      <Box display="flex" gap={2} minHeight="">
+        <Box flexGrow={2} flexDirection="column">
+          <Box paddingX={1.5} minHeight={125}>
             <Box
               display="flex"
               justifyContent="space-between"
               alignContent="center"
             >
-              <Typography
-                sx={{
-                  fontWeight: "semiBold",
-                  fontSize: { md: "2em", lg: "2.5em", xl: "2.75em" },
-                }}
-              >
+              <Typography variant="h3" fontWeight="semiBold">
                 Hello, Staff Name
               </Typography>
-              <Box display="flex" alignContent="center" flexWrap="wrap" gap={2}>
-                <Typography
-                  sx={{
-                    fontWeight: "medium",
-                    fontSize: { lg: ".9em", xl: "1.125em" },
-                    lineHeight: 2.5,
-                  }}
-                >
-                  {dayNow}
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant="h6" fontWeight="medium">
+                  {moment(Date.now()).format("DD MMMM, YYYY")}
                 </Typography>
                 <Avatar sx={{ bgcolor: theme.palette.background.third }}>
-                  <CalendarMonthOutlinedIcon color="error" />
+                  <FontAwesomeIcon
+                    icon={faCalendarDays}
+                    color={theme.palette.text.active}
+                  />
                 </Avatar>
               </Box>
             </Box>
             <Typography
               color={theme.palette.text.third}
-              sx={{
-                fontWeight: "regular",
-                fontSize: { md: "1em", lg: "1.375em" },
-              }}
+              variant="h6"
+              fontWeight="regular"
             >
               Try to best everyday!
             </Typography>
           </Box>
+
           <Grid
             container={isNonMobile}
             minHeight={125}
@@ -144,16 +149,14 @@ const HomePage = () => {
 
         {isNonMobile ? (
           <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            flexDirection="column"
             minWidth={250}
             minHeight={250}
             bgcolor={alpha(theme.palette.background.hovered, 0.1)}
             borderRadius={8}
-            flexWrap="wrap"
-            flexDirection="column"
-            display="flex"
-            justifyContent="center"
-            alignContent="center"
-            marginRight={2}
             gap={2}
           >
             <StyledBadge
@@ -162,17 +165,28 @@ const HomePage = () => {
               variant="dot"
             >
               <Avatar
-                alt="Remy Sharp"
-                src=""
-                sx={{ width: 111, height: 111, border: 2 }}
+                alt={profile.firstName + " " + profile.lastName}
+                src={profile.image}
+                sx={{
+                  width: 111,
+                  height: 111,
+                  border: 2,
+                  borderColor: theme.palette.background.secondary,
+                }}
               />
             </StyledBadge>
 
             <Box alignItems="center" flexDirection="column" display="flex">
-              <Typography fontSize={22} fontWeight={700}>
-                Staff Name
+              <Typography variant="h6" fontWeight="medium" noWrap>
+                {profile.firstName + " " + profile.lastName}
               </Typography>
-              <Typography color={theme.palette.text.third}>#ID123</Typography>
+              <Typography
+                variant="subtitle1"
+                fontWeight="light"
+                color={theme.palette.text.third}
+              >
+                #{(profile.id + "" + profile.roleId + "" + profile.languageCode).toUpperCase()}
+              </Typography>
             </Box>
           </Box>
         ) : null}
@@ -180,13 +194,13 @@ const HomePage = () => {
 
       <Box marginX={2}>
         <Grid container paddingTop={5} spacing={2.5}>
-          <Grid item md={12}>
+          <Grid item xs={12}>
             <ChartCard />
           </Grid>
-          <Grid item md={12} lg={6}>
+          <Grid item xs={12} lg={6}>
             <CustomersOrder loadings={loadings} rows={rows} />
           </Grid>
-          <Grid item md={12} lg={6}>
+          <Grid item xs={12} lg={6}>
             <CountryRanking loadings={loadings} rows={rows} />
           </Grid>
         </Grid>

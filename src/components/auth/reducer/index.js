@@ -1,9 +1,17 @@
 import { LOG_OUT, SET_PROFILE_STATE, UPDATE_PROFILE } from "../action";
 import Cookies from "universal-cookie";
 
-const cookies = new Cookies()
+const cookies = new Cookies();
 
-const auth = (state = { isLoggingIn: false, profile: null, isUpdating: false }, action) => {
+const auth = (
+  state = {
+    shouldFetch: true,
+    isLoggingIn: false,
+    profile: null,
+    isUpdating: false,
+  },
+  action
+) => {
   switch (action.type) {
     case SET_PROFILE_STATE:
       return {
