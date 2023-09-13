@@ -1,21 +1,28 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
+  Avatar,
   Box,
   Button,
   CircularProgress,
+  Grid,
   IconButton,
   InputAdornment,
+  ListItemIcon,
+  MenuItem,
   OutlinedInput,
+  Select,
   Tab,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
   const theme = useTheme();
+  const profile = useSelector((state) => state.auth.profile);
   const [value, setValue] = useState("1");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -65,66 +72,197 @@ const Profile = () => {
               <Tab label="Password" value="2" />
             </TabList>
           </Box>
-          <TabPanel value="1">
+          <TabPanel value="1" sx={{ paddingX: 5 }}>
             <form
               style={{
                 display: "flex",
                 alignItems: "center",
                 flexDirection: "column",
-                gap: 30,
               }}
               onSubmit={onSubmit}
             >
-              <Box width={600} marginTop={2}>
-                <Typography
-                  textTransform="uppercase"
-                  color={theme.palette.text.third}
-                  fontWeight="semiBold"
-                  marginBottom={1}
+              <Box flexGrow={1} style={{ display: "flex" }}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  flexDirection="column"
+                  padding={2}
+                  gap={2}
                 >
-                  UserName
-                </Typography>
-                <TextField
-                  fullWidth
-                  inputProps={{ style: { height: "1em" } }}
-                  InputProps={{
-                    style: {
-                      borderRadius: 10,
-                      backgroundColor: theme.palette.background.secondary,
-                    },
-                  }}
-                  disabled
-                />
-              </Box>
-              <Box width={600}>
-                <Typography
-                  textTransform="uppercase"
-                  color={theme.palette.text.third}
-                  fontWeight="semiBold"
-                  marginBottom={1}
-                >
-                  Email
-                </Typography>
-                <TextField
-                  fullWidth
-                  inputProps={{ style: { height: "1em" } }}
-                  InputProps={{ style: { borderRadius: 10 } }}
-                />
-              </Box>
-              <Box width={600}>
-                <Typography
-                  textTransform="uppercase"
-                  color={theme.palette.text.third}
-                  fontWeight="semiBold"
-                  marginBottom={1}
-                >
-                  Phone
-                </Typography>
-                <TextField
-                  fullWidth
-                  inputProps={{ style: { height: "1em" } }}
-                  InputProps={{ style: { borderRadius: 10 } }}
-                />
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      width: 200,
+                      height: 200,
+                      border: 5,
+                      borderColor: theme.palette.background.secondary,
+                    }}
+                    src={profile.image}
+                  />
+                  <input
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="raised-button-file"
+                    type="file"
+                  />
+                  <label htmlFor="raised-button-file">
+                    <Button variant="outlined" color="error" component="span">
+                      Change Image
+                    </Button>
+                  </label>
+                </Box>
+                <Grid flexGrow={2} container paddingX={4} spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      textTransform="uppercase"
+                      color={theme.palette.text.third}
+                      fontWeight="semiBold"
+                    >
+                      UserName
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      inputProps={{ style: { height: "1em" } }}
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                          backgroundColor: theme.palette.background.secondary,
+                        },
+                      }}
+                      value={profile.email.slice(0, profile.email.indexOf("@"))}
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      textTransform="uppercase"
+                      color={theme.palette.text.third}
+                      fontWeight="semiBold"
+                    >
+                      Email
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      inputProps={{ style: { height: "1em" } }}
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                          backgroundColor: theme.palette.background.secondary,
+                        },
+                      }}
+                      value={profile.email}
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      textTransform="uppercase"
+                      color={theme.palette.text.third}
+                      fontWeight="semiBold"
+                    >
+                      First Name
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      inputProps={{ style: { height: "1em" } }}
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                        },
+                      }}
+                      value={profile.firstName}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      textTransform="uppercase"
+                      color={theme.palette.text.third}
+                      fontWeight="semiBold"
+                    >
+                      Last Name
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      inputProps={{ style: { height: "1em" } }}
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                        },
+                      }}
+                      value={profile.lastName}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      textTransform="uppercase"
+                      color={theme.palette.text.third}
+                      fontWeight="semiBold"
+                    >
+                      National
+                    </Typography>
+                    <Select value={profile.nationality} fullWidth displayEmpty>
+                      <MenuItem value={"Japan"}>
+                        <ListItemIcon></ListItemIcon>
+                        Japan
+                      </MenuItem>
+                      <MenuItem value={"VietNam"}>
+                        <ListItemIcon></ListItemIcon>VietNam
+                      </MenuItem>
+                      <MenuItem value={"ThaiLand"}>
+                        {" "}
+                        <ListItemIcon></ListItemIcon>ThaiLand
+                      </MenuItem>
+                    </Select>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      textTransform="uppercase"
+                      color={theme.palette.text.third}
+                      fontWeight="semiBold"
+                    >
+                      Gender
+                    </Typography>
+                    <Select value={profile.gender} fullWidth displayEmpty>
+                      <MenuItem value={"Male"}> Male</MenuItem>
+                      <MenuItem value={"Female"}>Female</MenuItem>
+                      <MenuItem value={"Third"}>Third</MenuItem>
+                    </Select>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography
+                      textTransform="uppercase"
+                      color={theme.palette.text.third}
+                      fontWeight="semiBold"
+                      marginBottom={1}
+                    >
+                      Phone
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      inputProps={{ style: { height: "1em" } }}
+                      InputProps={{ style: { borderRadius: 10 } }}
+                      value={profile.phone}
+                      onChange={(e) => {}}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography
+                      textTransform="uppercase"
+                      color={theme.palette.text.third}
+                      fontWeight="semiBold"
+                      marginBottom={1}
+                    >
+                      Address
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      inputProps={{ style: { height: "1em" } }}
+                      InputProps={{ style: { borderRadius: 10 } }}
+                      value={profile.address}
+                      onChange={(e) => {}}
+                    />
+                  </Grid>
+                </Grid>
               </Box>
               <Button
                 variant="contained"
