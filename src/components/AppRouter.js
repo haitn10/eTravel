@@ -17,6 +17,13 @@ import TourDetails from "./tours/details";
 import CreateNewTour from "./tours/create";
 import ManageUsers from "./users";
 
+import { createBrowserHistory } from "history";
+import UserDetails from "./users/details";
+import StaffDetails from "./staff/details";
+import ManageStaffs from "./staff";
+import ManageCategories from "./categories";
+export const history = createBrowserHistory();
+
 const AppRouter = () => {
   const state = useSelector((state) => state.auth);
   const [isFetching, setIsFetching] = useState(true);
@@ -81,6 +88,12 @@ const AppRouter = () => {
             <Route element={<Layout />}>
               <Route path="/*" element={<Navigate to="/users" />} exact />
               <Route path="/users" element={<ManageUsers />} />
+              <Route path="/users/details" element={<UserDetails />} />
+              <Route path="/staffs" element={<ManageStaffs />} />
+              <Route path="/staffs/details" element={<StaffDetails />} />
+              <Route path="/categories" element={<ManageCategories />} />
+              <Route path="/languages" element={<ManageStaffs />} />
+              <Route path="/languages/details" element={<StaffDetails />} />
             </Route>
           </Routes>
         </BrowserRouter>

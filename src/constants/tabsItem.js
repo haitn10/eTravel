@@ -72,20 +72,20 @@ const tabItems = [
     url: "/settings",
     options: [],
   },
-  {
-    id: 6,
-    title: "Help & Information",
-    icon: <ErrorOutline width={24} />,
-    url: "",
-    options: [],
-  },
-  {
-    id: 7,
-    title: "Log out",
-    icon: <SignOut height={24} />,
-    url: "",
-    options: [],
-  },
+  // {
+  //   id: 6,
+  //   title: "Help & Information",
+  //   icon: <ErrorOutline width={24} />,
+  //   url: "",
+  //   options: [],
+  // },
+  // {
+  //   id: 7,
+  //   title: "Log out",
+  //   icon: <SignOut height={24} />,
+  //   url: "",
+  //   options: [],
+  // },
 ];
 
 export default tabItems;
