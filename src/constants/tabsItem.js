@@ -1,33 +1,36 @@
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import AirlineStopsRoundedIcon from "@mui/icons-material/AirlineStopsRounded";
-import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
-import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import { Home, Directions, Import } from "@styled-icons/boxicons-regular";
+import {
+  Location,
+  LocationAdd,
+  CollectionsAdd,
+} from "@styled-icons/fluentui-system-regular";
+import { ListUl, FileEarmarkText } from "@styled-icons/bootstrap";
+import { SignOut } from "@styled-icons/octicons";
+import { Settings2Outline } from "@styled-icons/evaicons-outline";
+import { ErrorOutline } from "@styled-icons/material";
+
 const tabItems = [
   {
     id: 1,
     title: "Home",
-    icon: <HomeRoundedIcon />,
+    icon: <Home width={24} />,
     url: "/home",
     options: [],
   },
   {
     id: 2,
     title: "Tours",
-    icon: <AirlineStopsRoundedIcon />,
+    icon: <Directions width={24} />,
     url: "/tours",
     options: [
       {
         subTitle: "List Tours",
-        subIcon: <FormatListBulletedRoundedIcon />,
+        subIcon: <ListUl width={24} />,
         subUrl: "/",
       },
       {
         subTitle: "Create Tour",
-        subIcon: "",
+        subIcon: <CollectionsAdd width={24} />,
         subUrl: "/create",
       },
     ],
@@ -35,22 +38,22 @@ const tabItems = [
   {
     id: 3,
     title: "Places",
-    icon: <PlaceOutlinedIcon />,
+    icon: <Location width={24} />,
     url: "/places",
     options: [
       {
         subTitle: "List Places",
-        subIcon: <FormatListBulletedRoundedIcon />,
+        subIcon: <ListUl width={24} />,
         subUrl: "/",
       },
       {
         subTitle: "Create Place",
-        subIcon: "",
+        subIcon: <LocationAdd width={24} />,
         subUrl: "/add",
       },
       {
         subTitle: "Import File",
-        subIcon: "",
+        subIcon: <Import width={24} />,
         subUrl: "/import",
       },
     ],
@@ -58,28 +61,28 @@ const tabItems = [
   {
     id: 4,
     title: "Transactions",
-    icon: <RequestQuoteOutlinedIcon />,
+    icon: <FileEarmarkText height={24} />,
     url: "/transactions",
     options: [],
   },
   {
     id: 5,
     title: "Settings",
-    icon: <SettingsOutlinedIcon />,
+    icon: <Settings2Outline width={24} />,
     url: "/settings",
     options: [],
   },
   {
     id: 6,
     title: "Help & Information",
-    icon: <ErrorOutlineOutlinedIcon />,
+    icon: <ErrorOutline width={24} />,
     url: "",
     options: [],
   },
   {
     id: 7,
     title: "Log out",
-    icon: <LogoutRoundedIcon />,
+    icon: <SignOut height={24} />,
     url: "",
     options: [],
   },

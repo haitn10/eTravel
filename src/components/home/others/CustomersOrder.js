@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import React from "react";
 import TableSkeletion from "../../common/skeletion/TableSkeletion";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { TimeFive } from "@styled-icons/boxicons-regular/TimeFive";
+import { MoreHoriz } from "@styled-icons/material-outlined";
 
 const CustomersOrder = ({ loadings, rows }) => {
   const theme = useTheme();
@@ -86,13 +86,13 @@ const CustomersOrder = ({ loadings, rows }) => {
                           width: 30,
                         }}
                       >
-                        <AccessTimeIcon sx={{ width: 14 }} />
+                        <TimeFive width={14} />
                       </Avatar>
                       <Typography>{row.fat}h</Typography>
                     </Box>
                   </TableCell>
                   <TableCell align="right">
-                    <MoreHorizIcon />
+                    <MoreHoriz width={24} />
                   </TableCell>
                 </TableRow>
               ))

@@ -9,7 +9,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import { FilterAlt } from "@styled-icons/boxicons-regular";
 import { StyledMenu } from "../styled/StyledMenu";
 
 const FilterData = () => {
@@ -42,7 +42,7 @@ const FilterData = () => {
           borderRadius: 20,
           height: 40,
         }}
-        startIcon={<FilterAltOutlinedIcon />}
+        startIcon={<FilterAlt height={24} />}
         onClick={handleClick}
       >
         <Typography fontWeight="medium">Filter</Typography>
@@ -62,7 +62,7 @@ const FilterData = () => {
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          marginBottom={1} 
+          marginBottom={1}
           paddingX={1}
         >
           <Box>
