@@ -10,8 +10,7 @@ import {
 import React, { useState } from "react";
 import logo from "../../../assets/etravel-logo.png";
 
-import DoDisturbOnOutlinedIcon from "@mui/icons-material/DoDisturbOnOutlined";
-import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
+import { AddCircle, RemoveCircle } from "@styled-icons/ionicons-outline";
 
 import tabsItem from "../../../constants/tabsItem";
 import SubItems from "./subItems";
@@ -127,7 +126,10 @@ const Sidebar = ({
                             justifyContent: "end",
                           }}
                         >
-                          <ControlPointOutlinedIcon color="error" />
+                          <AddCircle
+                            width={24}
+                            color={theme.palette.text.active}
+                          />
                         </ListItemIcon>
                       ) : (
                         <ListItemIcon
@@ -136,7 +138,10 @@ const Sidebar = ({
                             justifyContent: "end",
                           }}
                         >
-                          <DoDisturbOnOutlinedIcon color="error" />
+                          <RemoveCircle
+                            width={24}
+                            color={theme.palette.text.active}
+                          />
                         </ListItemIcon>
                       )
                     ) : null}

@@ -1,8 +1,7 @@
 import { Box, Typography, alpha, useTheme } from "@mui/material";
 import React from "react";
 
-import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
-import TrendingDownRoundedIcon from "@mui/icons-material/TrendingDownRounded";
+import { TrendingUp, TrendingDown } from "@styled-icons/evaicons-solid";
 
 const ArrowData = ({ totalNum, direction, numDirection }) => {
   const theme = useTheme();
@@ -37,7 +36,7 @@ const ArrowData = ({ totalNum, direction, numDirection }) => {
           {(direction ? "+" : "-") + numDirection}
         </Typography>
         {direction ? (
-          <TrendingUpRoundedIcon
+          <TrendingUp
             sx={{ width: 14 }}
             color={
               direction
@@ -46,7 +45,7 @@ const ArrowData = ({ totalNum, direction, numDirection }) => {
             }
           />
         ) : (
-          <TrendingDownRoundedIcon
+          <TrendingDown
             sx={{ width: 14 }}
             color={
               direction

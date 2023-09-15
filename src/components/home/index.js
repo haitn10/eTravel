@@ -19,8 +19,7 @@ import ArrowData from "../common/ArrowData";
 import { StyledBadge } from "../common/styled/StyledBadge";
 
 import indicators from "../../constants/indicatorsItem";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarDays } from "@fortawesome/free-regular-svg-icons";
+import { Calendar } from "@styled-icons/ionicons-outline";
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -74,10 +73,7 @@ const HomePage = () => {
                   {moment(Date.now()).format("DD MMMM, YYYY")}
                 </Typography>
                 <Avatar sx={{ bgcolor: theme.palette.background.third }}>
-                  <FontAwesomeIcon
-                    icon={faCalendarDays}
-                    color={theme.palette.text.active}
-                  />
+                  <Calendar width={24} color={theme.palette.text.active} />
                 </Avatar>
               </Box>
             </Box>
@@ -185,7 +181,14 @@ const HomePage = () => {
                 fontWeight="light"
                 color={theme.palette.text.third}
               >
-                #{(profile.id + "" + profile.roleId + "" + profile.languageCode).toUpperCase()}
+                #
+                {(
+                  profile.id +
+                  "" +
+                  profile.roleId +
+                  "" +
+                  profile.languageCode
+                ).toUpperCase()}
               </Typography>
             </Box>
           </Box>

@@ -15,6 +15,7 @@ import TransactionsPage from "./transactions";
 import TransactionDetails from "./transactions/details";
 import TourDetails from "./tours/details";
 import CreateNewTour from "./tours/create";
+import ManageUsers from "./users";
 
 const AppRouter = () => {
   const state = useSelector((state) => state.auth);
@@ -78,8 +79,8 @@ const AppRouter = () => {
         <BrowserRouter>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/*" element={<Navigate to="/home-page" />} exact />
-              <Route path="/home-page" element={<HomePage />} />
+              <Route path="/*" element={<Navigate to="/users" />} exact />
+              <Route path="/users" element={<ManageUsers />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -1,21 +1,20 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleList } from "@fortawesome/free-regular-svg-icons";
-import { faCoins, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { CardText, BarChartLine } from "@styled-icons/bootstrap";
+import { Location } from "@styled-icons/fluentui-system-regular";
 
 const indicators = [
   {
     id: 1,
-    icon: <FontAwesomeIcon icon={faRectangleList} />,
+    icon: <CardText width={24} />,
     title: "Order Bills",
   },
   {
     id: 2,
-    icon: <FontAwesomeIcon icon={faLocationDot} />,
+    icon: <Location width={24} />,
     title: "Places",
   },
   {
     id: 3,
-    icon: <FontAwesomeIcon icon={faCoins} />,
+    icon: <BarChartLine width={24} />,
     title: "Revenue",
   },
 ];

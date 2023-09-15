@@ -8,8 +8,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
-import AddIcon from "@mui/icons-material/Add";
-import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
+import { Add, HighlightOff } from "@styled-icons/material";
 
 const TourGeneral = () => {
   const theme = useTheme();
@@ -108,7 +107,7 @@ const TourGeneral = () => {
                   component="label"
                   sx={{ width: "100%", height: "100%", gap: 1 }}
                 >
-                  <AddIcon
+                  <Add
                     color="inherit"
                     sx={{
                       height: 30,
@@ -164,7 +163,7 @@ const TourGeneral = () => {
                       setImagesList(imagesList.filter((e) => e !== item))
                     }
                   >
-                    <HighlightOffRoundedIcon color="error" />
+                    <HighlightOff color="error" />
                   </Button>
                 </Box>
               ))}

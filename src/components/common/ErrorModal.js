@@ -1,5 +1,5 @@
 import { Alert, IconButton, Slide } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { CloseOutline } from "@styled-icons/evaicons-outline";
 import React from "react";
 
 const ErrorModal = ({ open, setOpen, title, message }) => {
@@ -23,7 +23,7 @@ const ErrorModal = ({ open, setOpen, title, message }) => {
               setOpen(false);
             }}
           >
-            <CloseIcon fontSize="inherit" />
+            <CloseOutline fontSize="inherit" />
           </IconButton>
         }
         sx={{ mb: 2 }}

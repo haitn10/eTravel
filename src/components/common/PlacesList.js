@@ -12,8 +12,8 @@ import {
 import React, { useState } from "react";
 import SubCard from "./SubCard";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import SearchIcon from "@mui/icons-material/Search";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import { Search } from "@styled-icons/evaicons-solid";
+import { FilterAlt } from "@styled-icons/boxicons-regular";
 import { DataGrid } from "@mui/x-data-grid";
 import { createFakeServer } from "@mui/x-data-grid-generator";
 
@@ -101,7 +101,7 @@ const PlacesList = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <Search width={24} />
                   </InputAdornment>
                 ),
                 style: {
@@ -119,7 +119,7 @@ const PlacesList = () => {
                 inputProps={{ "aria-label": "Without label" }}
                 startAdornment={
                   <InputAdornment position="start">
-                    <FilterAltOutlinedIcon />
+                    <FilterAlt height={24} />
                   </InputAdornment>
                 }
                 sx={{

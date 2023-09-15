@@ -2,7 +2,7 @@ import React from "react";
 import { useTheme } from "@emotion/react";
 import { Grid, IconButton, Typography, alpha } from "@mui/material";
 import { Box } from "@mui/system";
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import { ArrowLeftCircle } from "@styled-icons/bootstrap";
 import { createBrowserHistory } from "history";
 
 const TransactionDetails = () => {
@@ -23,7 +23,7 @@ const TransactionDetails = () => {
           sx={{ border: 1, color: theme.palette.text.buttonText }}
           onClick={() => history.back()}
         >
-          <ArrowBackRoundedIcon />
+          <ArrowLeftCircle width={24} />
         </IconButton>
 
         <Box marginLeft={2}>
@@ -75,7 +75,7 @@ const TransactionDetails = () => {
           </Box>
         </Box>
 
-        <Grid container rowGap={{ xs: 1, sm: 2, xs: 3 }}>
+        <Grid container rowGap={{ xs: 1, sm: 2 }}>
           <Grid
             item
             xs={7}

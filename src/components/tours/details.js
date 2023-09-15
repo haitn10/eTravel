@@ -12,9 +12,8 @@ import {
   alpha,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import AddIcon from "@mui/icons-material/Add";
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
+import { Add, HighlightOff } from "@styled-icons/material";
+
 import { createBrowserHistory } from "history";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import moment from "moment/moment";
@@ -62,7 +61,7 @@ const TourDetails = () => {
           sx={{ border: 1, color: theme.palette.text.buttonText }}
           onClick={() => history.back()}
         >
-          <ArrowBackRoundedIcon />
+          <Add width={24} />
         </IconButton>
 
         <Box marginLeft={2}>
@@ -181,7 +180,7 @@ const TourDetails = () => {
                           component="label"
                           sx={{ width: "100%", height: "100%", gap: 1 }}
                         >
-                          <AddIcon
+                          <Add
                             color="inherit"
                             sx={{
                               height: 30,
@@ -241,7 +240,7 @@ const TourDetails = () => {
                               )
                             }
                           >
-                            <HighlightOffRoundedIcon color="error" />
+                            <HighlightOff color="error" />
                           </Button>
                         </Box>
                       ))}

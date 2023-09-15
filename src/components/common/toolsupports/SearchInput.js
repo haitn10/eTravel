@@ -1,9 +1,9 @@
 import React from "react";
 import { alpha, styled } from "@mui/material/styles";
 import { InputBase } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { Search } from "@styled-icons/evaicons-solid";
 
-const Search = styled("div")(({ theme }) => ({
+const SearchBox = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 20,
   border: 1,
@@ -55,15 +55,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const SearchInput = () => {
   return (
-    <Search>
+    <SearchBox>
       <SearchIconWrapper>
-        <SearchIcon />
+        <Search width={24} />
       </SearchIconWrapper>
       <StyledInputBase
         placeholder="Search…"
         inputProps={{ "aria-label": "search" }}
       />
-    </Search>
+    </SearchBox>
   );
 };
 
