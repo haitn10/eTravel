@@ -35,7 +35,7 @@ export const fetch = async (
     dispatch(setState({ isFetching: true }));
 
     const { data } = await API.get(path);
-    dispatch(setState({ shouldFetch: false, isFetching: false, items: data.chart }));
+    dispatch(setState({ shouldFetch: false, isFetching: false, items: data }));
     return Promise.resolve(data);
   } catch (e) {
     dispatch(setState({ isFetching: false }));

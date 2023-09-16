@@ -5,6 +5,8 @@ const homepage = (
     shouldFetch: true,
     isFetching: false,
     items: [],
+    languages: [],
+    orders: [],
     isUpdating: false,
   },
   action

@@ -17,11 +17,12 @@ import TourDetails from "./tours/details";
 import CreateNewTour from "./tours/create";
 import ManageUsers from "./users";
 
-import { createBrowserHistory } from "history";
 import UserDetails from "./users/details";
 import StaffDetails from "./staff/details";
 import ManageStaffs from "./staff";
 import ManageCategories from "./categories";
+
+import { createBrowserHistory } from "history";
 export const history = createBrowserHistory();
 
 const AppRouter = () => {

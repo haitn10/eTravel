@@ -23,7 +23,7 @@ const ErrorModal = ({ open, setOpen, title, message }) => {
               setOpen(false);
             }}
           >
-            <CloseOutline fontSize="inherit" />
+            <CloseOutline fontSize="inherit" width={24} />
           </IconButton>
         }
         sx={{ mb: 2 }}

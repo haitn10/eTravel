@@ -1,3 +1,5 @@
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
   useTheme,
@@ -6,11 +8,11 @@ import {
   Typography,
   Grid,
   useMediaQuery,
+  Skeleton,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getHomePageData } from "./action";
 import moment from "moment/moment";
+
+import { getHomePageData } from "./action";
 
 import ChartCard from "./others/ChartCard";
 import CustomersOrder from "./others/CustomersOrder";
@@ -19,6 +21,7 @@ import ArrowData from "../common/ArrowData";
 import { StyledBadge } from "../common/styled/StyledBadge";
 
 import indicators from "../../constants/indicatorsItem";
+
 import { Calendar } from "@styled-icons/ionicons-outline";
 
 function createData(name, calories, fat, carbs, protein) {
@@ -38,16 +41,16 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const isNonMobile = useMediaQuery("(min-width: 1200px)");
   const profile = useSelector((state) => state.auth.profile);
-  const [loadings, setLoadings] = useState(true);
-
-  const ec = useRef(1);
+  const [loadings, setLoadings] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      await dispatch(getHomePageData());
+      // await dispatch(getHomePageData());
+      // await dispatch(getOrdersData());
+      // await dispatch(getLanguagesData());
     }
     fetchData();
-  }, []);
+  }, [dispatch]);
 
   return (
     <Box
@@ -57,38 +60,45 @@ const HomePage = () => {
       borderRadius={5}
     >
       {/* Header HomePage */}
-      <Box display="flex" gap={2} minHeight="">
+      <Box display="flex" gap={2} paddingX={1.5}>
         <Box flexGrow={2} flexDirection="column">
-          <Box paddingX={1.5} minHeight={125}>
+          <Box minHeight={111}>
             <Box
               display="flex"
               justifyContent="space-between"
               alignContent="center"
             >
-              <Typography variant="h3" fontWeight="semiBold">
-                Hello, Staff Name
+              <Typography variant="h4" fontWeight="semiBold">
+                {loadings ? "Hello, Staff Name" : <Skeleton width={300} />}
               </Typography>
               <Box display="flex" alignItems="center" gap={2}>
-                <Typography variant="h6" fontWeight="medium">
-                  {moment(Date.now()).format("DD MMMM, YYYY")}
+                <Typography fontWeight="medium">
+                  {loadings ? (
+                    moment(Date.now()).format("DD MMMM, YYYY")
+                  ) : (
+                    <Skeleton width={200} />
+                  )}
                 </Typography>
-                <Avatar sx={{ bgcolor: theme.palette.background.third }}>
-                  <Calendar width={24} color={theme.palette.text.active} />
-                </Avatar>
+
+                {loadings ? (
+                  <Avatar sx={{ bgcolor: theme.palette.background.third }}>
+                    <Calendar width={22} color={theme.palette.text.active} />
+                  </Avatar>
+                ) : (
+                  <Skeleton variant="circular">
+                    <Avatar />
+                  </Skeleton>
+                )}
               </Box>
             </Box>
-            <Typography
-              color={theme.palette.text.third}
-              variant="h6"
-              fontWeight="regular"
-            >
-              Try to best everyday!
+            <Typography color={theme.palette.text.third} fontWeight="regular">
+              {loadings ? "Try to best everyday!" : <Skeleton width={200} />}
             </Typography>
           </Box>
 
           <Grid
             container={isNonMobile}
-            minHeight={125}
+            minHeight={111}
             borderBottom={2}
             borderTop={2}
             borderColor={theme.palette.background.third}
@@ -143,14 +153,14 @@ const HomePage = () => {
           </Grid>
         </Box>
 
-        {isNonMobile ? (
+        {isNonMobile && loadings ? (
           <Box
             display="flex"
             justifyContent="center"
             alignItems="center"
             flexDirection="column"
-            minWidth={250}
-            minHeight={250}
+            minWidth={222}
+            minHeight={222}
             bgcolor={alpha(theme.palette.background.hovered, 0.1)}
             borderRadius={8}
             gap={2}
@@ -173,11 +183,11 @@ const HomePage = () => {
             </StyledBadge>
 
             <Box alignItems="center" flexDirection="column" display="flex">
-              <Typography variant="h6" fontWeight="medium" noWrap>
+              <Typography fontWeight="medium" noWrap>
                 {profile.firstName + " " + profile.lastName}
               </Typography>
               <Typography
-                variant="subtitle1"
+                variant="caption"
                 fontWeight="light"
                 color={theme.palette.text.third}
               >
@@ -192,7 +202,16 @@ const HomePage = () => {
               </Typography>
             </Box>
           </Box>
-        ) : null}
+        ) : (
+          <Box>
+            <Skeleton
+              variant="rounded"
+              width={222}
+              height={222}
+              sx={{ ".MuiSkeleton-rounded": { borderRadius: 10 } }}
+            />
+          </Box>
+        )}
       </Box>
 
       <Box marginX={2}>

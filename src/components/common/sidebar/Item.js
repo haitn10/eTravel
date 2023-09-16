@@ -1,17 +1,29 @@
-import React, { useState } from "react";
-import { Typography } from "@mui/material";
+import React from "react";
+import { Typography, alpha, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import { MenuItem } from "react-pro-sidebar";
 
-const Item = ({ showTitle, title, icon }) => {
-  const [active, setActive] = useState(false);
+const Item = ({ title, icon, linkUrl, subMenu, selected, setSelected }) => {
+  const theme = useTheme();
   return (
-    <MenuItem icon={icon} component={<Link to="/home" />} active={active}>
-      {showTitle ? null : (
-        <Typography fontWeight={active ? "bold" : "medium"} color="inherit">
-          {title}
-        </Typography>
-      )}
+    <MenuItem
+      icon={icon}
+      component={<Link to={linkUrl} onClick={() => setSelected(title)} />}
+      style={{
+        color: selected ? theme.palette.text.active : undefined,
+        backgroundColor: selected
+          ? alpha(theme.palette.background.hovered, 0.05)
+          : undefined,
+      }}
+      active={selected}
+    >
+      <Typography
+        fontWeight={selected ? "bold" : "medium"}
+        color="inherit"
+        fontSize={subMenu ? "0.85rem" : "1rem"}
+      >
+        {title}
+      </Typography>
     </MenuItem>
   );
 };
