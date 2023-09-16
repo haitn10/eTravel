@@ -8,8 +8,8 @@ const Layout = () => {
   const isNonMobile = useMediaQuery("(min-width: 800px)");
 
   return (
-    <Box display={isNonMobile ? "flex" : "block"} minHeight="100vh">
-      <SidebarApp />
+    <Box display="flex">
+      <SidebarApp isNonMobile={isNonMobile} />
       <Box flexGrow={1} sx={{ background: theme.palette.background.secondary }}>
         <Outlet />
       </Box>

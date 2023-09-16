@@ -1,13 +1,13 @@
 import { Home, Directions, Import } from "@styled-icons/boxicons-regular";
 import {
-  Location,
   LocationAdd,
   CollectionsAdd,
 } from "@styled-icons/fluentui-system-regular";
 import { ListUl, FileEarmarkText } from "@styled-icons/bootstrap";
 import { Settings2Outline } from "@styled-icons/evaicons-outline";
+import { Location } from "@styled-icons/ionicons-outline";
 
-const tabItems = [
+const tabsItem = [
   {
     id: 1,
     title: "Home",
@@ -72,4 +72,4 @@ const tabItems = [
   },
 ];
 
-export default tabItems;
+export default tabsItem;

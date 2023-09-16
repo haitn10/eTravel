@@ -9,6 +9,6 @@ const setState = (state) => ({
 
 export const getHomePageData = () => {
   return async (dispatch, getState) => {
-    return fetch(getState().auth, dispatch, setState, "portal/charts");
+    return fetch(getState().homepage, dispatch, setState, "statictical");
   };
 };

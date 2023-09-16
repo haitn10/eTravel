@@ -5,7 +5,6 @@ import { MenuItem } from "react-pro-sidebar";
 
 const Item = ({ title, icon, linkUrl, subMenu, selected, setSelected }) => {
   const theme = useTheme();
-  console.log(linkUrl);
   return (
     <MenuItem
       icon={icon}

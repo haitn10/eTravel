@@ -13,6 +13,9 @@ import {
   useTheme,
 } from "@mui/material";
 import { Sidebar, Menu, SubMenu, MenuItem } from "react-pro-sidebar";
+import { useDispatch, useSelector } from "react-redux";
+
+import { logOut } from "../../auth/action";
 
 import { MenuOutline } from "@styled-icons/evaicons-outline";
 import { ErrorOutline } from "@styled-icons/material";
@@ -20,16 +23,16 @@ import { SignOut } from "@styled-icons/octicons";
 
 import Item from "./Item";
 import logo from "../../../assets/etravel-logo.png";
-import tabItems from "../../../constants/tabsItem";
-import { logOut } from "../../auth/action";
-import { useDispatch } from "react-redux";
+import tabsItem from "../../../constants/tabsItem";
+import tabsItemAdmin from "../../../constants/tabsItemAdmin";
 
-const SidebarApp = () => {
+const SidebarApp = ({ isNonMobile }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const state = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Home");
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(!isNonMobile);
 
   const onLogout = () => {
     dispatch(logOut());
@@ -66,7 +69,7 @@ const SidebarApp = () => {
                   color={theme.palette.text.third}
                   fontWeight="medium"
                 >
-                  Tour Operator
+                  {state.profile.roleName}
                 </Typography>
               </Box>
             )}
@@ -89,48 +92,62 @@ const SidebarApp = () => {
             </Box>
           )}
 
-          {tabItems.map((tab) => {
-            if (tab.options.length > 0) {
-              return (
-                <SubMenu
-                  key={tab.id}
-                  label={
-                    <Typography
-                      fontWeight={false ? "bold" : "medium"}
-                      color="inherit"
-                    >
-                      {tab.title}
-                    </Typography>
-                  }
-                  icon={tab.icon}
-                >
-                  {tab.options.map((option, index) => (
-                    <Item
-                      key={index}
-                      title={option.subTitle}
-                      icon={option.subIcon}
-                      linkUrl={option.subUrl}
-                      subMenu={true}
-                      selected={selected === option.subTitle}
-                      setSelected={setSelected}
-                    />
-                  ))}
-                </SubMenu>
-              );
-            } else {
-              return (
-                <Item
-                  key={tab.id}
-                  title={tab.title}
-                  icon={tab.icon}
-                  linkUrl={tab.url}
-                  subMenu={false}
-                  selected={selected === tab.title}
-                  setSelected={setSelected}
-                />
-              );
-            }
-          })}
+          {state.profile.roleName === "TourOperator" &&
+            tabsItem.map((tab) => {
+              if (tab.options.length > 0) {
+                return (
+                  <SubMenu
+                    key={tab.id}
+                    label={
+                      <Typography
+                        fontWeight={false ? "bold" : "medium"}
+                        color="inherit"
+                      >
+                        {tab.title}
+                      </Typography>
+                    }
+                    icon={tab.icon}
+                  >
+                    {tab.options.map((option, index) => (
+                      <Item
+                        key={index}
+                        title={option.subTitle}
+                        icon={option.subIcon}
+                        linkUrl={option.subUrl}
+                        subMenu={true}
+                        selected={selected === option.subTitle}
+                        setSelected={setSelected}
+                      />
+                    ))}
+                  </SubMenu>
+                );
+              } else {
+                return (
+                  <Item
+                    key={tab.id}
+                    title={tab.title}
+                    icon={tab.icon}
+                    linkUrl={tab.url}
+                    subMenu={false}
+                    selected={selected === tab.title}
+                    setSelected={setSelected}
+                  />
+                );
+              }
+            })}
+
+          {state.profile.roleName === "Administrator" &&
+            tabsItemAdmin.map((tab) => (
+              <Item
+                key={tab.id}
+                title={tab.title}
+                icon={tab.icon}
+                linkUrl={tab.url}
+                subMenu={false}
+                selected={selected === tab.title}
+                setSelected={setSelected}
+              />
+            ))}
         </Menu>
       </Sidebar>
       <Box marginBottom={3}>
