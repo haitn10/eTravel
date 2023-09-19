@@ -49,7 +49,7 @@ const ManageUsers = () => {
       />
 
       {/* Data Table */}
-      <Box height={rows ? "" : 400} paddingX={2} marginTop={3} width="100%">
+      <Box height={rows ? "" : 400} paddingX={2} marginTop={3}>
         <DataGrid
           rows={rows}
           {...data}

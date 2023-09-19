@@ -26,24 +26,29 @@ import logo from "../../../assets/etravel-logo.png";
 import tabsItem from "../../../constants/tabsItem";
 import tabsItemAdmin from "../../../constants/tabsItemAdmin";
 
-const SidebarApp = ({ isNonMobile }) => {
+const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const state = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Home");
-  const [isCollapsed, setIsCollapsed] = useState(!isNonMobile);
 
   const onLogout = () => {
     dispatch(logOut());
   };
 
   return (
-    <Box display="flex" flexDirection="column" justifyContent="space-between">
-      <Sidebar
-        collapsed={isCollapsed}
-        backgroundColor={theme.palette.background.primary}
-      >
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+      position="fixed"
+      minHeight="inherit"
+      zIndex={1}
+      left={0}
+      backgroundColor={theme.palette.background.primary}
+    >
+      <Sidebar collapsed={isCollapsed} backgroundColor="inherit">
         <Menu
           iconShape="square"
           menuItemStyles={{

@@ -6,6 +6,7 @@ const cookies = new Cookies();
 // URL
 export const DEVELOPMENT_URL = "";
 export const BASE_URL = "http://localhost:8000";
+// export const BASE_URL = "https://etravelapi.azurewebsites.net";
 
 export const API = axios.create({
   baseURL: `${BASE_URL}/api/`,

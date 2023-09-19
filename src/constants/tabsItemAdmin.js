@@ -10,19 +10,19 @@ const tabsItemAdmin = [
     url: "/users",
   },
   {
-    id: 1,
+    id: 2,
     title: "Staffs",
     icon: <Admin width={24} />,
     url: "/staffs",
   },
   {
-    id: 1,
+    id: 3,
     title: "Categories",
     icon: <CategoryAlt width={24} />,
     url: "/categories",
   },
   {
-    id: 1,
+    id: 4,
     title: "Languages",
     icon: <Language width={24} />,
     url: "/languages",
