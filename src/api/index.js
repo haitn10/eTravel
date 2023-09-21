@@ -24,19 +24,19 @@ export const fetch = async (
   dispatch,
   setState,
   path,
+  payload,
   requireFetch = false
 ) => {
   if (!requireFetch) {
-    if (!state.shouldFetch || state.isFetching) {
+    if (state.isFetching) {
       return Promise.resolve(state.items);
     }
   }
 
   try {
     dispatch(setState({ isFetching: true }));
-
-    const { data } = await API.get(path);
-    dispatch(setState({ shouldFetch: false, isFetching: false, items: data }));
+    const { data } = await API.get(path, { params: payload });
+    dispatch(setState({ isFetching: false, items: data }));
     return Promise.resolve(data);
   } catch (e) {
     dispatch(setState({ isFetching: false }));
