@@ -65,7 +65,7 @@ const ManageUsers = () => {
       />
 
       {/* Data Table */}
-      <Box display="flex" paddingX={2} flexGrow={1} marginTop={3}>
+      <Box paddingX={2} flexGrow={1} marginTop={3}>
         <DataGrid
           autoHeight
           disableColumnMenu
@@ -77,7 +77,7 @@ const ManageUsers = () => {
           pageSizeOptions={[5, 10, 20]}
           paginationMode="server"
           onPaginationModelChange={setPageModelState}
-          onRowClick={handleRowClick}
+          // onRowClick={handleRowClick}
           sx={{
             border: 0,
             "& .MuiDataGrid-row:hover": {
@@ -85,7 +85,6 @@ const ManageUsers = () => {
             },
             "& .MuiDataGrid-cell:focus": {
               outline: "none",
-              maxWidth: 150,
             },
           }}
         />

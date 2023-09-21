@@ -9,16 +9,15 @@ const users = [
     width: 65,
     align: "center",
   },
-  { field: "fullName", headerName: "Full Name", flex: 1, maxWidth: 400 },
-  { field: "nationality", headerName: "National", flex: 1, maxWidth: 400 },
-  { field: "gender", headerName: "Gender", flex: 1, maxWidth: 200 },
+  { field: "fullName", headerName: "Full Name", flex: 1 },
+  { field: "nationality", headerName: "National", flex: 1 },
+  { field: "gender", headerName: "Gender", flex: 1 },
   {
     field: "status",
     headerName: "Status",
     headerAlign: "center",
     align: "center",
     flex: 1,
-    maxWidth: 200,
     renderCell: (params) => {
       if (params.row.status === 1) {
         return (
