@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Box, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import Header from "../common/Header";
-import { getUsers } from "./action";
 
-import users from "../../constants/tables/users";
+import staffs from "../../constants/tables/staffs";
 import action from "../../constants/action";
+import { useDispatch } from "react-redux";
+import { getStaffs } from "./action";
 
-const ManageUsers = () => {
+const ManageStaffs = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const ManageUsers = () => {
         isLoading: true,
       }));
       const data = await dispatch(
-        getUsers({
+        getStaffs({
           PageNumber: pageModelState.page,
           PageSize: pageModelState.pageSize,
         })
@@ -48,7 +48,7 @@ const ManageUsers = () => {
   }, [dispatch, pageModelState]);
 
   const onNavigate = async (params) => {
-    navigate("/users/details", { state: { userId: params.row.id } });
+    navigate("/staffs/details", { state: { userId: params.row.id } });
   };
 
   return (
@@ -59,12 +59,12 @@ const ManageUsers = () => {
       borderRadius={5}
     >
       <Header
-        title={"Manage Users"}
-        subTitle={"Manage all them existing users or update status."}
+        title={"Manage Staffs"}
+        subTitle={"Manage all them existing staffs or update status."}
         showBack={false}
         showSearch={true}
         showFilter={false}
-        buttonAdd={false}
+        buttonAdd={true}
       />
 
       {/* Data Table */}
@@ -73,7 +73,7 @@ const ManageUsers = () => {
           autoHeight
           disableColumnMenu
           disableRowSelectionOnClick
-          columns={users.concat(action)}
+          columns={staffs.concat(action)}
           rows={pageState.data}
           rowCount={pageState.totalCount}
           loading={pageState.isLoading}
@@ -98,4 +98,4 @@ const ManageUsers = () => {
   );
 };
 
-export default ManageUsers;
+export default ManageStaffs;

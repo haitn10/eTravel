@@ -30,6 +30,7 @@ const UserDetails = () => {
     }
     getInfoDetails();
   }, [userId]);
+  console.log(data);
 
   return (
     <Box
@@ -38,7 +39,6 @@ const UserDetails = () => {
       paddingBottom={10}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
-      height="94vh"
     >
       <Header
         title={"User Details"}
@@ -165,7 +165,7 @@ const UserDetails = () => {
                 >
                   Address
                 </Typography>
-                <Typography fontWeight="medium" noWrap>
+                <Typography fontWeight="medium">
                   {data.address}
                 </Typography>
               </Box>

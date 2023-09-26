@@ -1,11 +1,20 @@
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import React from "react";
 import SearchInput from "./toolsupports/SearchInput";
 import FilterData from "./toolsupports/FilterData";
 import { ArrowLeft } from "@styled-icons/bootstrap";
 import { history } from "../AppRouter";
 
-const Header = ({ showBack, title, subTitle, showTool }) => {
+import { Add } from "@styled-icons/ionicons-solid";
+
+const Header = ({
+  showBack,
+  title,
+  subTitle,
+  showSearch,
+  showFilter,
+  buttonAdd,
+}) => {
   const theme = useTheme();
   return (
     <Box
@@ -43,14 +52,27 @@ const Header = ({ showBack, title, subTitle, showTool }) => {
           </Typography>
         </Box>
       </Box>
-
       {/* Search Box*/}
-      {showTool ? (
-        <Box display="flex" alignItems="center" gap={1}>
-          <SearchInput />
-          <FilterData />
-        </Box>
-      ) : null}
+      <Box display="flex" alignItems="center" gap={2}>
+        {showSearch ? <SearchInput /> : null}
+        {showFilter ? <FilterData /> : null}
+        {buttonAdd ? (
+          <Box>
+            <Button
+              variant="contained"
+              color="error"
+              sx={{
+                borderRadius: 10,
+                height: 40,
+              }}
+              startIcon={<Add height={24} />}
+              // onClick={handleClick}
+            >
+              <Typography fontWeight="medium">New</Typography>
+            </Button>
+          </Box>
+        ) : null}
+      </Box>
     </Box>
   );
 };
