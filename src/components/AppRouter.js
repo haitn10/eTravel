@@ -18,9 +18,10 @@ import CreateNewTour from "./tours/create";
 import ManageUsers from "./users";
 
 import UserDetails from "./users/details";
-import StaffDetails from "./staff/details";
-import ManageStaffs from "./staff";
+import StaffDetails from "./staffs/details";
+import ManageStaffs from "./staffs";
 import ManageCategories from "./categories";
+import ManageLanguages from "./languages";
 
 import { createBrowserHistory } from "history";
 export const history = createBrowserHistory();
@@ -93,8 +94,7 @@ const AppRouter = () => {
               <Route path="/staffs" element={<ManageStaffs />} />
               <Route path="/staffs/details" element={<StaffDetails />} />
               <Route path="/categories" element={<ManageCategories />} />
-              <Route path="/languages" element={<ManageStaffs />} />
-              <Route path="/languages/details" element={<StaffDetails />} />
+              <Route path="/languages" element={<ManageLanguages />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -8,7 +8,7 @@ const Item = ({ title, icon, linkUrl, subMenu, selected, setSelected }) => {
   return (
     <MenuItem
       icon={icon}
-      component={<Link to={linkUrl} onClick={() => setSelected(title)} />}
+      component={<Link to={linkUrl} onClick={() => setSelected(title.toLowerCase())} />}
       style={{
         color: selected ? theme.palette.text.active : undefined,
         backgroundColor: selected

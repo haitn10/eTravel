@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { Sidebar, Menu, SubMenu, MenuItem } from "react-pro-sidebar";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 import { logOut } from "../../auth/action";
 
@@ -29,9 +30,11 @@ import tabsItemAdmin from "../../../constants/tabsItemAdmin";
 const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const location = useLocation();
+  let path = location.pathname.slice(1);
   const state = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("Home");
+  const [selected, setSelected] = useState(path);
 
   const onLogout = () => {
     dispatch(logOut());
@@ -149,7 +152,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                 icon={tab.icon}
                 linkUrl={tab.url}
                 subMenu={false}
-                selected={selected === tab.title}
+                selected={selected.includes(tab.title.toLowerCase())}
                 setSelected={setSelected}
               />
             ))}
