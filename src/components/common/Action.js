@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { MoreHoriz } from "@styled-icons/material";
 
+import { updateUserStatus } from "../users/action";
+
 const Action = ({ id, status }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -30,6 +32,7 @@ const Action = ({ id, status }) => {
   };
 
   const onConfirm = async (event) => {
+    await updateUserStatus(id);
     setPopupConfirm(false);
   };
 

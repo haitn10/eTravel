@@ -21,3 +21,12 @@ export const getUserDetails = async (userId) => {
     return Promise.reject(e);
   }
 };
+
+export const updateUserStatus = async (userId) => {
+  try {
+    const { data } = await API.put(`/portal/users/${userId}`);
+    return Promise.resolve(data);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
