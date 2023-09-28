@@ -1,4 +1,8 @@
-import { SET_STAFFS_STATE } from "../action";
+import {
+  SET_STAFFS_STATE,
+  ADD_STAFF_PROCESS,
+  REMOVE_STAFF_PROCESS,
+} from "../action";
 
 const staffs = (
   state = { isFetching: false, items: [], details: [] },
@@ -9,6 +13,18 @@ const staffs = (
       return {
         ...state,
         ...action.state,
+      };
+    case ADD_STAFF_PROCESS:
+      return {
+        ...state,
+        processings: [...state.processings, action.identifier],
+      };
+    case REMOVE_STAFF_PROCESS:
+      return {
+        ...state,
+        processings: state.processings.filter(
+          (processing) => processing !== action.identifier
+        ),
       };
 
     default:

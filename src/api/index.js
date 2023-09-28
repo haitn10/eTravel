@@ -19,18 +19,9 @@ API.interceptors.request.use(function (config) {
   return config;
 });
 
-export const fetch = async (
-  state,
-  dispatch,
-  setState,
-  path,
-  payload,
-  requireFetch = false
-) => {
-  if (!requireFetch) {
-    if (state.isFetching) {
-      return Promise.resolve(state.items);
-    }
+export const fetch = async (state, dispatch, setState, path, payload) => {
+  if (state.isFetching) {
+    return Promise.resolve(state.items);
   }
 
   try {
@@ -44,59 +35,47 @@ export const fetch = async (
   }
 };
 
-// export const process = async (
-//     processings,
-//     dispatch,
-//     setState,
-//     addProcess,
-//     removeProcess,
-//     processId,
-//     path,
-//     item
-//   ) => {
-//     if (processings.includes(processId)) {
-//       return Promise.reject(new Error("This item is being processed."));
-//     }
+export const process = async (state, dispatch, setState, path, item) => {
+  if (state.isFetching) {
+    return Promise.reject(new Error("This item is being processed."));
+  }
 
-//     try {
-//       dispatch(addProcess(processId));
+  try {
+    dispatch(setState({ isFetching: true }));
 
-//       if (item.bannerImageUrl instanceof File) {
-//         let formData = new FormData();
-//         if (item.bannerImageUrl.type.includes("video")) {
-//           formData.append("video", item.bannerImageUrl);
-//         } else {
-//           formData.append("image", item.bannerImageUrl);
-//         }
-//         const response = await upload(formData);
-//         item.bannerImageUrl = `${baseURL}${response.data.url}`;
-//       }
+    // if (item.bannerImageUrl instanceof File) {
+    //   let formData = new FormData();
+    //   if (item.bannerImageUrl.type.includes("video")) {
+    //     formData.append("video", item.bannerImageUrl);
+    //   } else {
+    //     formData.append("image", item.bannerImageUrl);
+    //   }
+    //   const response = await upload(formData);
+    //   item.bannerImageUrl = `${baseURL}${response.data.url}`;
+    // }
 
-//       if (item.thumbnailImageUrl instanceof File) {
-//         let formData = new FormData();
-//         formData.append("image", item.thumbnailImageUrl);
-//         const response = await upload(formData);
-//         item.thumbnailImageUrl = `${baseURL}${response.data.url}`;
-//       }
+    // if (item.thumbnailImageUrl instanceof File) {
+    //   let formData = new FormData();
+    //   formData.append("image", item.thumbnailImageUrl);
+    //   const response = await upload(formData);
+    //   item.thumbnailImageUrl = `${baseURL}${response.data.url}`;
+    // }
 
-//       if (item.pdfUrl instanceof File) {
-//         let formData = new FormData();
-//         formData.append("pdf", item.pdfUrl);
-//         const response = await upload(formData);
-//         item.pdfUrl = `${baseURL}${response.data.url}`;
-//       }
+    // if (item.pdfUrl instanceof File) {
+    //   let formData = new FormData();
+    //   formData.append("pdf", item.pdfUrl);
+    //   const response = await upload(formData);
+    //   item.pdfUrl = `${baseURL}${response.data.url}`;
+    // }
 
-//       await API.post(path, item);
-//       dispatch(setState({ shouldFetch: true }));
-//       dispatch(removeProcess(processId));
-//       return Promise.resolve();
-//     } catch (e) {
-//       dispatch(removeProcess(processId));
-//       return Promise.reject(e);
-//     }
-//   };
-
-export const update = async () => {};
+    await API.post(path, item);
+    dispatch(setState({ isFetching: false }));
+    return Promise.resolve();
+  } catch (e) {
+    dispatch(setState({ isFetching: false }));
+    return Promise.reject(e);
+  }
+};
 
 //   export const remove = async (
 //     state,

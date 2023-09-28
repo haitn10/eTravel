@@ -9,7 +9,7 @@ const action = [
     headerAlign: "center",
     sortable: false,
     renderCell: (params) => {
-      return <Action id={params.row.id} status={params.row.status} />;
+      return <Action id={params.row.id} accountStatus={params.row.status} />;
     },
   },
 ];

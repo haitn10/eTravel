@@ -14,6 +14,7 @@ const Header = ({
   showSearch,
   showFilter,
   buttonAdd,
+  setOpen,
 }) => {
   const theme = useTheme();
   return (
@@ -66,7 +67,7 @@ const Header = ({
                 height: 40,
               }}
               startIcon={<Add height={24} />}
-              // onClick={handleClick}
+              onClick={() => setOpen(true)}
             >
               <Typography fontWeight="medium">New</Typography>
             </Button>

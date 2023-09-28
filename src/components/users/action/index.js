@@ -15,9 +15,19 @@ export const getUsers = (payload) => {
 
 export const getUserDetails = async (userId) => {
   try {
-    const { data } = await API.get(`/portal/users/${userId}`);
+    const { data } = await API.get(`portal/users/${userId}`);
     return Promise.resolve(data.account);
   } catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+export const changeState = async (userId) => {
+  try {
+    const { data } = await API.put(`portal/users/${userId}`);
+    return Promise.resolve(data);
+  } catch (e) {
+    console.log(e);
     return Promise.reject(e);
   }
 };
