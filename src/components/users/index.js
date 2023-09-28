@@ -48,7 +48,7 @@ const ManageUsers = () => {
   }, [dispatch, pageModelState]);
 
   const onNavigate = async (params) => {
-    navigate("/users/details", { state: { userId: params.row.id } });
+    navigate("/users/details", { state: { accountId: params.row.id } });
   };
 
   return (

@@ -21,16 +21,15 @@ import { ArrowIosDownward } from "@styled-icons/evaicons-solid";
 const UserDetails = () => {
   const theme = useTheme();
   const { state } = useLocation();
-  const { userId } = state;
+  const { accountId } = state;
   const [data, setData] = useState([]);
 
   useEffect(() => {
     async function getInfoDetails() {
-      setData(await getUserDetails(userId));
+      setData(await getUserDetails(accountId));
     }
     getInfoDetails();
-  }, [userId]);
-  console.log(data);
+  }, [accountId]);
 
   return (
     <Box
