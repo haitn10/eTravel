@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { MoreHoriz } from "@styled-icons/material";
 import { changeState } from "../users/action";
-import ErrorModal from "./ErrorModal";
 
 const Action = ({ id, accountStatus }) => {
   const theme = useTheme();

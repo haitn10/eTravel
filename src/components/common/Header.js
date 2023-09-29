@@ -63,7 +63,7 @@ const Header = ({
               variant="contained"
               color="error"
               sx={{
-                borderRadius: 10,
+                borderRadius: 2.5,
                 height: 40,
               }}
               startIcon={<Add height={24} />}

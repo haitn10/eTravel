@@ -17,7 +17,7 @@ const users = [
     headerName: "Status",
     headerAlign: "center",
     align: "center",
-    flex: 1,
+    width: 120,
     renderCell: (params) => {
       if (params.row.status === 1) {
         return (

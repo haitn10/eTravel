@@ -4,9 +4,10 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 // URL
-export const DEVELOPMENT_URL = "";
 export const BASE_URL = "http://localhost:8000";
 // export const BASE_URL = "https://etravelapi.azurewebsites.net";
+
+const API_KEY = "37efedc127cf403fb139d6ec92a6c8d1";
 
 export const API = axios.create({
   baseURL: `${BASE_URL}/api/`,
@@ -15,6 +16,16 @@ export const API = axios.create({
 API.interceptors.request.use(function (config) {
   const token = cookies.get("profile").accessToken;
   config.headers.Authorization = `Bearer ${token}`;
+
+  return config;
+});
+
+export const API_LANGUAGE = axios.create({
+  baseURL: "https://global.metadapi.com/lang/v1/",
+});
+
+API_LANGUAGE.interceptors.request.use(function (config) {
+  config.headers = { "Ocp-Apim-Subscription-Key": API_KEY };
 
   return config;
 });
