@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  MenuItem,
   Select,
   TextField,
   Typography,
@@ -13,32 +14,36 @@ import {
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-
-import Header from "../common/Header";
-
-import action from "../../constants/action";
-import { getLanguageCode, getLanguages } from "./action";
-import languages from "../../constants/tables/languages";
-import { MenuItem } from "react-pro-sidebar";
 import { Link } from "react-router-dom";
 
+import Header from "../common/Header";
+import UploadFile from "../common/UploadFile";
+import ErrorModal from "../common/ErrorModal";
+
+import action from "../../constants/action";
+import { getLanguageCode, getLanguages, processLanguage } from "./action";
+import languages from "../../constants/tables/languages";
+
 const initialState = {
-  name: "Tour Operator",
+  name: "Afar",
   icon: "",
   fileLink: "",
-  languageCode: "",
+  languageCode: "aa",
 };
 
 const ManageLanguages = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+  const [languageId, setLanguageId] = useState(null);
+  const [languageCode, setLanguageCode] = useState([]);
   const [values, setValues] = useState(initialState);
-  const form = useForm({ defaultValues: initialState });
-  const { register, handleSubmit, formState } = form;
-  const { errors } = formState;
+  const [notification, setNotification] = useState({
+    errorState: false,
+    errorMessage: "",
+    status: "error",
+  });
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -52,10 +57,19 @@ const ManageLanguages = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setValues(initialState);
+    setLanguageId(null);
   };
 
   const handleChange = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
+    const data = languageCode.filter(
+      (item) => item.langEnglishName === event.target.value
+    );
+    setValues({
+      ...values,
+      name: event.target.value,
+      languageCode: data[0] ? data[0].langCode : "",
+    });
   };
 
   const getData = useCallback(() => {
@@ -80,40 +94,52 @@ const ManageLanguages = () => {
     fetchData();
   }, [dispatch, pageModelState.page, pageModelState.pageSize]);
 
-  // useEffect(() => {
-  //   getLanguageCode();
-  // }, [open]);
+  const getLangCode = useCallback(() => {
+    if (languageCode.length > 0) {
+      return;
+    }
+    async function fetchData() {
+      try {
+        const res = await getLanguageCode();
+        setLanguageCode(res);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    fetchData();
+  }, [languageCode.length]);
 
-  // useEffect(() => {
-  //   getData();
-  // }, [getData]);
+  useEffect(() => {
+    getData();
+    getLangCode();
+  }, [getData, getLangCode]);
 
   const onSubmit = async () => {
-    // try {
-    //   await dispatch(processStaff(values));
-    //   setNotification({
-    //     ...notification,
-    //     errorState: true,
-    //     errorMessage: "Created successfully!",
-    //     status: "success",
-    //   });
-    //   setValues(initialState);
-    //   setOpen(false);
-    // } catch (e) {
-    //   const message = e.response.data ? e.response.data.message : e.message;
-    //   setNotification({
-    //     ...notification,
-    //     errorState: true,
-    //     errorMessage: message,
-    //     status: "error",
-    //   });
-    // }
-    // getData();
-    // //Close error message
-    // setTimeout(
-    //   () => setNotification({ ...notification, errorState: false }),
-    //   3000
-    // );
+    try {
+      await dispatch(processLanguage(values));
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: "Created successfully!",
+        status: "success",
+      });
+      setValues(initialState);
+      setOpen(false);
+    } catch (e) {
+      const message = e.response.data ? e.response.data.message : e.message;
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: message,
+        status: "error",
+      });
+    }
+    getData();
+    //Close error message
+    setTimeout(
+      () => setNotification({ ...notification, errorState: false }),
+      3000
+    );
   };
   return (
     <Box
@@ -122,6 +148,13 @@ const ManageLanguages = () => {
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
+      <ErrorModal
+        open={notification.errorState}
+        setOpen={setNotification}
+        title="Info"
+        message={notification.errorMessage}
+        status={notification.status}
+      />
       <Header
         title={"Manage Languages"}
         subTitle={"Manage all them existing languages or update status."}
@@ -137,6 +170,7 @@ const ManageLanguages = () => {
         <DataGrid
           autoHeight
           disableColumnMenu
+          rowHeight={75}
           disableRowSelectionOnClick
           columns={languages.concat(action)}
           rows={pageState.data}
@@ -146,10 +180,13 @@ const ManageLanguages = () => {
           pageSizeOptions={[5, 10, 20]}
           paginationMode="server"
           onPaginationModelChange={setPageModelState}
-          onRowClick={() => setOpen(true)}
+          onRowClick={(params) => {
+            setOpen(true);
+            setLanguageId(params.row.id);
+          }}
           sx={{
             border: 0,
-            minHeight: "75vh",
+            minHeight: "77vh",
             "& .MuiDataGrid-row:hover": {
               cursor: "pointer",
             },
@@ -175,7 +212,7 @@ const ManageLanguages = () => {
           borderBottom={1}
           borderColor={theme.palette.background.third}
         >
-          Add New Languages
+          {languageId ? "Language Details" : "Add New Languages"}
         </DialogTitle>
         <DialogContent sx={{ paddingX: 20, marginTop: 5 }}>
           <FormControl fullWidth size="small" noValidate>
@@ -186,22 +223,36 @@ const ManageLanguages = () => {
               gap={3}
               marginBottom={4}
             >
-              <Typography>Language Name</Typography>
+              <Typography sx={{ width: 200 }}>Language Name</Typography>
               <Select
-                value={values.name}
+                value={languageId ? "" : values.name}
                 sx={{ borderRadius: 2.5 }}
                 name="name"
                 fullWidth
                 onChange={handleChange}
               >
-                <MenuItem value="Tour Operator" defaultValue>
-                  Tour Operator
-                </MenuItem>
-                <MenuItem value="Admin">Admin</MenuItem>
+                {languageCode.map((item, index) => (
+                  <MenuItem key={index} value={item.langEnglishName}>
+                    <img
+                      src={""}
+                      alt={item.langEnglishName}
+                      style={{ width: 20, marginRight: 10 }}
+                    />
+                    {item.langEnglishName}
+                  </MenuItem>
+                ))}
               </Select>
-
-              <Typography sx={{ width: 100 }}>Language Code</Typography>
+            </Box>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap={3}
+              marginBottom={4}
+            >
+              <Typography sx={{ width: 200 }}>Language Code</Typography>
               <TextField
+                fullWidth
                 size="small"
                 disabled
                 InputProps={{
@@ -209,7 +260,7 @@ const ManageLanguages = () => {
                     borderRadius: 10,
                   },
                 }}
-                value={"zh"}
+                value={values.languageCode}
               />
             </Box>
 
@@ -220,25 +271,11 @@ const ManageLanguages = () => {
               gap={3}
               marginBottom={4}
             >
-              <Typography sx={{ width: 100 }}>File</Typography>
-              <TextField
-                fullWidth
-                InputProps={{
-                  style: {
-                    borderRadius: 10,
-                  },
-                }}
-                helperText="Data must format correctly!"
-                type="file"
-                inputProps={{
-                  style: { height: "1em" },
-                  accept: "image/*",
-                  multiple: true,
-                }}
-              />
+              <Typography sx={{ width: 200 }}>File</Typography>
+              <UploadFile />
             </Box>
             <Typography color="error">
-              (Get data template <Link>here</Link> )
+              (Get data template <Link>here</Link>)
             </Typography>
           </FormControl>
         </DialogContent>
@@ -249,6 +286,16 @@ const ManageLanguages = () => {
           }}
         >
           <Button
+            onClick={onSubmit}
+            variant="contained"
+            sx={{
+              borderRadius: 2.5,
+              height: 40,
+            }}
+          >
+            {languageId ? "Update" : "Add New"}
+          </Button>
+          <Button
             onClick={handleClose}
             variant="contained"
             color="error"
@@ -258,16 +305,6 @@ const ManageLanguages = () => {
             }}
           >
             Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            variant="contained"
-            sx={{
-              borderRadius: 2.5,
-              height: 40,
-            }}
-          >
-            Add New
           </Button>
         </DialogActions>
       </Dialog>

@@ -4,7 +4,7 @@ const action = [
   {
     field: "action",
     headerName: "Actions",
-    maxWidth: 200,
+    width: 120,
     align: "center",
     headerAlign: "center",
     sortable: false,
