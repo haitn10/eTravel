@@ -11,9 +11,7 @@ const languages = (
         ...action.state,
       };
     case GET_LANGUAGES_CODE:
-      return {
-        ...state,
-      };
+      return state;
 
     default:
       return state;

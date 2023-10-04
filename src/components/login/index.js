@@ -16,8 +16,11 @@ import ErrorModal from "../common/ErrorModal";
 const Login = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const [errorState, setErrorState] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [notification, setNotification] = useState({
+    errorState: false,
+    errorMessage: "",
+    status: "error",
+  });
   const [loading, setLoading] = useState(false);
 
   const [username, setUserName] = useState("");
@@ -37,12 +40,19 @@ const Login = () => {
       await dispatch(login({ username, password }));
     } catch (e) {
       setLoading(false);
-      setErrorState(true);
-      setErrorMessage(e);
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: e,
+        status: "error",
+      });
     }
 
     //Close error message
-    setTimeout(() => setErrorState(false), 3000);
+    setTimeout(
+      () => setNotification({ ...notification, errorState: false }),
+      3000
+    );
   };
   return (
     <Box
@@ -52,10 +62,11 @@ const Login = () => {
       height="100%"
     >
       <ErrorModal
-        open={errorState}
-        setOpen={setErrorState}
+        open={notification.errorState}
+        setOpen={setNotification}
         title="Info"
-        message={errorMessage}
+        message={notification.errorMessage}
+        status={notification.status}
       />
       <form onSubmit={onLogin}>
         <Box

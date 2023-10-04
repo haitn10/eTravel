@@ -1,4 +1,4 @@
-import { API, API_LANGUAGE, fetch, process } from "../../../api";
+import { API, fetch, process } from "../../../api";
 
 export const SET_LANGUAGES_STATE = "SET_LANGUAGES_STATE";
 export const GET_LANGUAGES_CODE = "GET_LANGUAGES_CODE";
@@ -18,7 +18,7 @@ export const getLanguages = (payload) => {
       getState().languages,
       dispatch,
       setState,
-      "languages",
+      "portal/languages",
       payload
     );
   };
@@ -36,13 +36,13 @@ export const getLanguageDetails = async (languageId) => {
 
 export const getLanguageCode = async () => {
   try {
-    if (getState.languagesCode) {
-      return;
+    if (getState.languagesCode !== undefined) {
+      return Promise.resolve(getState.languagesCode);
     }
     setState({ isFetching: true });
-    const { data } = API_LANGUAGE.get(`languages`);
-    setState({ isFetching: false });
-    return Promise.resolve(data);
+    const { data } = await API.get(`portal/languages/languagecode`);
+    setState({ isFetching: false, languageCode: data.languagesCode });
+    return Promise.resolve(data.languagesCode);
   } catch (e) {
     setState({ isFetching: false });
     return Promise.reject(e);

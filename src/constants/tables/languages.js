@@ -11,6 +11,24 @@ const languages = [
     align: "center",
   },
   {
+    field: "icon",
+    headerName: "National Flag",
+    headerAlign: "center",
+    align: "center",
+    flex: 1,
+    renderCell: (params) => (
+      <img
+        src={params.row.icon}
+        alt={`${params.row.name}`}
+        style={{
+          width: 100,
+          height: 60,
+          border: `2px solid ${theme.palette.background.third}`,
+        }}
+      />
+    ),
+  },
+  {
     field: "languageCode",
     headerName: "Language Code",
     headerAlign: "center",
@@ -19,22 +37,8 @@ const languages = [
   },
   {
     field: "name",
-    headerName: "National Name",
-    headerAlign: "center",
+    headerName: "Language Name",
     flex: 1,
-  },
-  {
-    field: "icon",
-    headerName: "National Flag",
-    headerAlign: "center",
-    flex: 1,
-    renderCell: (params) => (
-      <img
-        src={params.row.icon}
-        alt={`${params.row.name}`}
-        style={{ width: 120 }}
-      />
-    ),
   },
   {
     field: "createTime",
