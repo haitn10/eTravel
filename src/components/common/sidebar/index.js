@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -34,7 +34,11 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
   let path = location.pathname.slice(1);
   const state = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(path);
+  const [selected, setSelected] = useState("");
+
+  useEffect(() => {
+    setSelected(path);
+  }, [path]);
 
   const onLogout = () => {
     dispatch(logOut());

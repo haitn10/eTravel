@@ -24,6 +24,18 @@ export const getLanguages = (payload) => {
   };
 };
 
+export const getAllLanguages = (payload) => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().languages,
+      dispatch,
+      setState,
+      "languages",
+      payload
+    );
+  };
+};
+
 export const getLanguageDetails = async (languageId) => {
   try {
     const { data } = await API.get(`languages/${languageId}`);

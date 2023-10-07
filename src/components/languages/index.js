@@ -21,7 +21,7 @@ import Header from "../common/Header";
 import UploadFile from "../common/UploadFile";
 import ErrorModal from "../common/ErrorModal";
 
-import action from "../../constants/action";
+import action from "../../constants/actions";
 import { getLanguageCode, getLanguages, processLanguage } from "./action";
 import languages from "../../constants/tables/languages";
 

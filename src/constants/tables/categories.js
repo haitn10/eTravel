@@ -5,7 +5,7 @@ import { theme } from "../../styles/theme";
 const categories = [
   {
     field: "id",
-    headerName: "Category ID",
+    headerName: "CategoryID",
     headerAlign: "center",
     width: 120,
     align: "center",
@@ -13,6 +13,13 @@ const categories = [
   {
     field: "name",
     headerName: "Category Name",
+    flex: 1,
+  },
+  {
+    field: "totalLanguage",
+    headerName: "Number of Languages",
+    headerAlign: "center",
+    align: "center",
     flex: 1,
   },
   {

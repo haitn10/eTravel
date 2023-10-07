@@ -15,6 +15,8 @@ const staffs = [
   {
     field: "createTime",
     headerName: "Create Time",
+    headerAlign: "right",
+    align: "right",
     flex: 1,
     renderCell: (params) => {
       return moment(params.row.createTime).format("DD MMMM, YYYY");

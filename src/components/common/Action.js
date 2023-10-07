@@ -14,16 +14,18 @@ import {
 import { MoreHoriz } from "@styled-icons/material";
 import { changeState } from "../users/action";
 
-const Action = ({ id, accountStatus }) => {
+const Action = ({
+  id,
+  accountStatus,
+  api,
+  notification,
+  setNotification,
+  getData,
+}) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [popupConfirm, setPopupConfirm] = useState(false);
-  const [notification, setNotification] = useState({
-    errorState: false,
-    errorMessage: "",
-    status: "",
-  });
 
   const showMenu = async (event) => {
     event.stopPropagation();
@@ -37,13 +39,14 @@ const Action = ({ id, accountStatus }) => {
 
   const onConfirm = async () => {
     try {
-      const response = await changeState(id);
+      const response = await changeState(api, id);
       if (response) {
+        getData();
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: response.messa,
-          status: "error",
+          errorMessage: response,
+          status: "success",
         });
       }
     } catch (e) {

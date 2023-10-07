@@ -64,7 +64,6 @@ const Login = () => {
       <ErrorModal
         open={notification.errorState}
         setOpen={setNotification}
-        title="Info"
         message={notification.errorMessage}
         status={notification.status}
       />

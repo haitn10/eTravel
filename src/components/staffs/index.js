@@ -15,15 +15,15 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 
 import Header from "../common/Header";
+import ErrorModal from "../common/ErrorModal";
 
 import staffs from "../../constants/tables/staffs";
-import action from "../../constants/action";
-import { useDispatch } from "react-redux";
+import action from "../../constants/actions";
 import { getStaffs, processStaff } from "./action";
-import { useForm } from "react-hook-form";
-import ErrorModal from "../common/ErrorModal";
 
 const initialState = {
   firstName: "",
