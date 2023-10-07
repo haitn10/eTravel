@@ -11,20 +11,42 @@ import React, { useCallback, useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { getCategories } from "./action";
+import { useNavigate } from "react-router-dom";
 
 import Header from "../common/Header";
+import ErrorModal from "../common/ErrorModal";
+import AddCategory from "../common/components/AddCategory";
+import Action from "../common/Action";
 
 import categories from "../../constants/tables/categories";
-import action from "../../constants/action";
+import { getCategories, processCategory } from "./action";
+import { getAllLanguages } from "../languages/action";
+
+const initialCategoryLanguage = { languageCode: "zh-cn", nameLanguage: "" };
 
 const ManageCategories = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const form = useForm({ defaultValues: {} });
-  const { register, handleSubmit, formState } = form;
+  const [values, setValues] = useState({ name: "" });
+  const [categoryLanguages, setCategoryLanguages] = useState([
+    initialCategoryLanguage,
+  ]);
+  const [languageList, setLanguageList] = useState([]);
+  const form = useForm({
+    defaultValues: { name: "", categoryLanguages: [initialCategoryLanguage] },
+  });
+
+  const { register, handleSubmit, setError, clearErrors, formState } = form;
   const { errors } = formState;
+
+  const [notification, setNotification] = useState({
+    errorState: false,
+    errorMessage: "",
+    status: "error",
+  });
+
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -36,63 +58,131 @@ const ManageCategories = () => {
     pageSize: 10,
   });
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  useEffect(() => {
+    async function fetchLanguage() {
+      const response = await dispatch(getAllLanguages());
+      setLanguageList(response.languages);
+    }
+    fetchLanguage();
+  }, [dispatch]);
 
   const getData = useCallback(() => {
     async function fetchData() {
-      setPageState((old) => ({
-        ...old,
-        isLoading: true,
-      }));
-      const data = await dispatch(
-        getCategories({
-          PageNumber: pageModelState.page,
-          PageSize: pageModelState.pageSize,
-        })
-      );
-      setPageState((old) => ({
-        ...old,
-        isLoading: false,
-        data: data.accounts.data,
-        totalCount: data.accounts.totalCount,
-      }));
+      try {
+        setPageState((old) => ({
+          ...old,
+          isLoading: true,
+        }));
+        const data = await dispatch(
+          getCategories({
+            PageNumber: pageModelState.page,
+            PageSize: pageModelState.pageSize,
+          })
+        );
+        setPageState((old) => ({
+          ...old,
+          isLoading: false,
+          data: data.categories.data,
+          totalCount: data.categories.totalCount,
+        }));
+      } catch (error) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "There was a problem loading data!",
+          status: "error",
+        });
+      }
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
   }, [getData]);
 
-  const onSubmit = async () => {
-    // try {
-    //   await dispatch(processStaff(values));
-    //   setNotification({
-    //     ...notification,
-    //     errorState: true,
-    //     errorMessage: "Created successfully!",
-    //     status: "success",
-    //   });
-    //   setValues(initialState);
-    //   setOpen(false);
-    // } catch (e) {
-    //   const message = e.response.data ? e.response.data.message : e.message;
-    //   setNotification({
-    //     ...notification,
-    //     errorState: true,
-    //     errorMessage: message,
-    //     status: "error",
-    //   });
-    // }
-    // getData();
-    // //Close error message
-    // setTimeout(
-    //   () => setNotification({ ...notification, errorState: false }),
-    //   3000
-    // );
+  const handleClose = () => {
+    setOpen(false);
   };
+
+  const isDuplicate = () => {
+    const nameOccurrences = {};
+    for (const obj of categoryLanguages) {
+      if (nameOccurrences[obj.languageCode]) {
+        return true;
+      }
+      nameOccurrences[obj.languageCode] = true;
+    }
+    return false;
+  };
+
+  const onSubmit = async () => {
+    if (isDuplicate()) {
+      return setError("languageCode", {
+        message: "Duplicate language!",
+      });
+    }
+
+    if (categoryLanguages.some((item) => item.nameLanguage === "")) {
+      return setError("nameLanguage", {
+        message: "Language Name not empty!",
+      });
+    }
+    const data = { ...values, categoryLanguages: categoryLanguages };
+    try {
+      await dispatch(processCategory(data));
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: "Created successfully!",
+        status: "success",
+      });
+      setValues({ name: "" });
+      setCategoryLanguages([initialCategoryLanguage]);
+      setOpen(false);
+    } catch (e) {
+      const message = e.response.data
+        ? e.response.data.title
+        : "Something went wrong!";
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: message,
+        status: "error",
+      });
+    }
+    getData();
+  };
+
+  const onNavigate = async (params) => {
+    navigate("/categories/details", {
+      state: { categoryId: params.row.id, languageList: languageList },
+    });
+  };
+
+  const action = [
+    {
+      field: "action",
+      headerName: "Actions",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <Action
+            id={params.row.id}
+            accountStatus={params.row.status}
+            api="portal/categories/changestatus"
+            notification={notification}
+            setNotification={setNotification}
+            getData={getData}
+          />
+        );
+      },
+    },
+  ];
 
   return (
     <Box
@@ -101,6 +191,12 @@ const ManageCategories = () => {
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
+      <ErrorModal
+        open={notification.errorState}
+        setOpen={setNotification}
+        message={notification.errorMessage}
+        status={notification.status}
+      />
       <Header
         title={"Manage Categories"}
         subTitle={"Manage all them existing catogories or update status."}
@@ -108,6 +204,7 @@ const ManageCategories = () => {
         showSearch={true}
         showFilter={false}
         buttonAdd={true}
+        setOpen={setOpen}
       />
 
       {/* Data Table */}
@@ -124,7 +221,7 @@ const ManageCategories = () => {
           pageSizeOptions={[5, 10, 20]}
           paginationMode="server"
           onPaginationModelChange={setPageModelState}
-          onRowClick={() => setOpen(true)}
+          onRowClick={(params) => onNavigate(params)}
           sx={{
             border: 0,
             minHeight: "75vh",
@@ -142,7 +239,7 @@ const ManageCategories = () => {
         open={open}
         onClose={handleClose}
         fullWidth
-        maxWidth="md"
+        maxWidth="lg"
         scroll="paper"
       >
         <DialogTitle
@@ -153,39 +250,19 @@ const ManageCategories = () => {
           borderBottom={1}
           borderColor={theme.palette.background.third}
         >
-          Add New Staff
+          Add New Category
         </DialogTitle>
         <DialogContent sx={{ paddingX: 20, marginTop: 5 }}>
-          <form noValidate>
-            {/* <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginBottom={4}
-            >
-              <Typography sx={{ width: 100 }}>Role</Typography>
-              <FormControl
-                sx={{
-                  minWidth: 120,
-                }}
-                fullWidth
-                size="small"
-              >
-                <Select
-                  value={values.roleId}
-                  sx={{ borderRadius: 2.5 }}
-                  name="roleId"
-                  onChange={handleChange}
-                >
-                  <MenuItem value={2} defaultValue>
-                    Tour Operator
-                  </MenuItem>
-                  <MenuItem value={1}>Admin</MenuItem>
-                </Select>
-              </FormControl>
-            </Box> */}
-          </form>
+          <AddCategory
+            values={values}
+            setValues={setValues}
+            categoryLanguages={categoryLanguages}
+            setCategoryLanguages={setCategoryLanguages}
+            languageList={languageList}
+            register={register}
+            errors={errors}
+            clearErrors={clearErrors}
+          />
         </DialogContent>
         <DialogActions
           sx={{
@@ -193,6 +270,16 @@ const ManageCategories = () => {
             "&.MuiDialogActions-root": { justifyContent: "center" },
           }}
         >
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            variant="contained"
+            sx={{
+              borderRadius: 2.5,
+              height: 40,
+            }}
+          >
+            Add New
+          </Button>
           <Button
             onClick={handleClose}
             variant="contained"
@@ -203,16 +290,6 @@ const ManageCategories = () => {
             }}
           >
             Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            variant="contained"
-            sx={{
-              borderRadius: 2.5,
-              height: 40,
-            }}
-          >
-            Add New
           </Button>
         </DialogActions>
       </Dialog>

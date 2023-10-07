@@ -24,6 +24,7 @@ import ManageCategories from "./categories";
 import ManageLanguages from "./languages";
 
 import { createBrowserHistory } from "history";
+import CategoryDetails from "./categories/details";
 export const history = createBrowserHistory();
 
 const AppRouter = () => {
@@ -94,6 +95,7 @@ const AppRouter = () => {
               <Route path="/staffs" element={<ManageStaffs />} />
               <Route path="/staffs/details" element={<StaffDetails />} />
               <Route path="/categories" element={<ManageCategories />} />
+              <Route path="/categories/details" element={<CategoryDetails />} />
               <Route path="/languages" element={<ManageLanguages />} />
             </Route>
           </Routes>

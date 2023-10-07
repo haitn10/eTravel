@@ -31,9 +31,7 @@ const languages = [
   {
     field: "languageCode",
     headerName: "Language Code",
-    headerAlign: "center",
     flex: 1,
-    align: "center",
   },
   {
     field: "name",
@@ -43,6 +41,8 @@ const languages = [
   {
     field: "createTime",
     headerName: "Create Time",
+    headerAlign: "right",
+    align: "right",
     flex: 1,
     renderCell: (params) => {
       return moment(params.row.createTime).format("DD MMMM, YYYY");

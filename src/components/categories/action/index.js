@@ -15,30 +15,40 @@ export const getCategories = (payload) => {
       getState().categories,
       dispatch,
       setState,
-      "portal/users/operator",
+      "portal/categories",
       payload
     );
   };
 };
 
-export const getCategorieDetails = async (CategorieId) => {
+export const getCategoryDetails = async (categoryId) => {
   try {
-    const { data } = await API.get(`portal/users/operator/${CategorieId}`);
-    return Promise.resolve(data.account);
+    const { data } = await API.get(`portal/categories/${categoryId}`);
+    return Promise.resolve(data.category);
   } catch (e) {
     console.log(e);
     return Promise.reject(e);
   }
 };
 
-export const processCategorie = (Categorie) => {
+export const processCategory = (Categorie) => {
   return async (dispatch, getState) => {
     return process(
-      getState().Categories,
+      getState().categories,
       dispatch,
       setState,
-      "portal/users/operator",
+      "portal/categories",
       Categorie
     );
   };
+};
+
+export const updateCategory = async (categoryId, values) => {
+  try {
+    const { data } = await API.put(`portal/categories/${categoryId}`, values);
+    return Promise.resolve(data);
+  } catch (e) {
+    console.log(e);
+    return Promise.reject(e);
+  }
 };

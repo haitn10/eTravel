@@ -22,9 +22,9 @@ export const getUserDetails = async (userId) => {
   }
 };
 
-export const changeState = async (userId) => {
+export const changeState = async (api, userId) => {
   try {
-    const { data } = await API.put(`portal/users/${userId}`);
+    const { data } = await API.put(`${api}/${userId}`);
     return Promise.resolve(data);
   } catch (e) {
     console.log(e);
