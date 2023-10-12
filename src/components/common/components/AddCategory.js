@@ -128,7 +128,6 @@ const AddCategory = ({
             }}
             onChange={(event) => handleChangeCategories(index, event)}
           />
-
           {categoryLanguages.length === 1 ? null : (
             <IconButton onClick={() => handleRemoveFields(index)}>
               <Remove width={24} />

@@ -21,7 +21,7 @@ import Header from "../common/Header";
 import { Add, Remove } from "styled-icons/material";
 import ErrorModal from "../common/ErrorModal";
 
-const initialCategoryLanguage = { languageCode: "zh", nameLanguage: "" };
+const initialCategoryLanguage = { languageCode: "zh-cn", nameLanguage: "" };
 
 const CategoryDetails = () => {
   const theme = useTheme();
@@ -73,7 +73,6 @@ const CategoryDetails = () => {
     clearErrors(["languageCode", "nameLanguage"]);
     const values = [...categoryLanguages];
     values[index][event.target.name] = event.target.value;
-
     setCategoryLanguages(values);
   };
 
@@ -93,7 +92,6 @@ const CategoryDetails = () => {
       setCategoryLanguages(value);
     }
   };
-  console.log(categoryLanguages);
 
   const isDuplicate = () => {
     const nameOccurrences = {};
@@ -150,6 +148,7 @@ const CategoryDetails = () => {
       paddingBottom={10}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
+      minHeight="94vh"
     >
       <ErrorModal
         open={notification.errorState}
@@ -175,11 +174,14 @@ const CategoryDetails = () => {
             gap={3}
             marginBottom={4}
           >
-            <Typography sx={{ width: 220 }}>Category Name</Typography>
+            <Typography required sx={{ width: 220 }}>
+              Category Name
+            </Typography>
             <TextField
               fullWidth
               name="name"
               size="small"
+              required
               InputProps={{
                 style: {
                   borderRadius: 10,
@@ -232,20 +234,15 @@ const CategoryDetails = () => {
                 <TextField
                   fullWidth
                   name="nameLanguage"
+                  value={data.nameLanguage}
                   size="small"
+                  required
                   InputProps={{
                     style: {
                       borderRadius: 10,
                     },
                   }}
-                  value={data.nameLanguage}
                   onChange={(event) => handleChangeCategories(index, event)}
-                  // {...register("nameLanguage", {
-                  //   onChange: handleChangeCategories,
-                  //   required: "Not empty!",
-                  // })}
-                  error={data.nameLanguage === ""}
-                  helperText={data.nameLanguage === "" ? "Not empty!" : ""}
                 />
                 {categoryLanguages && categoryLanguages.length === 1 ? null : (
                   <IconButton onClick={() => handleRemoveFields(index)}>
