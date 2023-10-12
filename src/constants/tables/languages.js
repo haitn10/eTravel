@@ -1,17 +1,53 @@
 import { Box, Typography, alpha } from "@mui/material";
 import { theme } from "../../styles/theme";
+import moment from "moment/moment";
 
-const users = [
+const languages = [
   {
     field: "id",
-    headerName: "UserID",
+    headerName: "Language ID",
     headerAlign: "center",
-    width: 65,
+    width: 120,
     align: "center",
   },
-  { field: "fullName", headerName: "Full Name", flex: 1 },
-  { field: "nationality", headerName: "National", flex: 1 },
-  { field: "gender", headerName: "Gender", flex: 1 },
+  {
+    field: "icon",
+    headerName: "National Flag",
+    headerAlign: "center",
+    align: "center",
+    flex: 1,
+    renderCell: (params) => (
+      <img
+        src={params.row.icon}
+        alt={`${params.row.name}`}
+        style={{
+          width: 100,
+          height: 60,
+          border: `2px solid ${theme.palette.background.third}`,
+        }}
+      />
+    ),
+  },
+  {
+    field: "languageCode",
+    headerName: "Language Code",
+    flex: 1,
+  },
+  {
+    field: "name",
+    headerName: "Language Name",
+    flex: 1,
+  },
+  {
+    field: "createTime",
+    headerName: "Create Time",
+    headerAlign: "right",
+    align: "right",
+    flex: 1,
+    renderCell: (params) => {
+      return moment(params.row.createTime).format("DD MMMM, YYYY");
+    },
+  },
   {
     field: "status",
     headerName: "Status",
@@ -65,5 +101,4 @@ const users = [
     },
   },
 ];
-
-export default users;
+export default languages;

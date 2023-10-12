@@ -8,7 +8,7 @@ import Header from "../common/Header";
 import { getUsers } from "./action";
 
 import users from "../../constants/tables/users";
-import action from "../../constants/action";
+import action from "../../constants/actions";
 
 const ManageUsers = () => {
   const theme = useTheme();
@@ -48,7 +48,7 @@ const ManageUsers = () => {
   }, [dispatch, pageModelState]);
 
   const onNavigate = async (params) => {
-    navigate("/users/details", { state: { userId: params.row.id } });
+    navigate("/users/details", { state: { accountId: params.row.id } });
   };
 
   return (

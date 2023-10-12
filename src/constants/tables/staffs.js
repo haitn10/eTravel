@@ -15,6 +15,8 @@ const staffs = [
   {
     field: "createTime",
     headerName: "Create Time",
+    headerAlign: "right",
+    align: "right",
     flex: 1,
     renderCell: (params) => {
       return moment(params.row.createTime).format("DD MMMM, YYYY");
@@ -25,7 +27,7 @@ const staffs = [
     headerName: "Status",
     headerAlign: "center",
     align: "center",
-    flex: 1,
+    width: 120,
     renderCell: (params) => {
       if (params.row.status === 1) {
         return (

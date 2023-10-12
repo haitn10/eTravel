@@ -12,10 +12,16 @@ import {
   useTheme,
 } from "@mui/material";
 import { MoreHoriz } from "@styled-icons/material";
+import { changeState } from "../users/action";
 
-import { updateUserStatus } from "../users/action";
-
-const Action = ({ id, status }) => {
+const Action = ({
+  id,
+  accountStatus,
+  api,
+  notification,
+  setNotification,
+  getData,
+}) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -31,9 +37,33 @@ const Action = ({ id, status }) => {
     setAnchorEl(false);
   };
 
-  const onConfirm = async (event) => {
-    await updateUserStatus(id);
+  const onConfirm = async () => {
+    try {
+      const response = await changeState(api, id);
+      if (response) {
+        getData();
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: response,
+          status: "success",
+        });
+      }
+    } catch (e) {
+      const message = e.response.data ? e.response.data.message : e.message;
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: message,
+        status: "error",
+      });
+    }
     setPopupConfirm(false);
+    //Close error message
+    setTimeout(
+      () => setNotification({ ...notification, errorState: false }),
+      3000
+    );
   };
 
   return (
@@ -51,7 +81,7 @@ const Action = ({ id, status }) => {
         }}
       >
         <MenuItem onClick={handleConfirm}>
-          {status ? "Enable" : "Disable"}
+          {!accountStatus ? "Enable" : "Disable"}
         </MenuItem>
       </Menu>
       <Dialog
@@ -60,11 +90,11 @@ const Action = ({ id, status }) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {`Confirm ${status ? "ban" : "unban"} action?`}
+          {`Confirm ${!accountStatus ? "ban" : "unban"} action?`}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {status
+            {!accountStatus
               ? "Banning this account will make this account unable to operate in the system."
               : "This action of unbanning an account will give the account the specified rights and function normally in the system."}
           </DialogContentText>

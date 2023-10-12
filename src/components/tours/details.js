@@ -20,6 +20,7 @@ import moment from "moment/moment";
 import { labels } from "../../constants/rating";
 import SubsLanguage from "../common/SubsLanguage";
 import PlacesList from "../common/PlacesList";
+import Header from "../common/Header";
 
 const TourDetails = () => {
   const theme = useTheme();
@@ -55,32 +56,15 @@ const TourDetails = () => {
       borderRadius={5}
     >
       {/* Title */}
-      <Box display="flex" alignItems="center" marginLeft={2} padding={1}>
-        <IconButton
-          aria-label="back"
-          sx={{ border: 1, color: theme.palette.text.buttonText }}
-          onClick={() => history.back()}
-        >
-          <Add width={24} />
-        </IconButton>
 
-        <Box marginLeft={2}>
-          <Typography
-            color={theme.palette.text.active}
-            fontWeight="bold"
-            fontSize={36}
-          >
-            Tour Details
-          </Typography>
-          <Typography
-            color={theme.palette.text.third}
-            fontWeight="regular"
-            fontSize={18}
-          >
-            Manage all information of tour and update tour.
-          </Typography>
-        </Box>
-      </Box>
+      <Header
+        title={"Tour Details"}
+        subTitle={"Manage all information of tour and update tour."}
+        showBack={true}
+        showSearch={false}
+        showFilter={false}
+        buttonAdd={false}
+      />
 
       <Box marginTop={3}>
         <TabContext value={value}>
