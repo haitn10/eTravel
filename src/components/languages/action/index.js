@@ -1,4 +1,4 @@
-import { API, fetch, process } from "../../../api";
+import { API, fetch, process, upload } from "../../../api";
 
 export const SET_LANGUAGES_STATE = "SET_LANGUAGES_STATE";
 export const GET_LANGUAGES_CODE = "GET_LANGUAGES_CODE";
@@ -52,23 +52,39 @@ export const getLanguageCode = async () => {
       return Promise.resolve(getState.languagesCode);
     }
     setState({ isFetching: true });
-    const { data } = await API.get(`portal/languages/languagecode`);
-    setState({ isFetching: false, languageCode: data.languagesCode });
-    return Promise.resolve(data.languagesCode);
+    const { data } = await API.get("portal/nationalities");
+    setState({ isFetching: false, languageCode: data.nationalities });
+    return Promise.resolve(data.nationalities);
   } catch (e) {
     setState({ isFetching: false });
     return Promise.reject(e);
   }
 };
 
-export const processLanguage = (language) => {
+export const processLanguage = (language, file) => {
   return async (dispatch, getState) => {
     return process(
       getState().languages,
       dispatch,
       setState,
       "languages",
-      language
+      language,
+      file
     );
   };
+};
+
+export const updateLanguage = async (languageId, values) => {
+  try {
+    if (values.fileLink instanceof File) {
+      console.log(122);
+      const response = await upload(values, values.fileLink);
+      values.fileLink = response;
+    }
+    const { data } = await API.put(`portal/languages/${languageId}`, values);
+    return Promise.resolve(data);
+  } catch (e) {
+    console.log(e);
+    return Promise.reject(e);
+  }
 };

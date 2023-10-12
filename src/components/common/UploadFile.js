@@ -1,16 +1,21 @@
-import { Box, alpha, useTheme } from "@mui/material";
+import { Box, alpha, Typography, useTheme } from "@mui/material";
 import React from "react";
 
 import { CloudUploadOutline } from "@styled-icons/evaicons-outline";
+import { CloudCheckFill } from "@styled-icons/bootstrap";
 
-const UploadFile = () => {
+const UploadFile = ({ file, setFile, clearErrors }) => {
   const theme = useTheme();
+  const handleChangeFile = (event) => {
+    clearErrors("fileType");
+    setFile(event.target.files[0]);
+  };
   return (
     <Box
       display="flex"
       alignItems="center"
-      width="100%"
       position="relative"
+      overflow="hidden"
       border={1}
       borderRadius={2.5}
       borderColor={alpha(theme.palette.text.primary, 0.28)}
@@ -20,20 +25,35 @@ const UploadFile = () => {
         htmlFor="file"
         style={{
           color: theme.palette.text.third,
-          width: "100%",
           cursor: "pointer",
         }}
       >
-        <CloudUploadOutline height={24} style={{ margin: 10 }} />
-        Import File .JSON
+        {file ? (
+          <Box display="flex" alignItems="center">
+            <CloudCheckFill
+              height={24}
+              color={theme.palette.text.onStatus}
+              style={{ margin: 10 }}
+            />
+            <Typography noWrap>{file.name}</Typography>
+          </Box>
+        ) : (
+          <Box display="flex" alignItems="center">
+            <CloudUploadOutline height={24} style={{ margin: 10 }} />
+            <Typography noWrap>Import File .JSON</Typography>
+          </Box>
+        )}
+
         <input
           id="file"
+          name="fileLink"
           style={{
             opacity: 0,
             position: "absolute",
           }}
-          accept=".json"
+          onChange={handleChangeFile}
           type="file"
+          accept=".json"
         />
       </label>
     </Box>

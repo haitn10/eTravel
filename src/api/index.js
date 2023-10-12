@@ -1,6 +1,14 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
 
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+import { storage } from "../firebase";
+
 const cookies = new Cookies();
 
 // URL
@@ -18,6 +26,35 @@ API.interceptors.request.use(function (config) {
   return config;
 });
 
+export const upload = (item, file) => {
+  const fileRef = ref(
+    storage,
+    `Language/FileTranslate/${item.languageCode}.json`
+  );
+  return uploadBytes(fileRef, file).then(async () => {
+    try {
+      const url = await getDownloadURL(fileRef);
+      return Promise.resolve(url);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  });
+};
+
+export const remove = (item) => {
+  const fileRef = ref(
+    storage,
+    `Language/FileTranslate/${item.languageCode}.json`
+  );
+  deleteObject(fileRef)
+    .then(() => {
+      return Promise.resolve();
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+};
+
 export const fetch = async (state, dispatch, setState, path, payload) => {
   if (state.isFetching) {
     return Promise.resolve(state.items);
@@ -34,7 +71,7 @@ export const fetch = async (state, dispatch, setState, path, payload) => {
   }
 };
 
-export const process = async (state, dispatch, setState, path, item) => {
+export const process = async (state, dispatch, setState, path, item, file) => {
   if (state.isFetching) {
     return Promise.reject(new Error("This item is being processed."));
   }
@@ -59,18 +96,15 @@ export const process = async (state, dispatch, setState, path, item) => {
     //   const response = await upload(formData);
     //   item.thumbnailImageUrl = `${baseURL}${response.data.url}`;
     // }
-
-    // if (item.pdfUrl instanceof File) {
-    //   let formData = new FormData();
-    //   formData.append("pdf", item.pdfUrl);
-    //   const response = await upload(formData);
-    //   item.pdfUrl = `${baseURL}${response.data.url}`;
-    // }
-
+    if (file instanceof File) {
+      const response = await upload(item, file);
+      item.fileLink = response;
+    }
     await API.post(path, item);
     dispatch(setState({ isFetching: false }));
     return Promise.resolve();
   } catch (e) {
+    await remove(item);
     dispatch(setState({ isFetching: false }));
     return Promise.reject(e);
   }
