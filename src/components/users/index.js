@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import Header from "../common/Header";
-import { getUsers } from "./action";
+import ErrorModal from "../common/ErrorModal";
+import Action from "../common/Action";
 
+import { getUsers } from "./action";
 import users from "../../constants/tables/users";
-import action from "../../constants/actions";
 
 const ManageUsers = () => {
   const theme = useTheme();
@@ -25,31 +26,74 @@ const ManageUsers = () => {
     pageSize: 10,
   });
 
-  useEffect(() => {
+  const [notification, setNotification] = useState({
+    errorState: false,
+    errorMessage: "",
+    status: "error",
+  });
+
+  const getData = useCallback(() => {
     async function fetchData() {
-      setPageState((old) => ({
-        ...old,
-        isLoading: true,
-      }));
-      const data = await dispatch(
-        getUsers({
-          PageNumber: pageModelState.page,
-          PageSize: pageModelState.pageSize,
-        })
-      );
-      setPageState((old) => ({
-        ...old,
-        isLoading: false,
-        data: data.accounts.data,
-        totalCount: data.accounts.totalCount,
-      }));
+      try {
+        setPageState((old) => ({
+          ...old,
+          isLoading: true,
+        }));
+        const data = await dispatch(
+          getUsers({
+            PageNumber: pageModelState.page,
+            PageSize: pageModelState.pageSize,
+          })
+        );
+        setPageState((old) => ({
+          ...old,
+          isLoading: false,
+          data: data.accounts.data,
+          totalCount: data.accounts.totalCount,
+        }));
+      } catch (error) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "There was a problem loading data!",
+          status: "error",
+        });
+      }
     }
     fetchData();
-  }, [dispatch, pageModelState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
 
   const onNavigate = async (params) => {
     navigate("/users/details", { state: { accountId: params.row.id } });
   };
+
+  const action = [
+    {
+      field: "action",
+      headerName: "Actions",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <Action
+            id={params.row.id}
+            accountStatus={params.row.status}
+            api="portal/users"
+            notification={notification}
+            setNotification={setNotification}
+            getData={getData}
+          />
+        );
+      },
+    },
+  ];
 
   return (
     <Box
@@ -58,6 +102,13 @@ const ManageUsers = () => {
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
+      <ErrorModal
+        open={notification.errorState}
+        setOpen={setNotification}
+        message={notification.errorMessage}
+        status={notification.status}
+      />
+
       <Header
         title={"Manage Users"}
         subTitle={"Manage all them existing users or update status."}

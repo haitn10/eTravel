@@ -45,7 +45,7 @@ const Action = ({
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: response,
+          errorMessage: response.message || response,
           status: "success",
         });
       }
