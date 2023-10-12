@@ -40,6 +40,8 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
     setSelected(path);
   }, [path]);
 
+  console.log(selected);
+
   const onLogout = () => {
     dispatch(logOut());
   };
@@ -127,7 +129,9 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                         icon={option.subIcon}
                         linkUrl={option.subUrl}
                         subMenu={true}
-                        selected={selected === option.subTitle}
+                        selected={selected.includes(
+                          option.subTitle.toLowerCase()
+                        )}
                         setSelected={setSelected}
                       />
                     ))}
@@ -141,7 +145,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                     icon={tab.icon}
                     linkUrl={tab.url}
                     subMenu={false}
-                    selected={selected === tab.title}
+                    selected={selected.includes(tab.title.toLowerCase())}
                     setSelected={setSelected}
                   />
                 );
