@@ -25,6 +25,7 @@ import ManageLanguages from "./languages";
 
 import { createBrowserHistory } from "history";
 import CategoryDetails from "./categories/details";
+import LanguageDetails from "./languages/details";
 export const history = createBrowserHistory();
 
 const AppRouter = () => {
@@ -97,6 +98,7 @@ const AppRouter = () => {
               <Route path="/categories" element={<ManageCategories />} />
               <Route path="/categories/details" element={<CategoryDetails />} />
               <Route path="/languages" element={<ManageLanguages />} />
+              <Route path="/languages/details" element={<LanguageDetails />} />
             </Route>
           </Routes>
         </BrowserRouter>

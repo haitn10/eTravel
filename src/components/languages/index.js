@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  FormHelperText,
   MenuItem,
   Select,
   TextField,
@@ -15,30 +16,33 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 import Header from "../common/Header";
 import UploadFile from "../common/UploadFile";
 import ErrorModal from "../common/ErrorModal";
+import Action from "../common/Action";
 
-import action from "../../constants/actions";
 import { getLanguageCode, getLanguages, processLanguage } from "./action";
 import languages from "../../constants/tables/languages";
 
 const initialState = {
-  name: "Afar",
+  name: "",
   icon: "",
-  fileLink: "",
-  languageCode: "aa",
+  languageCode: "",
 };
 
 const ManageLanguages = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const [languageId, setLanguageId] = useState(null);
   const [languageCode, setLanguageCode] = useState([]);
   const [values, setValues] = useState(initialState);
+  const [file, setFile] = useState();
   const [notification, setNotification] = useState({
     errorState: false,
     errorMessage: "",
@@ -55,22 +59,11 @@ const ManageLanguages = () => {
     pageSize: 10,
   });
 
-  const handleClose = () => {
-    setOpen(false);
-    setValues(initialState);
-    setLanguageId(null);
-  };
-
-  const handleChange = (event) => {
-    const data = languageCode.filter(
-      (item) => item.langEnglishName === event.target.value
-    );
-    setValues({
-      ...values,
-      name: event.target.value,
-      languageCode: data[0] ? data[0].langCode : "",
-    });
-  };
+  const form = useForm({
+    defaultValues: initialState,
+  });
+  const { handleSubmit, setError, clearErrors, formState } = form;
+  const { errors } = formState;
 
   const getData = useCallback(() => {
     async function fetchData() {
@@ -78,23 +71,33 @@ const ManageLanguages = () => {
         ...old,
         isLoading: true,
       }));
-      const data = await dispatch(
-        getLanguages({
-          PageNumber: pageModelState.page,
-          PageSize: pageModelState.pageSize,
-        })
-      );
-      setPageState((old) => ({
-        ...old,
-        isLoading: false,
-        data: data.languages.data,
-        totalCount: data.languages.totalCount,
-      }));
+      try {
+        const data = await dispatch(
+          getLanguages({
+            PageNumber: pageModelState.page,
+            PageSize: pageModelState.pageSize,
+          })
+        );
+        setPageState((old) => ({
+          ...old,
+          isLoading: false,
+          data: data.languages.data,
+          totalCount: data.languages.totalCount,
+        }));
+      } catch (error) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "There was a problem loading data!",
+          status: "error",
+        });
+      }
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, pageModelState.page, pageModelState.pageSize]);
 
-  const getLangCode = useCallback(() => {
+  useEffect(() => {
     if (languageCode.length > 0) {
       return;
     }
@@ -107,23 +110,43 @@ const ManageLanguages = () => {
       }
     }
     fetchData();
-  }, [languageCode.length]);
-
-  useEffect(() => {
     getData();
-    getLangCode();
-  }, [getData, getLangCode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getData]);
+
+  const handleChange = (event) => {
+    clearErrors("values");
+    setValues({
+      ...values,
+      name: event?.target.value.languageName,
+      icon: event?.target.value.icon,
+      languageCode: event?.target.value.nationalCode,
+    });
+  };
 
   const onSubmit = async () => {
+    if (values.name === "") {
+      return setError("values", {
+        message: "Choose language!",
+      });
+    }
+    if (!file) {
+      return setError("fileType", {
+        message: "Must import a JSON file!",
+      });
+    } else if (file.type !== "application/json") {
+      return setError("fileType", {
+        message: "Only JSON file are allowed!",
+      });
+    }
     try {
-      await dispatch(processLanguage(values));
+      await dispatch(processLanguage(values, file));
       setNotification({
         ...notification,
         errorState: true,
         errorMessage: "Created successfully!",
         status: "success",
       });
-      setValues(initialState);
       setOpen(false);
     } catch (e) {
       const message = e.response.data ? e.response.data.message : e.message;
@@ -135,12 +158,45 @@ const ManageLanguages = () => {
       });
     }
     getData();
-    //Close error message
-    setTimeout(
-      () => setNotification({ ...notification, errorState: false }),
-      3000
-    );
   };
+
+  const handleClose = () => {
+    setOpen(false);
+    setValues(initialState);
+    clearErrors("values");
+    setFile();
+    setLanguageId(null);
+  };
+
+  const onNavigate = async (params) => {
+    navigate("/languages/details", {
+      state: { languageId: params.row.id, languageCode: languageCode },
+    });
+  };
+
+  const action = [
+    {
+      field: "action",
+      headerName: "Actions",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <Action
+            id={params.row.id}
+            accountStatus={params.row.status}
+            api="languages"
+            notification={notification}
+            setNotification={setNotification}
+            getData={getData}
+          />
+        );
+      },
+    },
+  ];
+
   return (
     <Box
       margin="1.25em"
@@ -180,10 +236,7 @@ const ManageLanguages = () => {
           pageSizeOptions={[5, 10, 20]}
           paginationMode="server"
           onPaginationModelChange={setPageModelState}
-          onRowClick={(params) => {
-            setOpen(true);
-            setLanguageId(params.row.id);
-          }}
+          onRowClick={(params) => onNavigate(params)}
           sx={{
             border: 0,
             minHeight: "77vh",
@@ -221,46 +274,55 @@ const ManageLanguages = () => {
               alignItems="center"
               justifyContent="center"
               gap={3}
-              marginBottom={4}
             >
               <Typography sx={{ width: 200 }}>Language Name</Typography>
               <Select
-                value={languageId ? "" : values.name}
                 sx={{ borderRadius: 2.5 }}
-                name="name"
+                name="values"
                 fullWidth
+                defaultValue=""
                 onChange={handleChange}
+                error={!!errors?.values}
               >
                 {languageCode.map((item, index) => (
-                  <MenuItem key={index} value={item.langEnglishName}>
+                  <MenuItem key={index} value={item || ""}>
                     <img
-                      src={""}
-                      alt={item.langEnglishName}
+                      src={item.icon}
+                      alt={item.nationalName}
                       style={{ width: 20, marginRight: 10 }}
                     />
-                    {item.langEnglishName}
+                    {item.nationalName}
                   </MenuItem>
                 ))}
               </Select>
             </Box>
+            <FormHelperText
+              htmlFor="render-select"
+              error
+              style={{ marginLeft: 180 }}
+            >
+              {errors.values?.message}
+            </FormHelperText>
+
             <Box
               display="flex"
               alignItems="center"
               justifyContent="center"
               gap={3}
-              marginBottom={4}
+              marginTop={4}
             >
               <Typography sx={{ width: 200 }}>Language Code</Typography>
               <TextField
                 fullWidth
                 size="small"
+                name="nationalCode"
                 disabled
                 InputProps={{
                   style: {
                     borderRadius: 10,
                   },
                 }}
-                value={values.languageCode}
+                value={values?.languageCode}
               />
             </Box>
 
@@ -269,12 +331,23 @@ const ManageLanguages = () => {
               alignItems="center"
               justifyContent="center"
               gap={3}
-              marginBottom={4}
+              marginTop={4}
             >
               <Typography sx={{ width: 200 }}>File</Typography>
-              <UploadFile />
+              <UploadFile
+                file={file}
+                setFile={setFile}
+                clearErrors={clearErrors}
+              />
             </Box>
-            <Typography color="error">
+            <FormHelperText
+              htmlFor="render-select"
+              error
+              style={{ marginLeft: 180 }}
+            >
+              {errors.fileType?.message}
+            </FormHelperText>
+            <Typography color="error" marginTop={4}>
               (Get data template <Link>here</Link>)
             </Typography>
           </FormControl>
@@ -286,7 +359,7 @@ const ManageLanguages = () => {
           }}
         >
           <Button
-            onClick={onSubmit}
+            onClick={handleSubmit(onSubmit)}
             variant="contained"
             sx={{
               borderRadius: 2.5,
