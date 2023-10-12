@@ -20,9 +20,9 @@ import { useDispatch } from "react-redux";
 
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
+import Action from "../common/Action";
 
 import staffs from "../../constants/tables/staffs";
-import action from "../../constants/actions";
 import { getStaffs, processStaff } from "./action";
 
 const initialState = {
@@ -42,7 +42,7 @@ const ManageStaffs = () => {
   const [notification, setNotification] = useState({
     errorState: false,
     errorMessage: "",
-    status: "success",
+    status: "error",
   });
   const [values, setValues] = useState(initialState);
   const form = useForm({ defaultValues: initialState });
@@ -66,24 +66,34 @@ const ManageStaffs = () => {
 
   const getData = useCallback(() => {
     async function fetchData() {
-      setPageState((old) => ({
-        ...old,
-        isLoading: true,
-      }));
-      const data = await dispatch(
-        getStaffs({
-          PageNumber: pageModelState.page,
-          PageSize: pageModelState.pageSize,
-        })
-      );
-      setPageState((old) => ({
-        ...old,
-        isLoading: false,
-        data: data.accounts.data,
-        totalCount: data.accounts.totalCount,
-      }));
+      try {
+        setPageState((old) => ({
+          ...old,
+          isLoading: true,
+        }));
+        const data = await dispatch(
+          getStaffs({
+            PageNumber: pageModelState.page,
+            PageSize: pageModelState.pageSize,
+          })
+        );
+        setPageState((old) => ({
+          ...old,
+          isLoading: false,
+          data: data.accounts.data,
+          totalCount: data.accounts.totalCount,
+        }));
+      } catch (error) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "There was a problem loading data!",
+          status: "error",
+        });
+      }
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
@@ -126,6 +136,29 @@ const ManageStaffs = () => {
       3000
     );
   };
+
+  const action = [
+    {
+      field: "action",
+      headerName: "Actions",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <Action
+            id={params.row.id}
+            accountStatus={params.row.status}
+            api="portal/users"
+            notification={notification}
+            setNotification={setNotification}
+            getData={getData}
+          />
+        );
+      },
+    },
+  ];
 
   return (
     <Box

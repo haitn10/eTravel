@@ -1,5 +1,6 @@
 import { Box, Typography, alpha } from "@mui/material";
 import { theme } from "../../styles/theme";
+import moment from "moment";
 
 const users = [
   {
@@ -11,7 +12,18 @@ const users = [
   },
   { field: "fullName", headerName: "Full Name", flex: 1 },
   { field: "nationality", headerName: "National", flex: 1 },
+  { field: "phone", headerName: "Phone", flex: 1 },
   { field: "gender", headerName: "Gender", flex: 1 },
+  {
+    field: "createTime",
+    headerName: "Create Time",
+    headerAlign: "right",
+    align: "right",
+    flex: 1,
+    renderCell: (params) => {
+      return moment(params.row.createTime).format("DD MMMM, YYYY");
+    },
+  },
   {
     field: "status",
     headerName: "Status",
