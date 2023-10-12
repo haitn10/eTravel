@@ -187,7 +187,7 @@ const ManageLanguages = () => {
           <Action
             id={params.row.id}
             accountStatus={params.row.status}
-            api="languages"
+            api="portal/languages/changestatus"
             notification={notification}
             setNotification={setNotification}
             getData={getData}
