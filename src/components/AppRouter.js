@@ -5,27 +5,32 @@ import { CssBaseline } from "@mui/material";
 
 import { getProfile } from "./auth/action";
 
-import Login from "./login";
 import Layout from "./common/Layout";
+import Login from "./login";
 import HomePage from "./home";
-import Profile from "./auth";
 import ManageTours from "./tours";
-import ManagePlaces from "./places";
-import TransactionsPage from "./transactions";
-import TransactionDetails from "./transactions/details";
 import TourDetails from "./tours/details";
 import CreateNewTour from "./tours/create";
-import ManageUsers from "./users";
+import ManagePlaces from "./places";
+import PlaceDetails from "./places/details";
+import AddPlace from "./places/add";
+import ImportPlaces from "./places/import";
+import ManageBookings from "./bookings";
+import BookingDetails from "./bookings/details";
+import ManageTransactions from "./transactions";
+import TransactionDetails from "./transactions/details";
+import Profile from "./auth";
 
+import ManageUsers from "./users";
 import UserDetails from "./users/details";
-import StaffDetails from "./staffs/details";
 import ManageStaffs from "./staffs";
+import StaffDetails from "./staffs/details";
 import ManageCategories from "./categories";
+import CategoryDetails from "./categories/details";
 import ManageLanguages from "./languages";
+import LanguageDetails from "./languages/details";
 
 import { createBrowserHistory } from "history";
-import CategoryDetails from "./categories/details";
-import LanguageDetails from "./languages/details";
 export const history = createBrowserHistory();
 
 const AppRouter = () => {
@@ -65,15 +70,18 @@ const AppRouter = () => {
           <CssBaseline />
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/*" element={<Navigate to="/home" />} exact />
-              <Route path="/home" element={<HomePage />} />
+              <Route path="/*" element={<Navigate to="/dashboard" />} exact />
+              <Route path="/dashboard" element={<HomePage />} />
               <Route path="/tours" element={<ManageTours />} />
               <Route path="/tours/details" element={<TourDetails />} />
               <Route path="/tours/create" element={<CreateNewTour />} />
               <Route path="/places/" element={<ManagePlaces />} />
-              <Route path="/places/add" element={<ManagePlaces />} />
-              <Route path="/places/import" element={<ManagePlaces />} />
-              <Route path="/transactions" element={<TransactionsPage />} />
+              <Route path="/places/details" element={<PlaceDetails />} />
+              <Route path="/places/add" element={<AddPlace />} />
+              <Route path="/places/import" element={<ImportPlaces />} />
+              <Route path="/bookings" element={<ManageBookings />} />
+              <Route path="/bookings/details" element={<BookingDetails />} />
+              <Route path="/transactions" element={<ManageTransactions />} />
               <Route
                 path="/transactions/details"
                 element={<TransactionDetails />}
@@ -90,7 +98,8 @@ const AppRouter = () => {
         <BrowserRouter>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/*" element={<Navigate to="/users" />} exact />
+              <Route path="/*" element={<Navigate to="/dashboard" />} exact />
+              <Route path="/dashboard" element={<HomePage />} />
               <Route path="/users" element={<ManageUsers />} />
               <Route path="/users/details" element={<UserDetails />} />
               <Route path="/staffs" element={<ManageStaffs />} />
