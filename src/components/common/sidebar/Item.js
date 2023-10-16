@@ -1,14 +1,17 @@
 import React from "react";
 import { Typography, alpha, useTheme } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MenuItem } from "react-pro-sidebar";
 
 const Item = ({ title, icon, linkUrl, subMenu, selected, setSelected }) => {
   const theme = useTheme();
+  const location = useLocation();
+  let path = location.pathname.slice();
+
   return (
     <MenuItem
       icon={icon}
-      component={<Link to={linkUrl} onClick={() => setSelected(title.toLowerCase())} />}
+      component={<Link to={linkUrl} onClick={() => setSelected(path)} />}
       style={{
         color: selected ? theme.palette.text.active : undefined,
         backgroundColor: selected

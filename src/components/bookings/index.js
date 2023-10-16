@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
+import tours from "../../constants/tables/tours";
 import Action from "../common/Action";
 import { getTours } from "./action";
 import transactions from "../../constants/tables/transactions";
+import bookings from "../../constants/tables/bookings";
 
-const ManageTransactions = () => {
+const ManageBookings = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -95,7 +97,7 @@ const ManageTransactions = () => {
   ];
   return (
     <Box
-      minHeight="94vh"
+      minHeight="95vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -124,7 +126,7 @@ const ManageTransactions = () => {
           autoHeight
           disableColumnMenu
           disableRowSelectionOnClick
-          columns={transactions.concat(action)}
+          columns={bookings.concat(action)}
           rows={pageState.data}
           rowCount={pageState.totalCount}
           loading={pageState.isLoading}
@@ -135,7 +137,7 @@ const ManageTransactions = () => {
           onRowClick={(params) => onNavigate(params)}
           sx={{
             border: 0,
-            minHeight: "72vh",
+            minHeight: "75vh",
             "& .MuiDataGrid-row:hover": {
               cursor: "pointer",
             },
@@ -149,4 +151,4 @@ const ManageTransactions = () => {
   );
 };
 
-export default ManageTransactions;
+export default ManageBookings;

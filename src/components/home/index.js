@@ -41,7 +41,7 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const isNonMobile = useMediaQuery("(min-width: 1200px)");
   const profile = useSelector((state) => state.auth.profile);
-  const [loadings, setLoadings] = useState(false);
+  const [loadings, setLoadings] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -54,8 +54,9 @@ const HomePage = () => {
 
   return (
     <Box
-      margin={2.5}
-      padding={2.5}
+      minHeight="94vh"
+      margin="1.25em"
+      padding={2}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >

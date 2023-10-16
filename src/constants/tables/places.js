@@ -2,29 +2,29 @@ import { Box, Typography, alpha } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../styles/theme";
 
-const tours = [
+const places = [
   {
     field: "id",
-    headerName: "TourID",
+    headerName: "PlaceID",
     headerAlign: "center",
     width: 100,
     align: "center",
   },
   {
     field: "name",
-    headerName: "Tour Name",
+    headerName: "Place Name",
     flex: 1,
   },
   {
-    field: "totalPlace",
-    headerName: "Total Places",
+    field: "price",
+    headerName: "Price",
     headerAlign: "center",
     align: "center",
     flex: 1,
   },
   {
-    field: "total",
-    headerName: "Total Prices",
+    field: "hour",
+    headerName: "Duration",
     headerAlign: "center",
     align: "center",
     flex: 1,
@@ -93,4 +93,4 @@ const tours = [
     },
   },
 ];
-export default tours;
+export default places;

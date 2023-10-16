@@ -1,11 +1,11 @@
-import { SET_TOURS_STATE } from "../action";
+import { SET_PLACES_STATE } from "../action";
 
-const tours = (
+const places = (
   state = { isFetching: false, items: [], details: [] },
   action
 ) => {
   switch (action.type) {
-    case SET_TOURS_STATE:
+    case SET_PLACES_STATE:
       return {
         ...state,
         ...action.state,
@@ -16,4 +16,4 @@ const tours = (
   }
 };
 
-export default tours;
+export default places;

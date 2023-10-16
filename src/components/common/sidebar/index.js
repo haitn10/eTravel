@@ -31,16 +31,14 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const location = useLocation();
-  let path = location.pathname.slice(1);
+  let path = location.pathname.slice();
   const state = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState("dashboard");
 
   useEffect(() => {
     setSelected(path);
   }, [path]);
-
-  console.log(selected);
 
   const onLogout = () => {
     dispatch(logOut());
@@ -108,10 +106,12 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
 
           {state.profile.roleName === "TourOperator" &&
             tabsItem.map((tab) => {
+              const checkOpen = path.startsWith(tab.url);
               if (tab.options.length > 0) {
                 return (
                   <SubMenu
                     key={tab.id}
+                    defaultOpen={checkOpen}
                     label={
                       <Typography
                         fontWeight={false ? "bold" : "medium"}
@@ -129,9 +129,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                         icon={option.subIcon}
                         linkUrl={option.subUrl}
                         subMenu={true}
-                        selected={selected.includes(
-                          option.subTitle.toLowerCase()
-                        )}
+                        selected={selected === option.subUrl.toLowerCase()}
                         setSelected={setSelected}
                       />
                     ))}
@@ -145,7 +143,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                     icon={tab.icon}
                     linkUrl={tab.url}
                     subMenu={false}
-                    selected={selected.includes(tab.title.toLowerCase())}
+                    selected={selected === tab.url.toLowerCase()}
                     setSelected={setSelected}
                   />
                 );
@@ -160,7 +158,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                 icon={tab.icon}
                 linkUrl={tab.url}
                 subMenu={false}
-                selected={selected.includes(tab.title.toLowerCase())}
+                selected={selected.includes(tab.url.toLowerCase())}
                 setSelected={setSelected}
               />
             ))}

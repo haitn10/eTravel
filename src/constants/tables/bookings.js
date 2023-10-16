@@ -2,7 +2,7 @@ import { Box, Typography, alpha } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../styles/theme";
 
-const tours = [
+const bookings = [
   {
     field: "id",
     headerName: "TourID",
@@ -93,4 +93,4 @@ const tours = [
     },
   },
 ];
-export default tours;
+export default bookings;
