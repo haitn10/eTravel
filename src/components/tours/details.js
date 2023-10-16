@@ -4,7 +4,6 @@ import {
   Button,
   CircularProgress,
   Grid,
-  IconButton,
   Rating,
   Tab,
   TextField,
@@ -14,7 +13,6 @@ import {
 import { Box } from "@mui/system";
 import { Add, HighlightOff } from "@styled-icons/material";
 
-import { createBrowserHistory } from "history";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import moment from "moment/moment";
 import { labels } from "../../constants/rating";
@@ -24,7 +22,6 @@ import Header from "../common/Header";
 
 const TourDetails = () => {
   const theme = useTheme();
-  const history = createBrowserHistory();
   const [value, setValue] = useState("1");
   const [loading, setLoading] = useState(false);
   const [imagesList, setImagesList] = useState([]);

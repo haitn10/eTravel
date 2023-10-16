@@ -9,8 +9,10 @@ import Header from "../common/Header";
 import tours from "../../constants/tables/tours";
 import Action from "../common/Action";
 import { getTours } from "./action";
+import transactions from "../../constants/tables/transactions";
+import bookings from "../../constants/tables/bookings";
 
-const ManageTours = () => {
+const ManageBookings = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -124,7 +126,7 @@ const ManageTours = () => {
           autoHeight
           disableColumnMenu
           disableRowSelectionOnClick
-          columns={tours.concat(action)}
+          columns={bookings.concat(action)}
           rows={pageState.data}
           rowCount={pageState.totalCount}
           loading={pageState.isLoading}
@@ -149,4 +151,4 @@ const ManageTours = () => {
   );
 };
 
-export default ManageTours;
+export default ManageBookings;

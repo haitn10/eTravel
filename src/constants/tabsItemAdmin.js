@@ -5,24 +5,30 @@ import { CategoryAlt } from "@styled-icons/boxicons-regular";
 const tabsItemAdmin = [
   {
     id: 1,
+    title: "Dashboard",
+    icon: <Group width={24} />,
+    url: "/dashboard",
+  },
+  {
+    id: 2,
     title: "Users",
     icon: <Group width={24} />,
     url: "/users",
   },
   {
-    id: 2,
+    id: 3,
     title: "Staffs",
     icon: <Admin width={24} />,
     url: "/staffs",
   },
   {
-    id: 3,
+    id: 4,
     title: "Categories",
     icon: <CategoryAlt width={24} />,
     url: "/categories",
   },
   {
-    id: 4,
+    id: 5,
     title: "Languages",
     icon: <Language width={24} />,
     url: "/languages",

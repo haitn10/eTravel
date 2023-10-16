@@ -4,22 +4,23 @@ import {
   CollectionsAdd,
 } from "@styled-icons/fluentui-system-regular";
 import { ListUl, FileEarmarkText } from "@styled-icons/bootstrap";
+import { ExchangeDollar } from "@styled-icons/remix-line";
 import { Settings2Outline } from "@styled-icons/evaicons-outline";
 import { Location } from "@styled-icons/ionicons-outline";
 
 const tabsItem = [
   {
     id: 1,
-    title: "Home",
+    title: "Dashboard",
     icon: <Home width={24} />,
-    url: "/home",
+    url: "/dashboard",
     options: [],
   },
   {
     id: 2,
     title: "Tours",
     icon: <Directions width={24} />,
-    url: "",
+    url: "/tours",
     options: [
       {
         subTitle: "List Tours",
@@ -37,7 +38,7 @@ const tabsItem = [
     id: 3,
     title: "Places",
     icon: <Location width={24} />,
-    url: "",
+    url: "/places",
     options: [
       {
         subTitle: "List Places",
@@ -45,7 +46,7 @@ const tabsItem = [
         subUrl: "/places",
       },
       {
-        subTitle: "Create Place",
+        subTitle: "Add Place",
         subIcon: <LocationAdd width={20} />,
         subUrl: "/places/add",
       },
@@ -58,13 +59,20 @@ const tabsItem = [
   },
   {
     id: 4,
-    title: "Transactions",
+    title: "Bookings",
     icon: <FileEarmarkText height={24} />,
-    url: "/transactions",
+    url: "/bookings",
     options: [],
   },
   {
     id: 5,
+    title: "Transactions",
+    icon: <ExchangeDollar height={24} />,
+    url: "/transactions",
+    options: [],
+  },
+  {
+    id: 6,
     title: "Settings",
     icon: <Settings2Outline width={24} />,
     url: "/settings",
