@@ -16,6 +16,7 @@ const UploadFile = ({ file, setFile, clearErrors }) => {
       alignItems="center"
       position="relative"
       overflow="hidden"
+      width="100%"
       border={1}
       borderRadius={2.5}
       borderColor={alpha(theme.palette.text.primary, 0.28)}
@@ -24,6 +25,7 @@ const UploadFile = ({ file, setFile, clearErrors }) => {
       <label
         htmlFor="file"
         style={{
+          display: "flex",
           color: theme.palette.text.third,
           cursor: "pointer",
         }}
@@ -40,7 +42,7 @@ const UploadFile = ({ file, setFile, clearErrors }) => {
         ) : (
           <Box display="flex" alignItems="center">
             <CloudUploadOutline height={24} style={{ margin: 10 }} />
-            <Typography noWrap>Import File .JSON</Typography>
+            <Typography noWrap>Click to import file...</Typography>
           </Box>
         )}
 
@@ -53,7 +55,7 @@ const UploadFile = ({ file, setFile, clearErrors }) => {
           }}
           onChange={handleChangeFile}
           type="file"
-          accept=".json"
+          accept=".json, .xlsx"
         />
       </label>
     </Box>

@@ -9,6 +9,33 @@ const setState = (state) => ({
 
 export const getHomePageData = () => {
   return async (dispatch, getState) => {
-    return fetch(getState().homepage, dispatch, setState, "statictical");
+    return fetch(
+      getState().homepage,
+      dispatch,
+      setState,
+      "portal/charts/statictical"
+    );
+  };
+};
+
+export const getOrdersData = () => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().homepage,
+      dispatch,
+      setState,
+      "portal/charts/order"
+    );
+  };
+};
+
+export const getLanguagesData = () => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().homepage,
+      dispatch,
+      setState,
+      "portal/charts/language"
+    );
   };
 };

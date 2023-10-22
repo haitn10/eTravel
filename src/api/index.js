@@ -26,6 +26,18 @@ API.interceptors.request.use(function (config) {
   return config;
 });
 
+export const uploadImage = (item, url) => {
+  const fileRef = ref(storage, `${url}/${item.image.name}`);
+  return uploadBytes(fileRef, item.image).then(async () => {
+    try {
+      const url = await getDownloadURL(fileRef);
+      return Promise.resolve(url);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  });
+};
+
 export const upload = (item, file) => {
   const fileRef = ref(
     storage,
@@ -90,21 +102,24 @@ export const process = async (state, dispatch, setState, path, item, file) => {
     //   item.bannerImageUrl = `${baseURL}${response.data.url}`;
     // }
 
-    // if (item.thumbnailImageUrl instanceof File) {
-    //   let formData = new FormData();
-    //   formData.append("image", item.thumbnailImageUrl);
-    //   const response = await upload(formData);
-    //   item.thumbnailImageUrl = `${baseURL}${response.data.url}`;
-    // }
+    if (item.image instanceof File) {
+      try {
+        const response = await uploadImage(item, "Tour");
+        item.image = response;
+      } catch (e) {}
+    }
     if (file instanceof File) {
-      const response = await upload(item, file);
-      item.fileLink = response;
+      try {
+        const response = await upload(item, file);
+        item.fileLink = response;
+      } catch (e) {
+        await remove(item);
+      }
     }
     await API.post(path, item);
     dispatch(setState({ isFetching: false }));
     return Promise.resolve();
   } catch (e) {
-    await remove(item);
     dispatch(setState({ isFetching: false }));
     return Promise.reject(e);
   }

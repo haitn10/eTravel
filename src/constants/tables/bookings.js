@@ -2,17 +2,19 @@ import { Box, Typography, alpha } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../styles/theme";
 
+import { TimeFive } from "@styled-icons/boxicons-regular";
+
 const bookings = [
   {
     field: "id",
-    headerName: "TourID",
+    headerName: "BookingID",
     headerAlign: "center",
     width: 100,
     align: "center",
   },
   {
-    field: "name",
-    headerName: "Tour Name",
+    field: "customerName",
+    headerName: "Customer Name",
     flex: 1,
   },
   {
@@ -28,8 +30,27 @@ const bookings = [
     headerAlign: "center",
     align: "center",
     flex: 1,
+    renderCell: (params) => {
+      return (
+        "$" +
+        params.row.total.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+      );
+    },
   },
-
+  {
+    field: "totalTime",
+    headerName: "Total Times",
+    headerAlign: "center",
+    align: "center",
+    flex: 1,
+    renderCell: (params) => {
+      return (
+        <Box display="flex" alignItems="center" gap={1}>
+          <TimeFive width={14} /> {params.row.totalTime.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}h
+        </Box>
+      );
+    },
+  },
   {
     field: "createTime",
     headerName: "Create Time",
@@ -45,51 +66,37 @@ const bookings = [
     headerName: "Status",
     headerAlign: "center",
     align: "center",
-    width: 120,
+    width: 150,
     renderCell: (params) => {
-      if (params.row.status === 1) {
-        return (
-          <Box
-            border={1}
-            borderRadius={20}
-            width={80}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            borderColor={alpha(theme.palette.text.onStatus, 0.1)}
-            bgcolor={alpha(theme.palette.text.onStatus, 0.1)}
-          >
-            <Typography
-              variant="span"
-              fontWeight="medium"
-              color={theme.palette.text.onStatus}
-            >
-              Active
-            </Typography>
-          </Box>
-        );
-      } else {
-        return (
-          <Box
-            border={1}
-            borderRadius={20}
-            width={80}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            borderColor={alpha(theme.palette.text.active, 0.1)}
-            bgcolor={alpha(theme.palette.text.active, 0.1)}
-          >
-            <Typography
-              variant="span"
-              fontWeight="medium"
-              color={theme.palette.text.active}
-            >
-              Inactive
-            </Typography>
-          </Box>
-        );
+      let color = theme.palette.text.primary;
+      if (params.row.status === 0) {
+        color = theme.palette.text.primary;
+      } else if (params.row.status === 1) {
+        color = theme.palette.text.pending;
+      } else if (params.row.status === 2) {
+        color = theme.palette.text.onStatus;
+      } else if (params.row.status === 3) {
+        color = theme.palette.text.active;
+      } else if (params.row.status === 4) {
+        color = theme.palette.text.checked;
       }
+
+      return (
+        <Box
+          border={1}
+          borderRadius={20}
+          minWidth={100}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          borderColor={alpha(color, 0.1)}
+          bgcolor={alpha(color, 0.1)}
+        >
+          <Typography variant="span" fontWeight="medium" color={color}>
+            {params.row.statusType}
+          </Typography>
+        </Box>
+      );
     },
   },
 ];

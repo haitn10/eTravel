@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import moment from "moment/moment";
 
-import { getHomePageData } from "./action";
+import { getHomePageData, getLanguagesData, getOrdersData } from "./action";
 
 import ChartCard from "./others/ChartCard";
 import CustomersOrder from "./others/CustomersOrder";
@@ -20,21 +20,10 @@ import CountryRanking from "./others/CountryRanking";
 import ArrowData from "../common/ArrowData";
 import { StyledBadge } from "../common/styled/StyledBadge";
 
-import indicators from "../../constants/indicatorsItem";
-
 import { Calendar } from "@styled-icons/ionicons-outline";
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, "process", 4.0),
-  createData("Ice cream sandwich", 237, 9.0, "done", 4.3),
-  createData("Eclair", 262, 16.0, "done", 6.0),
-  createData("Cupcake", 305, 3.7, "done", 4.3),
-  createData("Gingerbread", 356, 16.0, "done", 3.9),
-];
+import { FileEarmarkText, ClipboardCheck } from "@styled-icons/bootstrap";
+import { Location } from "@styled-icons/ionicons-outline";
+import { Directions } from "@styled-icons/boxicons-regular";
 
 const HomePage = () => {
   const theme = useTheme();
@@ -42,12 +31,22 @@ const HomePage = () => {
   const isNonMobile = useMediaQuery("(min-width: 1200px)");
   const profile = useSelector((state) => state.auth.profile);
   const [loadings, setLoadings] = useState(true);
+  const [languageList, setLanguageList] = useState([]);
+  const [ordersList, setOrdersList] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      // await dispatch(getHomePageData());
-      // await dispatch(getOrdersData());
-      // await dispatch(getLanguagesData());
+      setLoadings(false);
+      try {
+        // await dispatch(getHomePageData());
+        const res1 = await dispatch(getOrdersData());
+        setOrdersList(res1.staticticalOrder);
+        const res2 = await dispatch(getLanguagesData());
+        setLanguageList(res2.statictical);
+        setLoadings(true);
+      } catch (error) {
+        setLoadings(true);
+      }
     }
     fetchData();
   }, [dispatch]);
@@ -62,7 +61,7 @@ const HomePage = () => {
     >
       {/* Header HomePage */}
       <Box display="flex" gap={2} paddingX={1.5}>
-        <Box flexGrow={2} flexDirection="column">
+        <Box flexGrow={2}>
           <Box minHeight={111}>
             <Box
               display="flex"
@@ -70,7 +69,11 @@ const HomePage = () => {
               alignContent="center"
             >
               <Typography variant="h4" fontWeight="semiBold">
-                {loadings ? "Hello, Staff Name" : <Skeleton width={300} />}
+                {loadings ? (
+                  `Hello, ${profile.firstName + " " + profile.lastName}`
+                ) : (
+                  <Skeleton width={300} />
+                )}
               </Typography>
               <Box display="flex" alignItems="center" gap={2}>
                 <Typography fontWeight="medium">
@@ -92,65 +95,159 @@ const HomePage = () => {
                 )}
               </Box>
             </Box>
-            <Typography color={theme.palette.text.third} fontWeight="regular">
-              {loadings ? "Try to best everyday!" : <Skeleton width={200} />}
+            <Typography color={theme.palette.text.third} fontWeight="medium">
+              {loadings ? (
+                "Try your best every day!!"
+              ) : (
+                <Skeleton width={200} />
+              )}
             </Typography>
           </Box>
 
           <Grid
             container={isNonMobile}
+            sx={{ flexGrow: 1 }}
             minHeight={111}
             borderBottom={2}
             borderTop={2}
-            borderColor={theme.palette.background.third}
+            borderColor={theme.palette.background.secondary}
           >
-            {indicators.map((indicator) => (
-              <Grid
-                item
-                xs={12 / indicators.length}
-                key={indicator.id}
-                flexDirection="row"
-                display="flex"
-                alignItems="center"
-                paddingX={4}
-                marginY={1}
-                sx={
-                  isNonMobile
-                    ? indicator.id / 2 === 1
-                      ? {
-                          borderRight: 2,
-                          borderLeft: 2,
-                          borderColor: theme.palette.background.third,
-                        }
-                      : null
-                    : indicator.id / 2 === 1
-                    ? {
-                        borderTop: 2,
-                        borderBottom: 2,
-                        borderColor: theme.palette.background.third,
-                      }
-                    : null
-                }
-                gap={2}
+            <Grid
+              item
+              xs={3}
+              flexDirection="row"
+              display="flex"
+              alignItems="center"
+              columnGap={2}
+              paddingX={3}
+              marginY={1}
+              borderRight={2}
+              borderLeft={2}
+              borderColor={theme.palette.background.secondary}
+            >
+              <Avatar
+                sx={{
+                  bgcolor: theme.palette.background.secondary,
+                  color: theme.palette.text.active,
+                }}
               >
-                <Avatar
+                <Location width={24} />
+              </Avatar>
+              <Box width="100%">
+                <Typography
                   sx={{
-                    bgcolor: theme.palette.background.third,
-                    color: theme.palette.text.active,
+                    fontWeight: "medium",
+                    fontSize: "1em",
+                    marginBottom: 1,
                   }}
                 >
-                  {indicator.icon}
-                </Avatar>
-                <Box width="100%">
-                  <Typography
-                    sx={{ fontWeight: "regular", fontSize: "1.375em" }}
-                  >
-                    {indicator.title}
-                  </Typography>
-                  <ArrowData totalNum={80} direction={true} numDirection={10} />
-                </Box>
-              </Grid>
-            ))}
+                  Places
+                </Typography>
+                <ArrowData totalNum={80} direction={true} numDirection={10} />
+              </Box>
+            </Grid>
+            <Grid
+              item
+              xs={3}
+              flexDirection="row"
+              display="flex"
+              alignItems="center"
+              columnGap={2}
+              paddingX={3}
+              marginY={1}
+              borderRight={2}
+              borderLeft={2}
+              borderColor={theme.palette.background.secondary}
+            >
+              <Avatar
+                sx={{
+                  bgcolor: theme.palette.background.secondary,
+                  color: theme.palette.text.active,
+                }}
+              >
+                <Directions width={24} />
+              </Avatar>
+              <Box width="100%">
+                <Typography
+                  sx={{
+                    fontWeight: "medium",
+                    fontSize: "1em",
+                    marginBottom: 1,
+                  }}
+                >
+                  Tours
+                </Typography>
+                <ArrowData totalNum={80} direction={true} numDirection={10} />
+              </Box>
+            </Grid>
+            <Grid
+              item
+              xs={3}
+              flexDirection="row"
+              display="flex"
+              alignItems="center"
+              columnGap={2}
+              paddingX={3}
+              marginY={1}
+              borderRight={2}
+              borderLeft={2}
+              borderColor={theme.palette.background.secondary}
+            >
+              <Avatar
+                sx={{
+                  bgcolor: theme.palette.background.secondary,
+                  color: theme.palette.text.active,
+                }}
+              >
+                <FileEarmarkText width={24} />
+              </Avatar>
+              <Box width="100%">
+                <Typography
+                  sx={{
+                    fontWeight: "medium",
+                    fontSize: "1em",
+                    marginBottom: 1,
+                  }}
+                >
+                  Bookings
+                </Typography>
+                <ArrowData totalNum={80} direction={true} numDirection={10} />
+              </Box>
+            </Grid>
+            <Grid
+              item
+              xs={3}
+              flexDirection="row"
+              display="flex"
+              alignItems="center"
+              columnGap={2}
+              paddingX={3}
+              marginY={1}
+              borderRight={2}
+              borderLeft={2}
+              borderColor={theme.palette.background.secondary}
+            >
+              <Avatar
+                sx={{
+                  bgcolor: theme.palette.background.secondary,
+                  color: theme.palette.text.active,
+                }}
+              >
+                <ClipboardCheck width={24} />
+              </Avatar>
+              <Box width="100%">
+                <Typography
+                  sx={{
+                    fontWeight: "medium",
+                    fontSize: "0.875em",
+                    marginBottom: 1,
+                  }}
+                >
+                  Success Transactions
+                </Typography>
+                <ArrowData totalNum={80} direction={true} numDirection={10} />
+              </Box>
+            </Grid>
           </Grid>
         </Box>
 
@@ -203,16 +300,7 @@ const HomePage = () => {
               </Typography>
             </Box>
           </Box>
-        ) : (
-          <Box>
-            <Skeleton
-              variant="rounded"
-              width={222}
-              height={222}
-              sx={{ ".MuiSkeleton-rounded": { borderRadius: 10 } }}
-            />
-          </Box>
-        )}
+        ) : null}
       </Box>
 
       <Box marginX={2}>
@@ -221,10 +309,10 @@ const HomePage = () => {
             <ChartCard />
           </Grid>
           <Grid item xs={12} lg={6}>
-            <CustomersOrder loadings={loadings} rows={rows} />
+            <CustomersOrder loadings={loadings} rows={ordersList} />
           </Grid>
           <Grid item xs={12} lg={6}>
-            <CountryRanking loadings={loadings} rows={rows} />
+            <CountryRanking loadings={loadings} rows={languageList} />
           </Grid>
         </Grid>
       </Box>

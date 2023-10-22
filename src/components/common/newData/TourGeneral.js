@@ -1,27 +1,18 @@
 import {
   Box,
-  Button,
   Grid,
   TextField,
   Typography,
   alpha,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
-import { Add, HighlightOff } from "@styled-icons/material";
+import React from "react";
+import { CloudCheckFill } from "styled-icons/bootstrap";
+import { CloudUploadOutline } from "styled-icons/evaicons-outline";
 
-const TourGeneral = () => {
+const TourGeneral = ({ values, setValues }) => {
   const theme = useTheme();
-  const [imagesList, setImagesList] = useState([]);
 
-  const handleChangeImage = (event) => {
-    const selectedImageFiles = Array.from(event.target.files);
-    const imagesArray = selectedImageFiles.map((file) => {
-      return URL.createObjectURL(file);
-    });
-
-    setImagesList((prevImages) => prevImages.concat(imagesArray));
-  };
   return (
     <Box padding={5} marginX={10}>
       <Box marginBottom={3}>
@@ -30,9 +21,9 @@ const TourGeneral = () => {
         </Typography>
       </Box>
       <Grid container rowGap={5}>
-        {/* Tour Name Default */}
+        {/* Tour Name */}
         <Grid item xs={12} md={4}>
-          <Typography fontWeight="medium">Tour Name</Typography>
+          <Typography variant="h6">Tour Name</Typography>
         </Grid>
         <Grid item xs={12} md={8}>
           <TextField
@@ -43,9 +34,18 @@ const TourGeneral = () => {
                 borderRadius: 10,
               },
             }}
+            value={values.name}
+            onChange={(e) =>
+              setValues({
+                ...values,
+                name: e.target.value,
+              })
+            }
             placeholder="Type tour name here"
           />
         </Grid>
+
+        {/* Tour Decription */}
         <Grid item xs={12} md={4}>
           <Typography variant="h6">Decription</Typography>
           <Typography variant="p">Write a short decription</Typography>
@@ -58,134 +58,83 @@ const TourGeneral = () => {
                 borderRadius: 10,
               },
             }}
+            value={values.description}
+            onChange={(e) =>
+              setValues({
+                ...values,
+
+                description: e.target.value,
+              })
+            }
             placeholder="Type description here"
             multiline={true}
             rows={5}
           />
         </Grid>
 
-        {/* Images */}
+        {/* Tour Image */}
         <Grid item xs={12} md={4}>
-          <Typography fontWeight="medium">Images</Typography>
+          <Typography variant="h6">Symbolic Picture</Typography>
         </Grid>
         <Grid item xs={12} md={8}>
-          {imagesList.length !== 0 ? (
-            <Box
-              sx={{
+          <Box
+            display="flex"
+            alignItems="center"
+            position="relative"
+            overflow="hidden"
+            border={1}
+            borderRadius={2.5}
+            borderColor={alpha(theme.palette.text.primary, 0.28)}
+            height={40}
+          >
+            <label
+              htmlFor="image"
+              style={{
                 display: "flex",
-                maxHeight: 220,
-                maxWidth: "100%",
-                overflowY: "hidden",
-                overflowX: "auto",
-                "&::-webkit-scrollbar": {
-                  marginTop: 0.5,
-                  width: "0.35em",
-                  height: "0.45em",
-                  bgcolor: theme.palette.background.secondary,
-                },
-
-                "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: theme.palette.background.third,
-                  borderRadius: 3,
-                  "&:hover": {
-                    background: alpha(theme.palette.background.hovered, 0.25),
-                  },
-                },
+                color: theme.palette.text.third,
+                cursor: "pointer",
               }}
-              columnGap={2}
             >
-              <Box
-                // height={200}
-                minWidth={200}
-                border={1}
-                borderRadius={2.5}
-                borderColor={theme.palette.background.third}
-              >
-                <Button
-                  variant="text"
-                  color="inherit"
-                  component="label"
-                  sx={{ width: "100%", height: "100%", gap: 1 }}
-                >
-                  <Add
-                    color="inherit"
-                    sx={{
-                      height: 30,
-                      width: 30,
-                      border: 1,
-                      borderStyle: "dashed",
-                      strokeDasharray: 30,
-                      borderRadius: 1,
-                    }}
+              {values.image ? (
+                <Box display="flex" alignItems="center">
+                  <CloudCheckFill
+                    height={24}
+                    color={theme.palette.text.onStatus}
+                    style={{ margin: 10 }}
                   />
-
-                  <Typography fontWeight="medium">Add Images</Typography>
-                  <input
-                    type="file"
-                    hidden
-                    multiple
-                    accept="image/*"
-                    onChange={(event) => handleChangeImage(event)}
-                  />
-                </Button>
-              </Box>
-              {imagesList.reverse().map((item, index) => (
-                <Box
-                  key={index}
-                  position="relative"
-                  minWidth={200}
-                  border={1}
-                  borderRadius={2.5}
-                  borderColor={theme.palette.background.third}
-                >
-                  <img
-                    src={item}
-                    alt="item"
-                    style={{
-                      height: "100%",
-                      width: "100%",
-                      maxWidth: 200,
-                      objectFit: "contain",
-                      borderRadius: 10,
-                    }}
-                    loading="lazy"
-                  />
-                  <Button
-                    sx={{
-                      position: "absolute",
-                      right: 2,
-                      top: 2,
-                      padding: 1,
-                      minWidth: 0,
-                      "&:hover": { backgroundColor: "inherit" },
-                    }}
-                    onClick={() =>
-                      setImagesList(imagesList.filter((e) => e !== item))
-                    }
-                  >
-                    <HighlightOff color="error" />
-                  </Button>
+                  <Typography noWrap>{values.image.name}</Typography>
                 </Box>
-              ))}
-            </Box>
-          ) : (
-            <TextField
-              fullWidth
-              inputProps={{
-                style: { height: "1em" },
-                accept: "image/*",
-                multiple: true,
+              ) : (
+                <Box display="flex" alignItems="center">
+                  <CloudUploadOutline height={24} style={{ margin: 10 }} />
+                  <Typography noWrap>Import picture for tour here</Typography>
+                </Box>
+              )}
+
+              <input
+                id="image"
+                style={{
+                  opacity: 0,
+                  position: "absolute",
+                }}
+                onChange={(e) =>
+                  setValues({ ...values, image: e.target.files[0] })
+                }
+                type="file"
+                accept="image/*"
+              />
+            </label>
+          </Box>
+          <Box marginTop={2}>
+            <img
+              src={values.image && URL.createObjectURL(values.image)}
+              style={{
+                maxWidth: "100%",
+                maxHeight: 300,
               }}
-              InputProps={{
-                style: {
-                  borderRadius: 10,
-                },
-              }}
-              type="file"
-              multiple
-              onChange={(event) => handleChangeImage(event)}
+              alt=""
             />
-          )}
+          </Box>
         </Grid>
       </Grid>
     </Box>

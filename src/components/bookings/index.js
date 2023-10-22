@@ -6,10 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
-import tours from "../../constants/tables/tours";
-import Action from "../common/Action";
 import { getTours } from "./action";
-import transactions from "../../constants/tables/transactions";
 import bookings from "../../constants/tables/bookings";
 
 const ManageBookings = () => {
@@ -49,8 +46,8 @@ const ManageBookings = () => {
         setPageState((old) => ({
           ...old,
           isLoading: false,
-          data: data.tours.data,
-          totalCount: data.tours.totalCount,
+          data: data.bookings.data,
+          totalCount: data.bookings.totalCount,
         }));
       } catch (error) {
         setNotification({
@@ -70,31 +67,9 @@ const ManageBookings = () => {
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/tours/details", { data: params.row.id });
+    navigate("/bookings/details", { data: params.row.id });
   };
 
-  const action = [
-    {
-      field: "action",
-      headerName: "Actions",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <Action
-            id={params.row.id}
-            accountStatus={params.row.status}
-            api="portal/categories/changestatus"
-            notification={notification}
-            setNotification={setNotification}
-            getData={getData}
-          />
-        );
-      },
-    },
-  ];
   return (
     <Box
       minHeight="95vh"
@@ -126,7 +101,7 @@ const ManageBookings = () => {
           autoHeight
           disableColumnMenu
           disableRowSelectionOnClick
-          columns={bookings.concat(action)}
+          columns={bookings}
           rows={pageState.data}
           rowCount={pageState.totalCount}
           loading={pageState.isLoading}
