@@ -5,17 +5,22 @@ const indicators = [
   {
     id: 1,
     icon: <CardText width={24} />,
-    title: "Order Bills",
+    title: "Total Bookings",
   },
   {
     id: 2,
     icon: <Location width={24} />,
-    title: "Places",
+    title: "Total Tours",
   },
   {
     id: 3,
     icon: <BarChartLine width={24} />,
-    title: "Revenue",
+    title: "Total Places",
+  },
+  {
+    id: 4,
+    icon: <BarChartLine width={24} />,
+    title: "Total Places",
   },
 ];
 

@@ -13,7 +13,7 @@ const tours = [
   {
     field: "name",
     headerName: "Tour Name",
-    flex: 1,
+    width: 300,
   },
   {
     field: "totalPlace",
@@ -28,6 +28,12 @@ const tours = [
     headerAlign: "center",
     align: "center",
     flex: 1,
+    renderCell: (params) => {
+      return (
+        "$" +
+        params.row.total.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+      );
+    },
   },
 
   {
@@ -35,7 +41,7 @@ const tours = [
     headerName: "Create Time",
     headerAlign: "right",
     align: "right",
-    flex: 1,
+    width: 200,
     renderCell: (params) => {
       return moment(params.row.createTime).format("DD MMMM, YYYY");
     },

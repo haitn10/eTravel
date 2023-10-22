@@ -31,14 +31,14 @@ export const getCategoryDetails = async (categoryId) => {
   }
 };
 
-export const processCategory = (Categorie) => {
+export const processCategory = (category) => {
   return async (dispatch, getState) => {
     return process(
       getState().categories,
       dispatch,
       setState,
       "portal/categories",
-      Categorie
+      category
     );
   };
 };

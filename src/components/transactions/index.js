@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
-import Action from "../common/Action";
 import { getTours } from "./action";
 import transactions from "../../constants/tables/transactions";
 
@@ -47,8 +46,8 @@ const ManageTransactions = () => {
         setPageState((old) => ({
           ...old,
           isLoading: false,
-          data: data.tours.data,
-          totalCount: data.tours.totalCount,
+          data: data.transactions.data,
+          totalCount: data.transactions.totalCount,
         }));
       } catch (error) {
         setNotification({
@@ -68,31 +67,9 @@ const ManageTransactions = () => {
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/tours/details", { data: params.row.id });
+    navigate("/transactions/details", { data: params.row.id });
   };
 
-  const action = [
-    {
-      field: "action",
-      headerName: "Actions",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <Action
-            id={params.row.id}
-            accountStatus={params.row.status}
-            api="portal/categories/changestatus"
-            notification={notification}
-            setNotification={setNotification}
-            getData={getData}
-          />
-        );
-      },
-    },
-  ];
   return (
     <Box
       minHeight="94vh"
@@ -110,8 +87,8 @@ const ManageTransactions = () => {
         status={notification.status}
       />
       <Header
-        title={"Manage Tournaments"}
-        subTitle={"Manage all them existing tours or update status."}
+        title={"Manage Transactions"}
+        subTitle={"Manage all transactions performed on the system."}
         showBack={false}
         showSearch={true}
         showFilter={false}
@@ -124,7 +101,7 @@ const ManageTransactions = () => {
           autoHeight
           disableColumnMenu
           disableRowSelectionOnClick
-          columns={transactions.concat(action)}
+          columns={transactions}
           rows={pageState.data}
           rowCount={pageState.totalCount}
           loading={pageState.isLoading}

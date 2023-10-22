@@ -2,12 +2,8 @@ import { SET_HOMEPAGE_STATE } from "../action";
 
 const homepage = (
   state = {
-    shouldFetch: true,
     isFetching: false,
-    items: [],
-    languages: [],
-    orders: [],
-    isUpdating: false,
+    items: {},
   },
   action
 ) => {

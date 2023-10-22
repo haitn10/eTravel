@@ -2,6 +2,7 @@ import {
   Box,
   FormControl,
   Grid,
+  IconButton,
   InputAdornment,
   MenuItem,
   Select,
@@ -9,52 +10,42 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
-import SubCard from "./SubCard";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { Search } from "@styled-icons/evaicons-solid";
-import { FilterAlt } from "@styled-icons/boxicons-regular";
 import { DataGrid } from "@mui/x-data-grid";
-import { createFakeServer } from "@mui/x-data-grid-generator";
 
-const SERVER_OPTIONS = {
-  useCursorPagination: false,
-};
+import SubCard from "./SubCard";
+import subPlaces from "../../constants/tables/subPlaces";
 
-const { useQuery, ...data } = createFakeServer({}, SERVER_OPTIONS);
+import { FilterAlt } from "@styled-icons/boxicons-regular";
+import { Search } from "@styled-icons/evaicons-solid";
+import { AddCircle } from "@styled-icons/fluentui-system-regular";
 
-const finalSpaceCharacters = [
-  {
-    id: "gary",
-    name: "Gary Goodspeed",
-    thumb: "/images/gary.png",
-  },
-  {
-    id: "cato",
-    name: "Little Cato",
-    thumb: "/images/cato.png",
-  },
-  {
-    id: "kvn",
-    name: "KVN",
-    thumb: "/images/kvn.png",
-  },
-  {
-    id: "mooncake",
-    name: "Mooncake",
-    thumb: "/images/mooncake.png",
-  },
-  {
-    id: "quinn",
-    name: "Quinn Ergon",
-    thumb: "/images/quinn.png",
-  },
-];
-
-const PlacesList = () => {
+const PlacesList = ({
+  values,
+  setValues,
+  pageState,
+  setPageState,
+  pageModelState,
+  setPageModelState,
+  notification,
+  setNotification,
+}) => {
+  console.log(values);
   const theme = useTheme();
-  const [placesList, setPlacesList] = useState(finalSpaceCharacters);
+  const [placesList, setPlacesList] = useState(values?.tourDetails);
+  const [price, setPrice] = useState(values?.total);
   const [filterValue, setFilterValue] = React.useState("");
+
+  useEffect(() => {
+    setValues({ ...values, tourDetails: placesList, total: price });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placesList]);
+
+  useEffect(() => {
+    setPageState({ ...pageState, data: [...pageState.data] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (event) => {
     setFilterValue(event.target.value);
@@ -62,30 +53,43 @@ const PlacesList = () => {
 
   const handleOnDragEnd = (result) => {
     if (!result.destination) return;
-
     const items = Array.from(placesList);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-
     setPlacesList(items);
   };
 
-  const [paginationModel, setPaginationModel] = React.useState({
-    page: 0,
-    pageSize: 10,
-  });
+  const onAdd = (data) => {
+    if (placesList.length < 5) {
+      setPlacesList(placesList.concat([data]));
+      setPrice(price + data.price);
+    } else {
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: "Don't add more than 5 places!",
+        status: "error",
+      });
+    }
+  };
 
-  const { isLoading, rows, pageInfo } = useQuery(paginationModel);
-  const [rowCountState, setRowCountState] = React.useState(
-    pageInfo?.totalRowCount || 0
-  );
-  React.useEffect(() => {
-    setRowCountState((prevRowCountState) =>
-      pageInfo?.totalRowCount !== undefined
-        ? pageInfo?.totalRowCount
-        : prevRowCountState
-    );
-  }, [pageInfo?.totalRowCount, setRowCountState]);
+  const action = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <IconButton aria-label="more" onClick={(e) => onAdd(params.row)}>
+            <AddCircle width={24} color={theme.palette.text.active} />
+          </IconButton>
+        );
+      },
+    },
+  ];
 
   return (
     <Box width="100%" paddingX={3} marginTop={2}>
@@ -108,10 +112,11 @@ const PlacesList = () => {
                   borderRadius: 10,
                 },
               }}
+              size="small"
               fullWidth
               placeholder="Search..."
             />
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <FormControl size="small" sx={{ m: 1, minWidth: 200 }}>
               <Select
                 value={filterValue}
                 onChange={handleChange}
@@ -135,15 +140,16 @@ const PlacesList = () => {
           </Box>
           <Box>
             <DataGrid
-              rows={rows}
-              {...data}
-              rowCount={rowCountState}
-              loading={isLoading}
+              columns={subPlaces.concat(action)}
+              rows={pageState.data}
+              rowCount={pageState.totalCount}
+              loading={pageState.isLoading}
               pageSizeOptions={[10]}
-              paginationModel={paginationModel}
+              paginationModel={pageModelState}
               paginationMode="server"
-              onPaginationModelChange={setPaginationModel}
+              onPaginationModelChange={setPageModelState}
               disableColumnMenu
+              disableRowSelectionOnClick
               sx={{
                 border: 0,
                 "& .MuiDataGrid-row:hover": {
@@ -159,7 +165,7 @@ const PlacesList = () => {
         <Grid item xs={12} md={5}>
           <Box>
             <Box display="flex" alignItems="center" gap={1}>
-              <Typography variant="h5" fontWeight="semiBold">
+              <Typography variant="h6" fontWeight="semiBold">
                 Reorder columns
               </Typography>
               <Box
@@ -175,38 +181,51 @@ const PlacesList = () => {
                 </Typography>
               </Box>
             </Box>
-            <Typography fontWeight="regular" color={theme.palette.text.third}>
+            <Typography
+              variant="body1"
+              fontWeight="regular"
+              color={theme.palette.text.third}
+            >
               Click and drag to reorder the columns
             </Typography>
           </Box>
 
           <Box>
             <Box minHeight={300} marginTop={5}>
-              <DragDropContext onDragEnd={handleOnDragEnd}>
-                <Droppable droppableId="ROOT" type="group">
-                  {(provided) => (
-                    <Box ref={provided.innerRef} {...provided.droppableProps}>
-                      {placesList.map((place, index) => (
-                        <Draggable
-                          draggableId={place.id}
-                          key={place.id}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <SubCard
-                              provided={provided}
-                              place={place}
-                              placesList={placesList}
-                              setPlacesList={setPlacesList}
-                            />
-                          )}
-                        </Draggable>
-                      ))}
-                    </Box>
-                  )}
-                </Droppable>
-              </DragDropContext>
+              {placesList.length > 0 ? (
+                <DragDropContext onDragEnd={handleOnDragEnd}>
+                  <Droppable droppableId="ROOT" type="group">
+                    {(provided) => (
+                      <Box ref={provided.innerRef} {...provided.droppableProps}>
+                        {placesList.map((place, index) => (
+                          <Draggable
+                            key={place.id}
+                            draggableId={place.name}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <SubCard
+                                provided={provided}
+                                place={place}
+                                placesList={placesList}
+                                setPlacesList={setPlacesList}
+                              />
+                            )}
+                          </Draggable>
+                        ))}
+                      </Box>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              ) : (
+                <Box display="flex" justifyContent="center">
+                  <Typography color="error" fontWeight="medium">
+                    (Not have places for tour)
+                  </Typography>
+                </Box>
+              )}
             </Box>
+
             {placesList.length === 5 ? (
               <Box>
                 <Typography color="error" fontWeight="medium">
@@ -220,7 +239,7 @@ const PlacesList = () => {
                 Total Price :
               </Typography>
               <Typography fontSize={18} fontWeight="semiBold">
-                20 $
+                {price} $
               </Typography>
             </Box>
           </Box>

@@ -68,7 +68,7 @@ const ManageTours = () => {
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/tours/details", { data: params.row.id });
+    navigate("/tours/details", { state: { tourId: params.row.id } });
   };
 
   const action = [
@@ -84,7 +84,7 @@ const ManageTours = () => {
           <Action
             id={params.row.id}
             accountStatus={params.row.status}
-            api="portal/categories/changestatus"
+            api="portal/tours/changestatus"
             notification={notification}
             setNotification={setNotification}
             getData={getData}

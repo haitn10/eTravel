@@ -9,7 +9,7 @@ const setState = (state) => ({
   state,
 });
 
-export const getTours = (payload) => {
+export const getPlaces = (payload) => {
   return async (dispatch, getState) => {
     return fetch(
       getState().tours,

@@ -13,6 +13,7 @@ const color = {
     500: "#2F80ED",
     600: "#C40234",
     700: "#B8B8B8",
+    800: "#E6A817",
   },
 };
 export default color;

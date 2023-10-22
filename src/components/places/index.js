@@ -3,7 +3,7 @@ import { Box, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getTours } from "./action";
+import { getPlaces } from "./action";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
@@ -40,7 +40,7 @@ const ManagePlaces = () => {
           isLoading: true,
         }));
         const data = await dispatch(
-          getTours({
+          getPlaces({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
           })
@@ -69,7 +69,7 @@ const ManagePlaces = () => {
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/tours/details", { data: params.row.id });
+    navigate("/places/details", { data: params.row.id });
   };
 
   const action = [
@@ -120,7 +120,7 @@ const ManagePlaces = () => {
       />
 
       {/* Data Table */}
-      <Box paddingX={2} flexGrow={1} marginTop={3}>
+      <Box paddingX={2} marginTop={3} >
         <DataGrid
           autoHeight
           disableColumnMenu
