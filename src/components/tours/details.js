@@ -1,48 +1,158 @@
-import React, { useState } from "react";
-import { useTheme } from "@emotion/react";
+import React, { useState, useEffect } from "react";
 import {
+  Box,
   Button,
   CircularProgress,
   Grid,
   Rating,
   Tab,
-  TextField,
   Typography,
   alpha,
+  useTheme,
 } from "@mui/material";
-import { Box } from "@mui/system";
-import { Add, HighlightOff } from "@styled-icons/material";
-
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import moment from "moment/moment";
-import { labels } from "../../constants/rating";
+
 import SubsLanguage from "../common/SubsLanguage";
 import PlacesList from "../common/PlacesList";
 import Header from "../common/Header";
 
+import { labels } from "../../constants/rating";
+import { getTourDetails, updateTour } from "./action";
+import { getPlaces } from "../places/action";
+
+import { CloudCheckFill } from "styled-icons/bootstrap";
+import { CloudUploadOutline } from "styled-icons/evaicons-outline";
+import ErrorModal from "../common/ErrorModal";
+
 const TourDetails = () => {
   const theme = useTheme();
-  const [value, setValue] = useState("1");
+  const dispatch = useDispatch();
+  const { state } = useLocation();
+  const { tourId } = state;
+  const [values, setValues] = useState({});
   const [loading, setLoading] = useState(false);
-  const [imagesList, setImagesList] = useState([]);
+  const [number, setNumber] = useState("1");
+
+  const [notification, setNotification] = useState({
+    errorState: false,
+    errorMessage: "",
+    status: "error",
+  });
+
+  const [pageState, setPageState] = useState({
+    isLoading: false,
+    data: [],
+    totalCount: 0,
+  });
+
+  const [pageModelState, setPageModelState] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  useEffect(() => {
+    async function getInfoDetails() {
+      try {
+        const data = await getTourDetails(tourId);
+        setValues(data);
+      } catch (error) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "Can't get data details for tour!",
+          status: "error",
+        });
+      }
+    }
+    getInfoDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tourId]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setPageState((old) => ({
+          ...old,
+          isLoading: true,
+        }));
+        const data = await dispatch(
+          getPlaces({
+            PageNumber: pageModelState.page,
+            PageSize: pageModelState.pageSize,
+          })
+        );
+        setPageState((old) => ({
+          ...old,
+          isLoading: false,
+          data: data.places.data,
+          totalCount: data.places.totalCount,
+        }));
+      } catch (error) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "There was a problem loading data!",
+          status: "error",
+        });
+      }
+    }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageModelState.page, pageModelState.pageSize]);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const handleChangeImage = (event) => {
-    const selectedImageFiles = Array.from(event.target.files);
-    const imagesArray = selectedImageFiles.map((file) => {
-      return URL.createObjectURL(file);
-    });
-
-    setImagesList((prevImages) => prevImages.concat(imagesArray));
+    setNumber(newValue);
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(!loading);
+    let data = {
+      name: values.name,
+      image: values.image,
+      total: values.total,
+      tourDetails: [],
+      tourDescriptions: [],
+    };
+    for (const place of values.tourDetails) {
+      data.tourDetails.push({ id: place.id, price: place.price });
+    }
+
+    for (const language of values.tourDescriptions) {
+      data.tourDescriptions.push({
+        languageCode: language.languageCode.trim(),
+        name: language.name,
+        description: language.description,
+      });
+    }
+
+    try {
+      const res = await updateTour(tourId, data);
+      if (res) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "Updated successfully!",
+          status: "success",
+        });
+      }
+      setLoading(loading);
+    } catch (e) {
+      const message = e.response.data
+        ? e.response.data.errors
+        : "Something went wrong!";
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: message,
+        status: "error",
+      });
+      setLoading(loading);
+    }
   };
+
   return (
     <Box
       minHeight="95vh"
@@ -52,7 +162,12 @@ const TourDetails = () => {
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
-      {/* Title */}
+      <ErrorModal
+        open={notification.errorState}
+        setOpen={setNotification}
+        message={notification.errorMessage}
+        status={notification.status}
+      />
 
       <Header
         title={"Tour Details"}
@@ -64,7 +179,7 @@ const TourDetails = () => {
       />
 
       <Box marginTop={3}>
-        <TabContext value={value}>
+        <TabContext value={number}>
           <Box
             sx={{
               paddingLeft: 4,
@@ -90,160 +205,84 @@ const TourDetails = () => {
               }}
               onSubmit={onSubmit}
             >
-              <Grid
-                container
-                width="80%"
-                display="flex"
-                alignItems="center"
-                rowGap={5}
-              >
-                {/* Tour Name Default */}
-                <Grid item xs={4}>
-                  <Typography fontWeight="medium">Tour Name</Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <TextField
-                    fullWidth
-                    inputProps={{ style: { height: "1em" } }}
-                    InputProps={{
-                      style: {
-                        borderRadius: 10,
-                        backgroundColor: theme.palette.background.secondary,
-                      },
-                    }}
-                    disabled
-                  />
-                </Grid>
-
+              <Grid container width="80%" display="flex" rowGap={5}>
                 {/* Images */}
                 <Grid item xs={4}>
-                  <Typography fontWeight="medium">Images</Typography>
+                  <Typography fontWeight="medium">Picture</Typography>
                 </Grid>
                 <Grid item xs={8}>
-                  {imagesList.length !== 0 ? (
-                    <Box
-                      sx={{
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    position="relative"
+                    overflow="hidden"
+                    border={1}
+                    borderRadius={2.5}
+                    borderColor={alpha(theme.palette.text.primary, 0.28)}
+                    height={40}
+                  >
+                    <label
+                      htmlFor="image"
+                      style={{
                         display: "flex",
-                        maxHeight: 220,
-                        maxWidth: "100%",
-                        overflowY: "hidden",
-                        overflowX: "auto",
-                        "&::-webkit-scrollbar": {
-                          marginTop: 0.5,
-                          width: "0.35em",
-                          height: "0.45em",
-                          bgcolor: theme.palette.background.secondary,
-                        },
-
-                        "&::-webkit-scrollbar-thumb": {
-                          backgroundColor: theme.palette.background.third,
-                          borderRadius: 3,
-                          "&:hover": {
-                            background: alpha(
-                              theme.palette.background.hovered,
-                              0.25
-                            ),
-                          },
-                        },
+                        width: "100%",
+                        color: theme.palette.text.third,
+                        cursor: "pointer",
                       }}
-                      columnGap={2}
                     >
-                      <Box
-                        // height={200}
-                        minWidth={200}
-                        border={1}
-                        borderRadius={2.5}
-                        borderColor={theme.palette.background.third}
-                      >
-                        <Button
-                          variant="text"
-                          color="inherit"
-                          component="label"
-                          sx={{ width: "100%", height: "100%", gap: 1 }}
-                        >
-                          <Add
-                            color="inherit"
-                            sx={{
-                              height: 30,
-                              width: 30,
-                              border: 1,
-                              borderStyle: "dashed",
-                              strokeDasharray: 30,
-                              borderRadius: 1,
-                            }}
+                      {values.image ? (
+                        <Box display="flex" alignItems="center">
+                          <CloudCheckFill
+                            height={24}
+                            color={theme.palette.text.onStatus}
+                            style={{ margin: 10 }}
                           />
-
-                          <Typography fontWeight="medium">
-                            Add Images
+                          <Typography noWrap>
+                            {values.image.name
+                              ? values.image.name
+                              : "Change Picture"}
                           </Typography>
-                          <input
-                            type="file"
-                            hidden
-                            multiple
-                            accept="image/*"
-                            onChange={(event) => handleChangeImage(event)}
-                          />
-                        </Button>
-                      </Box>
-                      {imagesList.reverse().map((item, index) => (
-                        <Box
-                          key={index}
-                          position="relative"
-                          minWidth={200}
-                          border={1}
-                          borderRadius={2.5}
-                          borderColor={theme.palette.background.third}
-                        >
-                          <img
-                            src={item}
-                            alt="item"
-                            style={{
-                              height: "100%",
-                              width: "100%",
-                              maxWidth: 200,
-                              objectFit: "contain",
-                              borderRadius: 10,
-                            }}
-                            loading="lazy"
-                          />
-                          <Button
-                            sx={{
-                              position: "absolute",
-                              right: 2,
-                              top: 2,
-                              padding: 1,
-                              minWidth: 0,
-                              "&:hover": { backgroundColor: "inherit" },
-                            }}
-                            onClick={() =>
-                              setImagesList(
-                                imagesList.filter((e) => e !== item)
-                              )
-                            }
-                          >
-                            <HighlightOff color="error" />
-                          </Button>
                         </Box>
-                      ))}
-                    </Box>
-                  ) : (
-                    <TextField
-                      fullWidth
-                      inputProps={{
-                        style: { height: "1em" },
-                        accept: "image/*",
-                        multiple: true,
+                      ) : (
+                        <Box display="flex" alignItems="center">
+                          <CloudUploadOutline
+                            height={24}
+                            style={{ margin: 10 }}
+                          />
+                          <Typography noWrap>
+                            Import picture for tour here
+                          </Typography>
+                        </Box>
+                      )}
+
+                      <input
+                        id="image"
+                        style={{
+                          opacity: 0,
+                          position: "absolute",
+                        }}
+                        onChange={(e) =>
+                          setValues({ ...values, image: e.target.files[0] })
+                        }
+                        type="file"
+                        accept="image/*"
+                      />
+                    </label>
+                  </Box>
+                  <Box marginTop={2}>
+                    <img
+                      src={
+                        values?.image && values?.image instanceof File
+                          ? URL.createObjectURL(values?.image)
+                          : values?.image
+                      }
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: 300,
                       }}
-                      InputProps={{
-                        style: {
-                          borderRadius: 10,
-                        },
-                      }}
-                      type="file"
-                      multiple
-                      onChange={(event) => handleChangeImage(event)}
+                      alt=""
                     />
-                  )}
+                  </Box>
                 </Grid>
 
                 {/* Rating */}
@@ -252,10 +291,9 @@ const TourDetails = () => {
                 </Grid>
                 <Grid item xs={8} display="flex" alignItems="center">
                   <Rating
-                    name="disabled"
-                    value={4.5}
-                    precision={0.5}
                     readOnly
+                    value={values.rate || 0}
+                    precision={0.5}
                     sx={{
                       ".MuiRating-icon": {
                         borderColor: theme.palette.text.active,
@@ -265,7 +303,7 @@ const TourDetails = () => {
                       },
                     }}
                   />
-                  <Box sx={{ marginX: 1 }}>{labels[value]}</Box>
+                  <Box sx={{ marginX: 1 }}>{labels[values.rate || 0]}</Box>
                   <Typography>(5 rates)</Typography>
                 </Grid>
 
@@ -277,8 +315,10 @@ const TourDetails = () => {
                 </Grid>
                 <Grid item xs={8}>
                   <Typography fontWeight="regular">
-                    {moment(Date.now()).format("MMMM DD, YYYY")}/
-                    {moment(Date.now()).format("MMMM DD, YYYY")}
+                    {moment(values?.createTime).format("MMMM DD, YYYY")} /{" "}
+                    {values?.updateTime
+                      ? moment(values?.updateTime).format("MMMM DD, YYYY")
+                      : " (No data)"}
                   </Typography>
                 </Grid>
 
@@ -287,12 +327,21 @@ const TourDetails = () => {
                   <Typography fontWeight="medium">Status</Typography>
                 </Grid>
                 <Grid item xs={8}>
-                  <Typography
-                    fontWeight="semiBold"
-                    color={theme.palette.text.onStatus}
-                  >
-                    Active
-                  </Typography>
+                  {values?.status ? (
+                    <Typography
+                      fontWeight="semiBold"
+                      color={theme.palette.text.onStatus}
+                    >
+                      Active
+                    </Typography>
+                  ) : (
+                    <Typography
+                      fontWeight="semiBold"
+                      color={theme.palette.text.active}
+                    >
+                      Inactive
+                    </Typography>
+                  )}
                 </Grid>
               </Grid>
               <Button
@@ -318,15 +367,6 @@ const TourDetails = () => {
             </form>
           </TabPanel>
           <TabPanel value="2">
-            {/* <Box paddingX={3}>
-              <Typography color="error" fontWeight="medium">
-                (Get{" "}
-                <a color="error" href="http://">
-                  code
-                </a>{" "}
-                for Voice File)
-              </Typography>
-            </Box> */}
             <form
               style={{
                 display: "flex",
@@ -336,7 +376,11 @@ const TourDetails = () => {
               }}
               onSubmit={onSubmit}
             >
-              <SubsLanguage languague={"English"} />
+              <SubsLanguage
+                item={"Tour"}
+                values={values}
+                setValues={setValues}
+              />
               <Button
                 variant="contained"
                 disabled={loading}
@@ -369,7 +413,16 @@ const TourDetails = () => {
               }}
               onSubmit={onSubmit}
             >
-              <PlacesList />
+              <PlacesList
+                values={values}
+                setValues={setValues}
+                pageState={pageState}
+                setPageState={setPageState}
+                pageModelState={pageModelState}
+                setPageModelState={setPageModelState}
+                notification={notification}
+                setNotification={setNotification}
+              />
               <Button
                 variant="contained"
                 disabled={loading}

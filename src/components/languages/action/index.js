@@ -41,7 +41,6 @@ export const getLanguageDetails = async (languageId) => {
     const { data } = await API.get(`languages/${languageId}`);
     return Promise.resolve(data.language);
   } catch (e) {
-    console.log(e);
     return Promise.reject(e);
   }
 };
@@ -77,7 +76,6 @@ export const processLanguage = (language, file) => {
 export const updateLanguage = async (languageId, values) => {
   try {
     if (values.fileLink instanceof File) {
-      console.log(122);
       const response = await upload(values, values.fileLink);
       values.fileLink = response;
     }

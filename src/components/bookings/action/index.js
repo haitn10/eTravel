@@ -11,6 +11,12 @@ const setState = (state) => ({
 
 export const getTours = (payload) => {
   return async (dispatch, getState) => {
-    return fetch(getState().tours, dispatch, setState, "portal/tours", payload);
+    return fetch(
+      getState().tours,
+      dispatch,
+      setState,
+      "portal/bookings",
+      payload
+    );
   };
 };

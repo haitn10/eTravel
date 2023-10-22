@@ -20,6 +20,7 @@ export const theme = createTheme({
       checked: color.text[500],
       active: color.text[600],
       buttonText: color.text[700],
+      pending: color.text[800],
     },
   },
   typography: {

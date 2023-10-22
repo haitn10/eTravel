@@ -7,7 +7,7 @@ const ArrowData = ({ totalNum, direction, numDirection }) => {
   const theme = useTheme();
   return (
     <Box display="flex" flexDirection="row" justifyContent="space-between">
-      <Typography sx={{ fontWeight: "semiBold", fontSize: "1.5em" }}>
+      <Typography sx={{ fontWeight: "semiBold", fontSize: "1.125em" }}>
         {totalNum}
       </Typography>
       <Box
@@ -18,7 +18,7 @@ const ArrowData = ({ totalNum, direction, numDirection }) => {
           direction ? theme.palette.text.onStatus : theme.palette.text.active,
           0.1
         )}
-        paddingX={2}
+        paddingX={1}
         borderRadius={10}
         color={
           direction ? theme.palette.text.onStatus : theme.palette.text.active
@@ -37,7 +37,7 @@ const ArrowData = ({ totalNum, direction, numDirection }) => {
         </Typography>
         {direction ? (
           <TrendingUp
-            sx={{ width: 14 }}
+            width={14}
             color={
               direction
                 ? theme.palette.text.onStatus
@@ -46,7 +46,7 @@ const ArrowData = ({ totalNum, direction, numDirection }) => {
           />
         ) : (
           <TrendingDown
-            sx={{ width: 14 }}
+            width={14}
             color={
               direction
                 ? theme.palette.text.onStatus
