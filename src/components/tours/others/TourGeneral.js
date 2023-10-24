@@ -1,29 +1,55 @@
 import {
   Box,
+  FormHelperText,
   Grid,
   TextField,
   Typography,
   alpha,
   useTheme,
 } from "@mui/material";
-import React from "react";
-import { CloudCheckFill } from "styled-icons/bootstrap";
-import { CloudUploadOutline } from "styled-icons/evaicons-outline";
+import React, { useEffect } from "react";
+import {
+  CloudCheckmark,
+  CloudDismiss,
+} from "@styled-icons/fluentui-system-filled";
+import { CloudArrowUp } from "@styled-icons/fluentui-system-regular";
 
-const TourGeneral = ({ values, setValues }) => {
+const TourGeneral = ({ values, setValues, errors, setError, clearErrors }) => {
   const theme = useTheme();
+  useEffect(() => {
+    let fileTypes = [
+      "image/apng",
+      "image/avif",
+      "image/gif",
+      "image/jpeg",
+      "image/png",
+      "image/svg+xml",
+      "image/webp",
+    ];
+
+    if (values.image instanceof File) {
+      if (values.image && !fileTypes.includes(values.image.type)) {
+        setError("fileType", {
+          message: "Please choose image file!",
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.image]);
 
   return (
     <Box padding={5} marginX={10}>
       <Box marginBottom={3}>
-        <Typography color="error">
+        <Typography color="error" fontSize={12}>
           (Data default in English language)
         </Typography>
       </Box>
-      <Grid container rowGap={5}>
+      <Grid container rowGap={2}>
         {/* Tour Name */}
         <Grid item xs={12} md={4}>
-          <Typography variant="h6">Tour Name</Typography>
+          <Typography fontWeight="medium">
+            Tour Name <small style={{ color: "red" }}>*</small>
+          </Typography>
         </Grid>
         <Grid item xs={12} md={8}>
           <TextField
@@ -47,8 +73,12 @@ const TourGeneral = ({ values, setValues }) => {
 
         {/* Tour Decription */}
         <Grid item xs={12} md={4}>
-          <Typography variant="h6">Decription</Typography>
-          <Typography variant="p">Write a short decription</Typography>
+          <Typography fontWeight="medium">
+            Decription <small style={{ color: "red" }}>*</small>
+          </Typography>
+          <Typography>
+            <small>Write a short decription</small>
+          </Typography>
         </Grid>
         <Grid item xs={12} md={8}>
           <TextField
@@ -74,7 +104,9 @@ const TourGeneral = ({ values, setValues }) => {
 
         {/* Tour Image */}
         <Grid item xs={12} md={4}>
-          <Typography variant="h6">Symbolic Picture</Typography>
+          <Typography fontWeight="medium">
+            Illustration Image <small style={{ color: "red" }}>*</small>
+          </Typography>
         </Grid>
         <Grid item xs={12} md={8}>
           <Box
@@ -85,28 +117,41 @@ const TourGeneral = ({ values, setValues }) => {
             border={1}
             borderRadius={2.5}
             borderColor={alpha(theme.palette.text.primary, 0.28)}
-            height={40}
+            height={49}
           >
             <label
               htmlFor="image"
               style={{
                 display: "flex",
+                width: "100%",
                 color: theme.palette.text.third,
                 cursor: "pointer",
               }}
             >
               {values.image ? (
                 <Box display="flex" alignItems="center">
-                  <CloudCheckFill
-                    height={24}
-                    color={theme.palette.text.onStatus}
-                    style={{ margin: 10 }}
-                  />
+                  {errors.fileType ? (
+                    <CloudDismiss
+                      height={24}
+                      color={theme.palette.text.active}
+                      style={{ margin: 10 }}
+                    />
+                  ) : (
+                    <CloudCheckmark
+                      height={24}
+                      color={theme.palette.text.onStatus}
+                      style={{ margin: 10 }}
+                    />
+                  )}
                   <Typography noWrap>{values.image.name}</Typography>
                 </Box>
               ) : (
-                <Box display="flex" alignItems="center">
-                  <CloudUploadOutline height={24} style={{ margin: 10 }} />
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  color={alpha(theme.palette.text.secondary, 0.4)}
+                >
+                  <CloudArrowUp height={24} style={{ margin: 10 }} />
                   <Typography noWrap>Import picture for tour here</Typography>
                 </Box>
               )}
@@ -117,14 +162,18 @@ const TourGeneral = ({ values, setValues }) => {
                   opacity: 0,
                   position: "absolute",
                 }}
-                onChange={(e) =>
-                  setValues({ ...values, image: e.target.files[0] })
-                }
+                onChange={(e) => {
+                  clearErrors("fileType");
+                  setValues({ ...values, image: e.target.files[0] });
+                }}
                 type="file"
                 accept="image/*"
               />
             </label>
           </Box>
+          <FormHelperText htmlFor="render-select" error>
+            {errors.fileType?.message}
+          </FormHelperText>
           <Box marginTop={2}>
             <img
               src={values.image && URL.createObjectURL(values.image)}

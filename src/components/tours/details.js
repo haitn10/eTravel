@@ -15,8 +15,8 @@ import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import moment from "moment/moment";
 
-import SubsLanguage from "../common/SubsLanguage";
-import PlacesList from "../common/PlacesList";
+import SubsLanguage from "./others/SubsLanguage";
+import PlacesList from "./others/PlacesList";
 import Header from "../common/Header";
 
 import { labels } from "../../constants/rating";
@@ -377,9 +377,10 @@ const TourDetails = () => {
               onSubmit={onSubmit}
             >
               <SubsLanguage
-                item={"Tour"}
                 values={values}
                 setValues={setValues}
+                notification={notification}
+                setNotification={setNotification}
               />
               <Button
                 variant="contained"

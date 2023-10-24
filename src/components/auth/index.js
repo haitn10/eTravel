@@ -30,6 +30,10 @@ const Profile = () => {
     setLoading(!loading);
   };
 
+  const [test, setTest] = useState("");
+
+  console.log(new File(test, "utf8"));
+
   return (
     <Box
       margin="1.25em"
@@ -109,6 +113,8 @@ const Profile = () => {
                   fullWidth
                   inputProps={{ style: { height: "1em" } }}
                   InputProps={{ style: { borderRadius: 10 } }}
+                  value={test}
+                  onChange={(e) => setTest(e.target.value)}
                 />
               </Box>
               <Box width={600}>
