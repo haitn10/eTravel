@@ -85,7 +85,7 @@ const ManagePlaces = () => {
           <Action
             id={params.row.id}
             accountStatus={params.row.status}
-            api="portal/categories/changestatus"
+            api="portal/places/changestatus"
             notification={notification}
             setNotification={setNotification}
             getData={getData}

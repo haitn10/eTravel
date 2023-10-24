@@ -15,11 +15,12 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { DataGrid } from "@mui/x-data-grid";
 
 import SubCard from "./SubCard";
-import subPlaces from "../../constants/tables/subPlaces";
+import subPlaces from "../../../constants/tables/subPlaces";
 
 import { FilterAlt } from "@styled-icons/boxicons-regular";
 import { Search } from "@styled-icons/evaicons-solid";
 import { AddCircle } from "@styled-icons/fluentui-system-regular";
+import { CheckCircleFill } from "@styled-icons/bootstrap";
 
 const PlacesList = ({
   values,
@@ -31,7 +32,6 @@ const PlacesList = ({
   notification,
   setNotification,
 }) => {
-  console.log(values);
   const theme = useTheme();
   const [placesList, setPlacesList] = useState(values?.tourDetails);
   const [price, setPrice] = useState(values?.total);
@@ -59,18 +59,38 @@ const PlacesList = ({
     setPlacesList(items);
   };
 
-  const onAdd = (data) => {
-    if (placesList.length < 5) {
-      setPlacesList(placesList.concat([data]));
-      setPrice(price + data.price);
-    } else {
-      setNotification({
-        ...notification,
-        errorState: true,
-        errorMessage: "Don't add more than 5 places!",
-        status: "error",
-      });
+  const isDuplicate = (data) => {
+    let checkDuplicate = false;
+    for (const place of placesList) {
+      if (place.id === data.id) {
+        checkDuplicate = true;
+        break;
+      }
     }
+    return checkDuplicate;
+  };
+
+  const onAdd = (data) => {
+    // if (placesList.length < 5) {
+      if (!isDuplicate(data)) {
+        setPlacesList(placesList.concat([data]));
+        setPrice(price + data.price);
+      } else {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "This place has been added to the list!",
+          status: "error",
+        });
+      }
+    // } else {
+    //   setNotification({
+    //     ...notification,
+    //     errorState: true,
+    //     errorMessage: "Limited to a maximum of 5 places!",
+    //     status: "error",
+    //   });
+    // }
   };
 
   const action = [
@@ -84,7 +104,11 @@ const PlacesList = ({
       renderCell: (params) => {
         return (
           <IconButton aria-label="more" onClick={(e) => onAdd(params.row)}>
-            <AddCircle width={24} color={theme.palette.text.active} />
+            {!isDuplicate(params.row) ? (
+              <AddCircle width={24} color={theme.palette.text.active} />
+            ) : (
+              <CheckCircleFill width={24} color={theme.palette.text.onStatus} />
+            )}
           </IconButton>
         );
       },
@@ -209,6 +233,8 @@ const PlacesList = ({
                                 place={place}
                                 placesList={placesList}
                                 setPlacesList={setPlacesList}
+                                price={price}
+                                setPrice={setPrice}
                               />
                             )}
                           </Draggable>
@@ -226,13 +252,13 @@ const PlacesList = ({
               )}
             </Box>
 
-            {placesList.length === 5 ? (
+            {/* {placesList.length === 5 ? (
               <Box>
                 <Typography color="error" fontWeight="medium">
                   The maximum number of places has been reached!
                 </Typography>
               </Box>
-            ) : null}
+            ) : null} */}
 
             <Box display="flex" justifyContent="space-between" marginTop={5}>
               <Typography fontSize={18} fontWeight="semiBold">
