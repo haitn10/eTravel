@@ -9,14 +9,17 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { Fragment, useEffect, useState } from "react";
-import TourGeneral from "../common/newData/TourGeneral";
-import PlacesList from "../common/PlacesList";
-import PreviewData from "../common/newData/PreviewData";
-import ErrorModal from "../common/ErrorModal";
 import { useDispatch } from "react-redux";
+
+import PlacesList from "./others/PlacesList";
+import TourGeneral from "./others/TourGeneral";
+import PreviewData from "./others/PreviewData";
+import ErrorModal from "../common/ErrorModal";
+import Header from "../common/Header";
+
 import { getPlaces } from "../places/action";
 import { processTour } from "./action";
-import Header from "../common/Header";
+import { useForm } from "react-hook-form";
 
 const steps = ["Information General", "Places List", "Confirmation"];
 
@@ -52,6 +55,12 @@ const CreateNewTour = () => {
     errorMessage: "",
     status: "error",
   });
+
+  const form = useForm({
+    defaultValues: initialState,
+  });
+  const { handleSubmit, setError, clearErrors, formState } = form;
+  const { errors } = formState;
 
   useEffect(() => {
     async function fetchData() {
@@ -107,7 +116,15 @@ const CreateNewTour = () => {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <TourGeneral values={values} setValues={setValues} />;
+        return (
+          <TourGeneral
+            values={values}
+            setValues={setValues}
+            errors={errors}
+            setError={setError}
+            clearErrors={clearErrors}
+          />
+        );
       case 1:
         return (
           <PlacesList
@@ -128,11 +145,11 @@ const CreateNewTour = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const onSubmit = async () => {
     setLoading(true);
     let arr = [];
     for (const place of values.tourDetails) {
-      arr.push({ placeId: place.id, price: place.price });
+      arr.push({ id: place.id, price: place.price });
     }
     const data = { ...values, tourDetails: arr };
     try {
@@ -145,6 +162,7 @@ const CreateNewTour = () => {
       });
       setValues(initialState);
       setLoading(false);
+      setActiveStep(0)
     } catch (e) {
       const message = e.response.data ? e.response.data.message : e.message;
       setNotification({
@@ -181,7 +199,7 @@ const CreateNewTour = () => {
 
       <Header
         title={"Create New Tour"}
-        subTitle={"New Tour - New Experience"}
+        subTitle={"New Tour - New Experiences"}
         showBack={false}
         showSearch={false}
         showFilter={false}
@@ -237,7 +255,7 @@ const CreateNewTour = () => {
         </Stepper>
 
         <Fragment>
-          <Box>{getStepContent(activeStep)}</Box>
+          <form>{getStepContent(activeStep)}</form>
 
           <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
             <Button
@@ -257,8 +275,13 @@ const CreateNewTour = () => {
             <Box sx={{ flex: "1 1 auto" }} />
 
             <Button
-              onClick={activeStep === 2 ? handleSubmit : handleNext}
-              disabled={loading}
+              onClick={activeStep === 2 ? handleSubmit(onSubmit) : handleNext}
+              disabled={
+                loading ||
+                values.name === "" ||
+                values.image === "" ||
+                errors.fileType?.message !== undefined
+              }
               variant="contained"
               color="error"
               sx={{
