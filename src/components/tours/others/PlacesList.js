@@ -25,6 +25,8 @@ import { CheckCircleFill } from "@styled-icons/bootstrap";
 const PlacesList = ({
   values,
   setValues,
+  setError,
+  clearErrors,
   pageState,
   setPageState,
   pageModelState,
@@ -35,7 +37,7 @@ const PlacesList = ({
   const theme = useTheme();
   const [placesList, setPlacesList] = useState(values?.tourDetails);
   const [price, setPrice] = useState(values?.total);
-  const [filterValue, setFilterValue] = React.useState("");
+  const [filterValue, setFilterValue] = useState("");
 
   useEffect(() => {
     setValues({ ...values, tourDetails: placesList, total: price });
@@ -48,6 +50,7 @@ const PlacesList = ({
   }, []);
 
   const handleChange = (event) => {
+    clearErrors("placesList");
     setFilterValue(event.target.value);
   };
 
@@ -71,33 +74,24 @@ const PlacesList = ({
   };
 
   const onAdd = (data) => {
-    // if (placesList.length < 5) {
-      if (!isDuplicate(data)) {
-        setPlacesList(placesList.concat([data]));
-        setPrice(price + data.price);
-      } else {
-        setNotification({
-          ...notification,
-          errorState: true,
-          errorMessage: "This place has been added to the list!",
-          status: "error",
-        });
-      }
-    // } else {
-    //   setNotification({
-    //     ...notification,
-    //     errorState: true,
-    //     errorMessage: "Limited to a maximum of 5 places!",
-    //     status: "error",
-    //   });
-    // }
+    if (!isDuplicate(data)) {
+      setPlacesList(placesList.concat([data]));
+      setPrice(price + data.price);
+    } else {
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: "This place has been added to the list!",
+        status: "error",
+      });
+    }
   };
 
   const action = [
     {
       field: "action",
       headerName: "Action",
-      width: 80,
+      width: 70,
       align: "center",
       headerAlign: "center",
       sortable: false,

@@ -35,13 +35,11 @@ export const updateTour = async (tourId, values) => {
     if (values.image instanceof File) {
       const response = await uploadImage(values, "Tour");
       values.image = response;
-      await console.log(values);
     }
 
     const { data } = await API.put(`portal/tours/${tourId}`, values);
     return Promise.resolve(data);
   } catch (e) {
-    console.log(e);
     return Promise.reject(e);
   }
 };

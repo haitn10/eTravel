@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import { TimeFive } from "@styled-icons/boxicons-regular";
 
@@ -18,11 +18,26 @@ const subPlaces = [
     sortable: false,
   },
   {
+    field: "category",
+    headerName: "Category",
+    headerAlign: "center",
+    align: "center",
+    renderCell: (params) => {
+      return (
+        <Typography textTransform="capitalize" fontSize={14}>
+          {params.row.category}
+        </Typography>
+      );
+    },
+    flex: 1,
+    sortable: false,
+  },
+  {
     field: "price",
     headerName: "Price",
     headerAlign: "center",
     align: "center",
-    flex: 1,
+    width: 60,
     sortable: false,
     renderCell: (params) => {
       return (
@@ -36,7 +51,7 @@ const subPlaces = [
     headerName: "Duration",
     headerAlign: "center",
     align: "center",
-    flex: 1,
+    width: 100,
     sortable: false,
     renderCell: (params) => {
       return (

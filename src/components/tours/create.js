@@ -27,7 +27,7 @@ const initialState = {
   name: "",
   image: "",
   total: 0,
-  description: "",
+  tourDescriptions: [],
   tourDetails: [],
 };
 
@@ -57,9 +57,9 @@ const CreateNewTour = () => {
   });
 
   const form = useForm({
-    defaultValues: initialState,
+    defaultValues: { name: "", image: "" },
   });
-  const { handleSubmit, setError, clearErrors, formState } = form;
+  const { handleSubmit, setError, clearErrors, register, formState } = form;
   const { errors } = formState;
 
   useEffect(() => {
@@ -120,6 +120,7 @@ const CreateNewTour = () => {
           <TourGeneral
             values={values}
             setValues={setValues}
+            register={register}
             errors={errors}
             setError={setError}
             clearErrors={clearErrors}
@@ -130,6 +131,8 @@ const CreateNewTour = () => {
           <PlacesList
             values={values}
             setValues={setValues}
+            setError={setError}
+            clearErrors={clearErrors}
             pageState={pageState}
             setPageState={setPageState}
             pageModelState={pageModelState}
@@ -162,7 +165,7 @@ const CreateNewTour = () => {
       });
       setValues(initialState);
       setLoading(false);
-      setActiveStep(0)
+      setActiveStep(0);
     } catch (e) {
       console.log(e);
       const message = e.response.data ? e.response.data.message : e.message;
@@ -178,7 +181,7 @@ const CreateNewTour = () => {
 
   return (
     <Box
-      minHeight="95vh"
+      minHeight="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -187,7 +190,6 @@ const CreateNewTour = () => {
       <ErrorModal
         open={notification.errorState}
         setOpen={setNotification}
-        title="Info"
         message={notification.errorMessage}
         status={notification.status}
       />
@@ -201,12 +203,8 @@ const CreateNewTour = () => {
       <Header
         title={"Create New Tour"}
         subTitle={"New Tour - New Experiences"}
-        showBack={false}
-        showSearch={false}
-        showFilter={false}
-        buttonAdd={false}
       />
-      <Box marginTop={5} padding={1} marginX={2}>
+      <Box marginTop={2} padding={1} marginX={2}>
         <Stepper
           activeStep={activeStep}
           alternativeLabel
@@ -276,13 +274,12 @@ const CreateNewTour = () => {
             <Box sx={{ flex: "1 1 auto" }} />
 
             <Button
-              onClick={activeStep === 2 ? handleSubmit(onSubmit) : handleNext}
-              disabled={
-                loading ||
-                values.name === "" ||
-                values.image === "" ||
-                errors.fileType?.message !== undefined
+              onClick={
+                activeStep === 2
+                  ? handleSubmit(onSubmit)
+                  : handleSubmit(handleNext)
               }
+              disabled={loading}
               variant="contained"
               color="error"
               sx={{
