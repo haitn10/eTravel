@@ -97,7 +97,7 @@ const PreviewData = ({ data }) => {
                   </Grid>
                   <Grid item xs={4} textAlign="right">
                     <Typography noWrap>Category</Typography>
-                    <Typography noWrap>Food</Typography>
+                    <Typography noWrap textTransform='capitalize'>{place.category}</Typography>
                   </Grid>
                 </Grid>
               </Box>
