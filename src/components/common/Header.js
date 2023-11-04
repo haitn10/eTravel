@@ -1,4 +1,12 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  Skeleton,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 import SearchInput from "./toolsupports/SearchInput";
 import FilterData from "./toolsupports/FilterData";
@@ -8,9 +16,10 @@ import { history } from "../AppRouter";
 import { Add } from "@styled-icons/ionicons-solid";
 
 const Header = ({
-  showBack,
   title,
   subTitle,
+  loading,
+  showBack,
   showSearch,
   showFilter,
   buttonAdd,
@@ -22,55 +31,80 @@ const Header = ({
       display="flex"
       alignItems="center"
       justifyContent="space-between"
-      padding={1}
       marginX={2}
     >
       <Box display="flex" alignItems="center" gap={2}>
         {showBack ? (
-          <IconButton
-            aria-label="back"
-            sx={{ border: 1, color: theme.palette.text.buttonText }}
-            onClick={() => history.back()}
-          >
-            <ArrowLeft width={24} />
-          </IconButton>
+          !loading ? (
+            <IconButton
+              aria-label="back"
+              sx={{ border: 1, color: theme.palette.text.buttonText }}
+              onClick={() => history.back()}
+            >
+              <ArrowLeft width={20} />
+            </IconButton>
+          ) : (
+            <Skeleton variant="circular">
+              <Avatar />
+            </Skeleton>
+          )
         ) : null}
 
         <Box>
-          <Typography
-            color={theme.palette.text.active}
-            fontWeight="bold"
-            fontSize={36}
-          >
-            {title}
-          </Typography>
-          <Typography
-            color={theme.palette.text.third}
-            fontWeight="regular"
-            fontSize={18}
-          >
-            {subTitle}
-          </Typography>
+          {!loading ? (
+            <Typography
+              color={theme.palette.text.active}
+              fontWeight="bold"
+              fontSize={28}
+            >
+              {title}
+            </Typography>
+          ) : (
+            <Skeleton width={150} />
+          )}
+          {!loading ? (
+            <Typography color={theme.palette.text.third} fontSize={16}>
+              {subTitle}
+            </Typography>
+          ) : (
+            <Skeleton width={250} />
+          )}
         </Box>
       </Box>
       {/* Search Box*/}
       <Box display="flex" alignItems="center" gap={2}>
-        {showSearch ? <SearchInput /> : null}
-        {showFilter ? <FilterData /> : null}
+        {showSearch ? (
+          !loading ? (
+            <SearchInput />
+          ) : (
+            <Skeleton width={200} />
+          )
+        ) : null}
+        {showFilter ? (
+          !loading ? (
+            <FilterData />
+          ) : (
+            <Skeleton width={200} />
+          )
+        ) : null}
         {buttonAdd ? (
           <Box>
-            <Button
-              variant="contained"
-              color="error"
-              sx={{
-                borderRadius: 2.5,
-                height: 40,
-              }}
-              startIcon={<Add height={24} />}
-              onClick={() => setOpen(true)}
-            >
-              <Typography fontWeight="medium">New</Typography>
-            </Button>
+            {!loading ? (
+              <Button
+                variant="contained"
+                color="error"
+                sx={{
+                  borderRadius: 2.5,
+                  height: 40,
+                }}
+                startIcon={<Add height={24} />}
+                onClick={() => setOpen(true)}
+              >
+                <Typography fontWeight="medium">New</Typography>
+              </Button>
+            ) : (
+              <Skeleton width={100} />
+            )}
           </Box>
         ) : null}
       </Box>

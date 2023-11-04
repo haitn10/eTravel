@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
-import { getTours } from "./action";
+import { getBookings } from "./action";
 import bookings from "../../constants/tables/bookings";
 
 const ManageBookings = () => {
@@ -38,7 +38,7 @@ const ManageBookings = () => {
           isLoading: true,
         }));
         const data = await dispatch(
-          getTours({
+          getBookings({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
           })
@@ -67,7 +67,7 @@ const ManageBookings = () => {
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/bookings/details", { data: params.row.id });
+    navigate("/bookings/details", { state: { bookingId: params.row.id } });
   };
 
   return (

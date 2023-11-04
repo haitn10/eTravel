@@ -1,28 +1,57 @@
 import {
   Box,
   Divider,
+  FormHelperText,
   Grid,
   TextField,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { getAllLanguages } from "../../languages/action";
+import { checkDuplicateName } from "../action";
 
-
-const MultiLanguages = ({ values, setValues }) => {
-  const dispatch = useDispatch();
-  const [languageList, setLanguageList] = useState([]);
+const MultiLanguages = ({
+  values,
+  setValues,
+  errors,
+  setError,
+  clearErrors,
+}) => {
+  const [checkDuplicate, setcheckDuplicate] = useState(false);
+  const [languageList, setLanguageList] = useState(values.placeDescriptions);
 
   useEffect(() => {
-    async function fetchLanguage() {
-      const response = await dispatch(getAllLanguages());
-      setLanguageList(response.languages);
-    }
-    fetchLanguage();
-  }, [dispatch]);
+    setValues({ ...values, placeDescriptions: languageList });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [languageList]);
 
-  console.log(languageList);
+  const onCheck = async (nameFile) => {
+    try {
+      const check = await checkDuplicateName(nameFile);
+      if (check) {
+        setcheckDuplicate(false);
+      }
+    } catch (err) {
+      setcheckDuplicate(true);
+    }
+  };
+
+  const handleChange = (index, event) => {
+    const data = [...languageList];
+    if (!event.target.files) {
+      data[index][event.target.name] = event.target.value;
+    } else {
+      // onCheck(event.target.files[0]?.name);
+      // if (checkDuplicate) {
+      //   clearErrors(`voiceFile${index}`);
+      data[index][event.target.name] = event.target.files[0];
+      // } else {
+      //   setError(`voiceFile${index}`, {
+      //     message: "Name file already exists! Please change.",
+      //   });
+      // }
+    }
+    setLanguageList(data);
+  };
 
   return (
     <>
@@ -42,35 +71,42 @@ const MultiLanguages = ({ values, setValues }) => {
             <Box paddingTop={2} paddingX={8}>
               <Grid container rowGap={3}>
                 <Grid item xs={12} md={4}>
-                  <Typography variant="h6">Place Name</Typography>
+                  <Typography fontWeight="medium">Place Name</Typography>
                 </Grid>
                 <Grid item xs={12} md={8}>
                   <TextField
                     fullWidth
                     size="small"
-                    value={""}
+                    name="placeName"
                     InputProps={{
                       style: {
                         borderRadius: 10,
                       },
                     }}
+                    value={language.placeName ? language.placeName : ""}
+                    onChange={(event) => handleChange(index, event)}
                     placeholder={`Type name here`}
                   />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  <Typography variant="h6">Decription</Typography>
-                  <Typography variant="p">Write a short decription</Typography>
+                  <Typography fontWeight="medium">Decription</Typography>
+                  <Typography>
+                    {" "}
+                    <small>Write a short decription</small>
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} md={8}>
                   <TextField
                     fullWidth
                     size="small"
-                    value={""}
+                    name="description"
                     InputProps={{
                       style: {
                         borderRadius: 10,
                       },
                     }}
+                    value={language.description ? language.description : ""}
+                    onChange={(event) => handleChange(index, event)}
                     placeholder="Type description here"
                     multiline={true}
                     rows={7}
@@ -78,19 +114,31 @@ const MultiLanguages = ({ values, setValues }) => {
                 </Grid>
 
                 <Grid item xs={12} md={4}>
-                  <Typography variant="h6">Voice File</Typography>
+                  <Typography fontWeight="medium">Voice File</Typography>
                 </Grid>
                 <Grid item xs={12} md={8}>
                   <TextField
                     fullWidth
                     type="file"
                     size="small"
+                    name="voiceFile"
                     InputProps={{
                       style: {
                         borderRadius: 10,
                       },
                     }}
+                    inputProps={{
+                      accept: "audio/mpeg, audio/mp3",
+                    }}
+                    onChange={(event) => handleChange(index, event)}
                   />
+                  <FormHelperText
+                    htmlFor="render-select"
+                    style={{ marginLeft: 14 }}
+                    error
+                  >
+                    {errors[`voiceFile${index}`]?.message}
+                  </FormHelperText>
                 </Grid>
               </Grid>
             </Box>

@@ -164,6 +164,7 @@ const CreateNewTour = () => {
       setLoading(false);
       setActiveStep(0)
     } catch (e) {
+      console.log(e);
       const message = e.response.data ? e.response.data.message : e.message;
       setNotification({
         ...notification,
