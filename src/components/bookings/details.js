@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -11,12 +11,43 @@ import {
 import { Box } from "@mui/system";
 import Header from "../common/Header";
 import { ExpandMore } from "styled-icons/material";
+import { useLocation } from "react-router-dom";
+import { getBookingDetails } from "./action";
 
 const BookingDetails = () => {
   const theme = useTheme();
+  const { state } = useLocation();
+  const { bookingId } = state;
+  const [values, setValues] = useState({});
+
+  const [notification, setNotification] = useState({
+    errorState: false,
+    errorMessage: "",
+    status: "error",
+  });
+
+  useEffect(() => {
+    async function getInfoDetails() {
+      try {
+        const data = await getBookingDetails(bookingId);
+        setValues(data);
+      } catch (error) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "Can't get data details for booking!",
+          status: "error",
+        });
+      }
+    }
+    getInfoDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookingId]);
+
+  console.log(values);
   return (
     <Box
-      minHeight="95vh"
+      minHeight="94vh"
       margin="1.25em"
       padding={2}
       paddingBottom={10}
@@ -44,7 +75,7 @@ const BookingDetails = () => {
             <Typography fontWeight="medium" fontSize={18}>
               TransactionID:{" "}
             </Typography>
-            <Typography fontWeight="bold"> # 123</Typography>
+            <Typography fontWeight="bold"> # {values.id}</Typography>
           </Box>
           <Box display="inherit" alignItems="center" gap={1}>
             <Typography fontWeight="medium" fontSize={18}>
@@ -58,7 +89,7 @@ const BookingDetails = () => {
               borderColor={alpha(theme.palette.text.onStatus, 0.2)}
             >
               <Typography fontWeight="bold" color={theme.palette.text.onStatus}>
-                Success
+                {values.statusType}
               </Typography>
             </Box>
           </Box>
@@ -81,7 +112,7 @@ const BookingDetails = () => {
                 Customer Name
               </Typography>
               <Typography fontWeight="medium" noWrap>
-                Nguyen Van A
+                {values.customerInfor?.customerName}
               </Typography>
             </Box>
             <Box marginBottom={2}>
@@ -93,7 +124,7 @@ const BookingDetails = () => {
                 Gender
               </Typography>
               <Typography fontWeight="medium" noWrap>
-                Male
+                {values.customerInfor?.gender}
               </Typography>
             </Box>
             <Box marginBottom={2}>
@@ -105,7 +136,7 @@ const BookingDetails = () => {
                 Nationality
               </Typography>
               <Typography fontWeight="medium" noWrap>
-                Japan
+                {values.customerInfor?.nationality}
               </Typography>
             </Box>
             <Box marginBottom={2}>
@@ -117,7 +148,7 @@ const BookingDetails = () => {
                 Phone Number
               </Typography>
               <Typography fontWeight="medium" noWrap>
-                (+84) 12*-*****8
+                {values.customerInfor?.phone}
               </Typography>
             </Box>
             <Box marginBottom={2}>
@@ -129,7 +160,7 @@ const BookingDetails = () => {
                 Email Address
               </Typography>
               <Typography fontWeight="medium" noWrap>
-                c********@gmail.com
+                {values.customerInfor?.email}
               </Typography>
             </Box>
             <Box marginBottom={2}>
@@ -141,7 +172,7 @@ const BookingDetails = () => {
                 Address
               </Typography>
               <Typography fontWeight="medium" noWrap>
-                (No data)
+                {values.customerInfor?.address}
               </Typography>
             </Box>
           </Grid>
@@ -161,7 +192,7 @@ const BookingDetails = () => {
                 Total Bill:
               </Typography>
               <Typography fontWeight="bold" fontSize={22} noWrap>
-                $ 20.00
+                $ {values.total}
               </Typography>
             </Box>
             <Box>
@@ -173,54 +204,30 @@ const BookingDetails = () => {
               paddingBottom={2}
               borderRadius={2}
             >
-              <Box
-                borderBottom={1}
-                borderColor={theme.palette.text.third}
-                marginTop={2}
-              >
-                <Typography fontWeight="semiBold">Place Number</Typography>
-                <Grid container color={theme.palette.text.third} padding={1}>
-                  <Grid item xs={4} textAlign="left">
-                    <Typography noWrap>Price</Typography>
-                    <Typography noWrap>$ 10.00</Typography>
-                  </Grid>
-                  <Grid item xs={4} textAlign="center">
-                    <Typography noWrap>Duration</Typography>
-                    <Typography noWrap>1/2 hour</Typography>
-                  </Grid>
-                  <Grid item xs={4} textAlign="right">
-                    <Typography noWrap>Category</Typography>
-                    <Typography noWrap>Food</Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-
-              <Box
-                borderBottom={1}
-                borderColor={theme.palette.text.third}
-                marginTop={2}
-              >
-                <Typography fontWeight="semiBold">Place Number</Typography>
-                <Grid
-                  container
-                  color={theme.palette.text.third}
-                  padding={1}
-                  spacing={2}
+              {values.placeDetail?.map((place) => (
+                <Box
+                  key={place.name}
+                  borderBottom={1}
+                  borderColor={theme.palette.text.third}
+                  marginTop={2}
                 >
-                  <Grid item xs={4} textAlign="left">
-                    <Typography noWrap>Price</Typography>
-                    <Typography noWrap>$ 10.00</Typography>
+                  <Typography fontWeight="semiBold">{place.name}</Typography>
+                  <Grid container color={theme.palette.text.third} padding={1}>
+                    <Grid item xs={4} textAlign="left">
+                      <Typography noWrap>Price</Typography>
+                      <Typography noWrap>$ {place.price}</Typography>
+                    </Grid>
+                    <Grid item xs={4} textAlign="center">
+                      <Typography noWrap>Duration</Typography>
+                      <Typography noWrap>{place.hour}</Typography>
+                    </Grid>
+                    <Grid item xs={4} textAlign="right">
+                      <Typography noWrap>Category</Typography>
+                      <Typography noWrap>{place.categoryName}</Typography>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={4} textAlign="center">
-                    <Typography noWrap>Duration</Typography>
-                    <Typography noWrap>1/2 hour</Typography>
-                  </Grid>
-                  <Grid item xs={4} textAlign="right">
-                    <Typography noWrap>Category</Typography>
-                    <Typography noWrap>Food</Typography>
-                  </Grid>
-                </Grid>
-              </Box>
+                </Box>
+              ))}
             </Box>
           </Grid>
 
@@ -245,7 +252,6 @@ const BookingDetails = () => {
             <AccordionSummary
               expandIcon={<ExpandMore width={24} />}
               sx={{
-                bgcolor: theme.palette.background.secondary,
                 padding: "4px 20px",
               }}
             >

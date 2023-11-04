@@ -48,7 +48,7 @@ const TourGeneral = ({ values, setValues, errors, setError, clearErrors }) => {
         {/* Tour Name */}
         <Grid item xs={12} md={4}>
           <Typography fontWeight="medium">
-            Tour Name <small style={{ color: "red" }}>*</small>
+            Tour Name <small style={{ color: theme.palette.text.active }}>*</small>
           </Typography>
         </Grid>
         <Grid item xs={12} md={8}>
@@ -74,7 +74,7 @@ const TourGeneral = ({ values, setValues, errors, setError, clearErrors }) => {
         {/* Tour Decription */}
         <Grid item xs={12} md={4}>
           <Typography fontWeight="medium">
-            Decription <small style={{ color: "red" }}>*</small>
+            Decription <small style={{ color: theme.palette.text.active }}>*</small>
           </Typography>
           <Typography>
             <small>Write a short decription</small>
@@ -105,7 +105,7 @@ const TourGeneral = ({ values, setValues, errors, setError, clearErrors }) => {
         {/* Tour Image */}
         <Grid item xs={12} md={4}>
           <Typography fontWeight="medium">
-            Illustration Image <small style={{ color: "red" }}>*</small>
+            Illustration Image <small style={{ color: theme.palette.text.active }}>*</small>
           </Typography>
         </Grid>
         <Grid item xs={12} md={8}>

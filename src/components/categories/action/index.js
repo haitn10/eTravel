@@ -21,6 +21,18 @@ export const getCategories = (payload) => {
   };
 };
 
+export const getCategoriesAll = (payload) => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().categories,
+      dispatch,
+      setState,
+      "portal/categories/all",
+      payload
+    );
+  };
+};
+
 export const getCategoryDetails = async (categoryId) => {
   try {
     const { data } = await API.get(`portal/categories/${categoryId}`);

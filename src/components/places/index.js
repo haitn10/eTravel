@@ -69,7 +69,7 @@ const ManagePlaces = () => {
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/places/details", { data: params.row.id });
+    navigate("/places/details", { state: { placeId: params.row.id } });
   };
 
   const action = [
@@ -120,7 +120,7 @@ const ManagePlaces = () => {
       />
 
       {/* Data Table */}
-      <Box paddingX={2} marginTop={3} >
+      <Box paddingX={2} marginTop={3}>
         <DataGrid
           autoHeight
           disableColumnMenu

@@ -69,7 +69,7 @@ const TourDetails = () => {
     getInfoDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tourId]);
-
+  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -121,11 +121,13 @@ const TourDetails = () => {
     }
 
     for (const language of values.tourDescriptions) {
-      data.tourDescriptions.push({
-        languageCode: language.languageCode.trim(),
-        name: language.name,
-        description: language.description,
-      });
+      if (language.name && language.description) {
+        data.tourDescriptions.push({
+          languageCode: language.languageCode.trim(),
+          name: language.name,
+          description: language.description,
+        });
+      }
     }
 
     try {

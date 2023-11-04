@@ -8,12 +8,18 @@ import {
   Stepper,
   useTheme,
 } from "@mui/material";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
 import PlaceGeneral from "./others/PlaceGeneral";
 import MultiLanguages from "./others/MultiLanguages";
 import Coordinates from "./others/Coordinates";
+import { getAllLanguages } from "../languages/action";
+import { useDispatch } from "react-redux";
+import PreviewData from "./others/PreviewData";
+import { useForm } from "react-hook-form";
+import { processPlace } from "./action";
+import dayjs from "dayjs";
 
 const steps = [
   "Information General",
@@ -24,42 +30,23 @@ const steps = [
 
 const initialState = {
   name: "",
+  address: "",
   longitude: 0,
   latitude: 0,
   googlePlaceId: "",
   entryTicket: 0,
-  hour: "",
+  hour: "00:00",
   price: 0,
-  placeCategories: [
-    {
-      categoryId: 0,
-    },
-  ],
-  placeImages: [
-    {
-      url: "string",
-      isPrimary: true,
-    },
-  ],
-  placeDescriptions: [
-    {
-      languageCode: "",
-      voiceFile: "",
-      name: "",
-      description: "",
-    },
-  ],
-  placeTimes: [
-    {
-      daysOfWeek: 0,
-      openTime: "",
-      endTime: "",
-    },
-  ],
+  placeCategories: [],
+  placeImages: [],
+  placeDescriptions: [],
+  placeTimes: [],
 };
 
 const AddPlace = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
+
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
   const [loading, setLoading] = useState(false);
@@ -70,6 +57,21 @@ const AddPlace = () => {
     errorMessage: "",
     status: "error",
   });
+
+  const form = useForm({
+    defaultValues: initialState,
+  });
+  const { handleSubmit, setError, clearErrors, register, formState } = form;
+  const { errors } = formState;
+
+  useEffect(() => {
+    async function fetchLanguage() {
+      const response = await dispatch(getAllLanguages());
+      setValues({ ...values, placeDescriptions: response.languages });
+    }
+    fetchLanguage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   const isStepSkipped = (step) => {
     return skipped.has(step);
@@ -93,20 +95,91 @@ const AddPlace = () => {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <PlaceGeneral values={values} setValues={setValues} />;
+        return (
+          <PlaceGeneral
+            values={values}
+            setValues={setValues}
+            errors={errors}
+            register={register}
+            setError={setError}
+            clearErrors={clearErrors}
+          />
+        );
       case 1:
-        return <MultiLanguages values={values} setValues={setValues} />;
+        return (
+          <MultiLanguages
+            values={values}
+            setValues={setValues}
+            errors={errors}
+            setError={setError}
+            clearErrors={clearErrors}
+          />
+        );
       case 2:
-        return <Coordinates values={values} setValues={setValues} />;
+        return (
+          <Coordinates
+            values={values}
+            setValues={setValues}
+            errors={errors}
+            register={register}
+          />
+        );
       case 3:
-        return;
+        return <PreviewData data={values} />;
       default:
         return;
     }
   };
 
-  const handleSubmit = async () => {
+  const onSubmit = async () => {
     setLoading(true);
+    let arrCate = [],
+      arrDesc = [];
+
+    for (const categories of values.placeCategories) {
+      arrCate.push({ id: categories.id });
+    }
+    for (const desc of values.placeDescriptions) {
+      if (desc.placeName && desc.voiceFile && desc.description) {
+        arrDesc.push({
+          languageCode: desc.languageCode,
+          voiceFile: desc.voiceFile,
+          name: desc.placeName,
+          description: desc.description,
+        });
+      }
+    }
+    const data = {
+      ...values,
+      hour: dayjs(values.hour).format("HH:mm:ss"),
+      placeCategories: arrCate,
+      placeDescriptions: arrDesc,
+    };
+
+    console.log(data);
+
+    try {
+      await dispatch(processPlace(data));
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: "Created Place Successfully!",
+        status: "success",
+      });
+      setValues(initialState);
+      setLoading(false);
+      setActiveStep(0);
+    } catch (e) {
+      console.log(e);
+      const message = e.response.data ? e.response.data.message : e.message;
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: message,
+        status: "error",
+      });
+      setLoading(false);
+    }
   };
   return (
     <Box
@@ -189,7 +262,7 @@ const AddPlace = () => {
         </Stepper>
 
         <Fragment>
-          <Box>{getStepContent(activeStep)}</Box>
+          <Box marginTop={5}>{getStepContent(activeStep)}</Box>
 
           <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
             <Button
@@ -209,7 +282,11 @@ const AddPlace = () => {
             <Box sx={{ flex: "1 1 auto" }} />
 
             <Button
-              onClick={activeStep === 3 ? handleSubmit : handleNext}
+              onClick={
+                activeStep === 3
+                  ? handleSubmit(onSubmit)
+                  : handleSubmit(handleNext)
+              }
               disabled={loading}
               variant="contained"
               color="error"

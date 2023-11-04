@@ -38,7 +38,7 @@ export const getAllLanguages = (payload) => {
 
 export const getLanguageDetails = async (languageId) => {
   try {
-    const { data } = await API.get(`portal/languages/${languageId}`);
+    const { data } = await API.get(`languages/${languageId}`);
     return Promise.resolve(data.language);
   } catch (e) {
     return Promise.reject(e);

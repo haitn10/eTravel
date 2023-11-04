@@ -14,6 +14,7 @@ const cookies = new Cookies();
 // URL
 export const BASE_URL = "http://localhost:8000";
 // export const BASE_URL = "https://etravelapi.azurewebsites.net";
+// export const CONVERSION_URL = `https://etravelconversion.azurewebsites.net/${}/valid`;
 
 export const API = axios.create({
   baseURL: `${BASE_URL}/api/`,
@@ -26,15 +27,41 @@ API.interceptors.request.use(function (config) {
   return config;
 });
 
-export const uploadImage = (item, url) => {
+export const uploadImage = async (data, url) => {
+  const checkArr = Array.isArray(data);
+  if (checkArr) {
+    const uploadPromises = data.map(async (item) => {
+      const fileRef = ref(storage, `${url}/${item.image.name}`);
+      await uploadBytes(fileRef, item.image);
+      const downloadURL = await getDownloadURL(fileRef);
+      item.image = downloadURL;
+    });
+
+    await Promise.all(uploadPromises);
+
+    return data;
+  } else {
+    const fileRef = ref(storage, `${url}/${data.image.name}`);
+    await uploadBytes(fileRef, data.image);
+    const urlRes = await getDownloadURL(fileRef);
+    return urlRes;
+  }
+};
+
+export const removeImage = (item, url) => {
   const fileRef = ref(storage, `${url}/${item.image.name}`);
-  return uploadBytes(fileRef, item.image).then(async () => {
-    try {
-      const url = await getDownloadURL(fileRef);
-      return Promise.resolve(url);
-    } catch (err) {
-      return Promise.reject(err);
-    }
+  deleteObject(fileRef)
+    .then(() => {
+      return Promise.resolve();
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+};
+
+export const uploadVoiceFile = (item) => {
+  return API.post("portal/places/convert/mp3", item, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
 };
 
@@ -90,24 +117,37 @@ export const process = async (state, dispatch, setState, path, item, file) => {
 
   try {
     dispatch(setState({ isFetching: true }));
+    if (item.placeDescriptions?.length > 0) {
+      let formData = new FormData();
+      item.placeDescriptions.forEach((element) => {
+        if (element.voiceFile instanceof File) {
+          formData.append("listMp3", element.voiceFile);
+        }
+      });
+      const { data } = await uploadVoiceFile(formData);
+      data.voiceFiles.forEach((itm) => {
+        const indexFile = item.placeDescriptions.findIndex(
+          (file) => itm.fileName === file.voiceFile.name
+        );
+        if (indexFile !== -1) {
+          item.placeDescriptions[indexFile].voiceFile = itm.fileLink;
+        }
+      });
+    }
 
-    // if (item.bannerImageUrl instanceof File) {
-    //   let formData = new FormData();
-    //   if (item.bannerImageUrl.type.includes("video")) {
-    //     formData.append("video", item.bannerImageUrl);
-    //   } else {
-    //     formData.append("image", item.bannerImageUrl);
-    //   }
-    //   const response = await upload(formData);
-    //   item.bannerImageUrl = `${baseURL}${response.data.url}`;
-    // }
+    if (item.placeImages) {
+      const response = await uploadImage(
+        item.placeImages,
+        `place/PlaceImg/${item.name}`
+      );
+      item.placeImages = response;
+    }
 
     if (item.image instanceof File) {
-      try {
-        const response = await uploadImage(item, "Tour");
-        item.image = response;
-      } catch (e) {}
+      const response = await uploadImage(item, "Tour");
+      item.image = response;
     }
+
     if (file instanceof File) {
       try {
         const response = await upload(item, file);
@@ -116,6 +156,7 @@ export const process = async (state, dispatch, setState, path, item, file) => {
         await remove(item);
       }
     }
+
     await API.post(path, item);
     dispatch(setState({ isFetching: false }));
     return Promise.resolve();
