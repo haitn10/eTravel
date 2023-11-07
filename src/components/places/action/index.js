@@ -61,6 +61,7 @@ export const processPlace = (newPlace) => {
 
 export const updatePlace = async (placeId, values) => {
   try {
+    setState({ isFetching: true });
     if (values.placeDescriptions.length > 0) {
       let formData = new FormData();
       values.placeDescriptions.forEach((element) => {
@@ -89,8 +90,29 @@ export const updatePlace = async (placeId, values) => {
       values.placeImages = response;
     }
     const { data } = await API.put(`portal/places/${placeId}`, values);
+    setState({ isFetching: false });
     return Promise.resolve(data);
   } catch (e) {
+    setState({ isFetching: false });
+    return Promise.reject(e);
+  }
+};
+
+export const importPlaceByFile = async (dataList) => {
+  try {
+    setState({ isFetching: true });
+    let formData = new FormData();
+    dataList.forEach((element) => {
+      formData.append("fileList", element);
+    });
+
+    const { data } = await API.post(`portal/places/importexcel`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    setState({ isFetching: false });
+    return Promise.resolve(data);
+  } catch (e) {
+    setState({ isFetching: false });
     return Promise.reject(e);
   }
 };
