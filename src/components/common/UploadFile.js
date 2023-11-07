@@ -55,7 +55,7 @@ const UploadFile = ({ file, setFile, clearErrors }) => {
           }}
           onChange={handleChangeFile}
           type="file"
-          accept=".json, .xlsx"
+          accept=".json"
         />
       </label>
     </Box>
