@@ -32,6 +32,8 @@ const TourGeneral = ({
   errors,
   setError,
   clearErrors,
+  notification,
+  setNotification,
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -42,8 +44,17 @@ const TourGeneral = ({
 
   useEffect(() => {
     async function fetchLanguage() {
-      const response = await dispatch(getAllLanguages());
-      setLanguagesList(response.languages);
+      try {
+        const response = await dispatch(getAllLanguages());
+        setLanguagesList(response.languages);
+      } catch (e) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "Can't loading languages for selection!",
+          status: "error",
+        });
+      }
     }
     fetchLanguage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,7 +103,6 @@ const TourGeneral = ({
     }
   };
 
-  console.log(selectLanguagesList);
   const removeToSelectLanguagesList = (index) => {
     const value = [...selectLanguagesList];
     value.splice(index, 1);
@@ -259,7 +269,7 @@ const TourGeneral = ({
 
       {selectLanguagesList &&
         selectLanguagesList.map((selectLanguage, index) => (
-          <Box key={index} display="flex">
+          <Box key={index} display="flex" justifyContent='center' width='100%'>
             <Box>
               <Grid container rowGap={2} marginY={2}>
                 <Grid item sm={12} lg={3}>

@@ -31,10 +31,12 @@ export const uploadImage = async (data, url) => {
   const checkArr = Array.isArray(data);
   if (checkArr) {
     const uploadPromises = data.map(async (item) => {
-      const fileRef = ref(storage, `${url}/${item.image.name}`);
-      await uploadBytes(fileRef, item.image);
-      const downloadURL = await getDownloadURL(fileRef);
-      item.image = downloadURL;
+      if (item.image instanceof File) {
+        const fileRef = ref(storage, `${url}/${item.image.name}`);
+        await uploadBytes(fileRef, item.image);
+        const downloadURL = await getDownloadURL(fileRef);
+        item.image = downloadURL;
+      }
     });
 
     await Promise.all(uploadPromises);

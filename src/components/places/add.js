@@ -8,13 +8,12 @@ import {
   Stepper,
   useTheme,
 } from "@mui/material";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useState } from "react";
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
 import PlaceGeneral from "./others/PlaceGeneral";
 import MultiLanguages from "./others/MultiLanguages";
 import Coordinates from "./others/Coordinates";
-import { getAllLanguages } from "../languages/action";
 import { useDispatch } from "react-redux";
 import PreviewData from "./others/PreviewData";
 import { useForm } from "react-hook-form";
@@ -31,12 +30,12 @@ const steps = [
 const initialState = {
   name: "",
   address: "",
-  longitude: 0,
-  latitude: 0,
+  longitude: undefined,
+  latitude: undefined,
   googlePlaceId: "",
-  entryTicket: 0,
-  hour: "00:00",
-  price: 0,
+  entryTicket: undefined,
+  hour: dayjs("2022-04-17T00:00"),
+  price: undefined,
   placeCategories: [],
   placeImages: [],
   placeDescriptions: [],
@@ -59,19 +58,18 @@ const AddPlace = () => {
   });
 
   const form = useForm({
-    defaultValues: initialState,
+    defaultValues: {
+      name: "",
+      address: "",
+      longitude: undefined,
+      latitude: undefined,
+      price: undefined,
+      placeCategories: [],
+      placeImages: [],
+    },
   });
   const { handleSubmit, setError, clearErrors, register, formState } = form;
   const { errors } = formState;
-
-  useEffect(() => {
-    async function fetchLanguage() {
-      const response = await dispatch(getAllLanguages());
-      setValues({ ...values, placeDescriptions: response.languages });
-    }
-    fetchLanguage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
 
   const isStepSkipped = (step) => {
     return skipped.has(step);
@@ -113,6 +111,8 @@ const AddPlace = () => {
             errors={errors}
             setError={setError}
             clearErrors={clearErrors}
+            notification={notification}
+            setNotification={setNotification}
           />
         );
       case 2:

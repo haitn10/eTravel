@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -6,21 +6,24 @@ import {
   Typography,
   alpha,
   useTheme,
-  Button,
   Autocomplete,
   FormHelperText,
+  ImageList,
+  ImageListItem,
+  IconButton,
 } from "@mui/material";
-import { Add, HighlightOff } from "styled-icons/material";
 import { useDispatch } from "react-redux";
 import { LocalizationProvider, TimeField } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
+import { NumericFormatCustom } from "../../common/NumericFormatCustom";
 import {
   CloudCheckmark,
   CloudDismiss,
 } from "@styled-icons/fluentui-system-filled";
 import { CloudArrowUp } from "@styled-icons/fluentui-system-regular";
-import { NumericFormatCustom } from "../../common/NumericFormatCustom";
+import { ImageAdd } from "@styled-icons/remix-line";
+import { CloseOutline } from "@styled-icons/evaicons-outline";
 
 import { getCategoriesAll } from "../../categories/action";
 const PlaceGeneral = ({
@@ -47,6 +50,19 @@ const PlaceGeneral = ({
   }, [dispatch]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesList]);
+
+  useEffect(() => {
+    if (values.placeCategories?.length === 0) {
+      setError("placeCategories", {
+        message: "Category is required!",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.placeCategories]);
+
+  useEffect(() => {
     let fileTypes = [
       "image/apng",
       "image/avif",
@@ -56,26 +72,36 @@ const PlaceGeneral = ({
       "image/svg+xml",
       "image/webp",
     ];
-    imagesList.forEach((image) => {
-      if (image.image instanceof File) {
-        if (!fileTypes.includes(image.image.type)) {
-          setError("fileType", {
-            message: "Please choose image file!",
-          });
-        } else {
-          setValues({ ...values, placeImages: imagesList });
+    if (imagesList.length !== 0) {
+      imagesList.forEach((item) => {
+        if (item.image instanceof File) {
+          if (item.image && !fileTypes.includes(item.image.type)) {
+            setError("placeImages", {
+              message: "Please choose image file!",
+            });
+          } else {
+            setValues({ ...values, placeImages: imagesList });
+          }
         }
-      }
-    });
+      });
+    } else {
+      setError("placeImages", {
+        message: "Image is required!",
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesList]);
 
-  const handleChangeCategories = (e, value) => {
-    setValues({ ...values, placeCategories: value });
+  const handleChangeOtherImages = (event) => {
+    const selectedImageFiles = Array.from(event.target.files);
+    const newImagesList = selectedImageFiles.map((file) => {
+      return { image: file, isPrimary: false };
+    });
+    setImagesList((preImagesList) => preImagesList.concat(newImagesList));
   };
 
   const handleChangePrimaryImage = (e) => {
-    clearErrors("fileType");
+    clearErrors("placeImages");
     const primaryIndex = imagesList.findIndex(
       (placeImage) => placeImage.isPrimary === true
     );
@@ -95,35 +121,52 @@ const PlaceGeneral = ({
     }
   };
 
-  const handleChangeOtherImages = (event) => {
-    let imagesArray = [];
-    const selectedImageFiles = Array.from(event.target.files);
-    for (const file of selectedImageFiles) {
-      imagesArray.push({ image: file, isPrimary: false });
-    }
-    setImagesList((preImageList) => preImageList.concat(imagesArray));
+  const removeImage = (index) => {
+    const newImagesList = imagesList.filter(
+      (image) => image.isPrimary === false
+    );
+    newImagesList.splice(index, 1);
+    const mergeList = imagesList
+      .filter((image) => image.isPrimary === true)
+      .concat(newImagesList);
+
+    setImagesList(mergeList);
   };
 
-  const previewImage = useMemo(() => {
-    let url = "";
-    const checkImage = imagesList.filter((item) => item.isPrimary === true);
-    if (checkImage.length !== 0) {
-      url = URL.createObjectURL(checkImage[0].image);
+  const handleChangeCategories = (e, value) => {
+    clearErrors("placeCategories");
+    setValues({ ...values, placeCategories: value });
+  };
+
+  const previewImage = (image) => {
+    let fileTypes = [
+      "image/apng",
+      "image/avif",
+      "image/gif",
+      "image/jpeg",
+      "image/png",
+      "image/svg+xml",
+      "image/webp",
+    ];
+    if (image) {
+      if (fileTypes.includes(image.type)) {
+        return URL.createObjectURL(image);
+      }
     }
-    return url;
-  }, [imagesList]);
+    return;
+  };
 
   return (
-    <Box padding={5} marginX={12}>
-      <Grid container rowGap={3}>
+    <Box padding={3} marginX={8}>
+      <Grid container rowGap={2}>
         {/* Place Name */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} lg={4}>
           <Typography fontWeight="medium">
             Place Name{" "}
             <small style={{ color: theme.palette.text.active }}>*</small>
           </Typography>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} lg={8}>
           <TextField
             fullWidth
             size="small"
@@ -145,49 +188,50 @@ const PlaceGeneral = ({
         </Grid>
 
         {/* Category */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} lg={4}>
           <Typography fontWeight="medium">
             Category{" "}
             <small style={{ color: theme.palette.text.active }}>*</small>
           </Typography>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} lg={8}>
           <Autocomplete
+            fullWidth
             multiple
             size="small"
             value={values.placeCategories}
             options={categoriesList}
             getOptionLabel={(option) => option?.name}
+            onChange={handleChangeCategories}
             filterSelectedOptions
             sx={{
               ".MuiOutlinedInput-root": {
                 borderRadius: 2.5,
               },
             }}
-            onChange={handleChangeCategories}
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder="Select one or more categories"
+                placeholder={
+                  values.placeCategories.length === 0
+                    ? "Select one or more categories"
+                    : ""
+                }
               />
             )}
           />
-          <FormHelperText
-            htmlFor="render-select"
-            style={{ marginLeft: 14 }}
-            error
-          >
+          <FormHelperText htmlFor="render-select" error sx={{ marginLeft: 2 }}>
             {errors.placeCategories?.message}
           </FormHelperText>
         </Grid>
 
         {/* Price */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} lg={4}>
           <Typography fontWeight="medium">
             Price <small style={{ color: theme.palette.text.active }}>*</small>
           </Typography>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} lg={8}>
           <TextField
             fullWidth
             size="small"
@@ -210,7 +254,7 @@ const PlaceGeneral = ({
         </Grid>
 
         {/* Entry Ticket */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} lg={4}>
           <Typography fontWeight="medium">
             Entry Ticket{" "}
             <small style={{ fontSize: 12, color: theme.palette.text.active }}>
@@ -218,7 +262,7 @@ const PlaceGeneral = ({
             </small>
           </Typography>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} lg={8}>
           <TextField
             fullWidth
             size="small"
@@ -237,13 +281,13 @@ const PlaceGeneral = ({
         </Grid>
 
         {/* Duration */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} lg={4}>
           <Typography fontWeight="medium">Duration</Typography>
           <Typography>
             <small>Estimated place completion time</small>
           </Typography>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} lg={8}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <TimeField
               fullWidth
@@ -255,28 +299,26 @@ const PlaceGeneral = ({
                 },
               }}
               onChange={(newValue) => setValues({ ...values, hour: newValue })}
-              format="HH:mm"
+              format="HH:mm:ss"
             />
           </LocalizationProvider>
         </Grid>
 
-        {/* Tour Image */}
-        <Grid item xs={12} md={4}>
+        {/* Primary Image */}
+        <Grid item xs={12} lg={4}>
           <Typography fontWeight="medium">
             Primary Image{" "}
             <small style={{ color: theme.palette.text.active }}>*</small>
           </Typography>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} lg={8}>
           <Box
             display="flex"
             alignItems="center"
-            position="relative"
-            overflow="hidden"
             border={1}
             borderRadius={2.5}
             borderColor={
-              !!errors.imagePrimary || !!errors.fileType
+              errors.placeImages
                 ? theme.palette.text.active
                 : alpha(theme.palette.text.primary, 0.28)
             }
@@ -294,7 +336,7 @@ const PlaceGeneral = ({
               {imagesList.filter((item) => item.isPrimary === true).length !==
               0 ? (
                 <Box display="flex" alignItems="center">
-                  {errors.fileType ? (
+                  {errors.placeImages ? (
                     <CloudDismiss
                       height={24}
                       color={theme.palette.text.active}
@@ -321,7 +363,7 @@ const PlaceGeneral = ({
                   color={alpha(theme.palette.text.secondary, 0.4)}
                 >
                   <CloudArrowUp height={24} style={{ margin: 10 }} />
-                  <Typography noWrap>Import picture for tour here</Typography>
+                  <Typography noWrap>Import primary image here</Typography>
                 </Box>
               )}
 
@@ -331,25 +373,21 @@ const PlaceGeneral = ({
                   opacity: 0,
                   position: "absolute",
                 }}
-                {...register("imagePrimary", {
-                  required: "Primary Image is required!",
-                  onChange: (e) => handleChangePrimaryImage(e),
-                })}
+                onChange={handleChangePrimaryImage}
                 type="file"
                 accept="image/*"
               />
             </label>
           </Box>
-          <FormHelperText
-            htmlFor="render-select"
-            style={{ marginLeft: 14 }}
-            error
-          >
-            {errors.imagePrimary?.message || errors.fileType?.message}
+          <FormHelperText htmlFor="render-select" error sx={{ marginLeft: 2 }}>
+            {errors.placeImages?.message}
           </FormHelperText>
-          <Box marginTop={2}>
+
+          <Box marginTop={2} position="relative">
             <img
-              src={previewImage}
+              src={previewImage(
+                imagesList.filter((item) => item.isPrimary === true)[0]?.image
+              )}
               style={{
                 maxWidth: "100%",
                 maxHeight: 300,
@@ -359,131 +397,94 @@ const PlaceGeneral = ({
           </Box>
         </Grid>
 
-        {/* Images */}
-        <Grid item xs={4}>
+        {/* Other Images */}
+        <Grid item xs={12} lg={4}>
           <Typography fontWeight="medium">Other Images</Typography>
         </Grid>
-        <Grid item xs={8}>
-          {imagesList.length > 1 ? (
-            <Box
-              sx={{
+        <Grid item xs={12} lg={8}>
+          <Box
+            display="flex"
+            alignItems="center"
+            border={1}
+            borderRadius={2.5}
+            borderColor={alpha(theme.palette.text.primary, 0.28)}
+            height={40}
+          >
+            <label
+              htmlFor="imageList"
+              style={{
                 display: "flex",
-                maxHeight: 220,
-                maxWidth: 1000,
-                overflowY: "hidden",
-                overflowX: "auto",
-                "&::-webkit-scrollbar": {
-                  marginTop: 0.5,
-                  width: "0.35em",
-                  height: "0.45em",
-                  bgcolor: theme.palette.background.secondary,
-                },
-
-                "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: theme.palette.background.third,
-                  borderRadius: 3,
-                  "&:hover": {
-                    background: alpha(theme.palette.background.hovered, 0.25),
-                  },
-                },
+                width: "100%",
+                color: theme.palette.text.third,
+                cursor: "pointer",
               }}
-              columnGap={2}
             >
               <Box
-                // height={200}
-                minWidth={200}
-                border={1}
-                borderRadius={2.5}
-                borderColor={theme.palette.background.third}
+                display="flex"
+                alignItems="center"
+                color={alpha(theme.palette.text.secondary, 0.4)}
               >
-                <Button
-                  variant="text"
-                  color="inherit"
-                  component="label"
-                  sx={{ width: "100%", height: "100%", gap: 1 }}
-                >
-                  <Add
-                    color="inherit"
-                    sx={{
-                      height: 30,
-                      width: 30,
-                      border: 1,
-                      borderStyle: "dashed",
-                      strokeDasharray: 30,
-                      borderRadius: 1,
-                    }}
-                  />
-
-                  <Typography fontWeight="medium">Add Images</Typography>
-                  <input
-                    type="file"
-                    hidden
-                    multiple
-                    accept="image/*"
-                    onChange={handleChangeOtherImages}
-                  />
-                </Button>
+                <ImageAdd width={20} style={{ margin: 10 }} />
+                <Typography noWrap>
+                  {imagesList.filter((image) => image.isPrimary === false)
+                    .length !== 0
+                    ? `Have ${
+                        imagesList.filter((image) => image.isPrimary === false)
+                          .length
+                      } image files`
+                    : "Import more images here..."}
+                </Typography>
               </Box>
-              {imagesList
+
+              <input
+                id="imageList"
+                style={{
+                  opacity: 0,
+                  position: "absolute",
+                }}
+                multiple
+                onChange={handleChangeOtherImages}
+                type="file"
+                accept="image/*"
+              />
+            </label>
+          </Box>
+
+          <ImageList
+            variant="standard"
+            cols={3}
+            gap={2}
+            sx={{ maxHeight: 500, marginTop: 2 }}
+          >
+            {imagesList &&
+              imagesList
                 .filter((image) => image.isPrimary === false)
-                .reverse()
                 .map((item, index) => (
-                  <Box
-                    key={index}
-                    position="relative"
-                    minWidth={200}
-                    border={1}
-                    borderRadius={2.5}
-                    borderColor={theme.palette.background.third}
-                  >
-                    <img
-                      src={URL.createObjectURL(item.image)}
-                      alt="item"
+                  <ImageListItem key={index}>
+                    <IconButton
                       style={{
-                        height: "100%",
-                        width: "100%",
-                        maxWidth: 200,
-                        objectFit: "contain",
-                        borderRadius: 10,
-                      }}
-                      loading="lazy"
-                    />
-                    <Button
-                      sx={{
                         position: "absolute",
                         right: 2,
                         top: 2,
-                        padding: 1,
-                        minWidth: 0,
-                        "&:hover": { backgroundColor: "inherit" },
+                        color: theme.palette.text.active,
                       }}
-                      onClick={() =>
-                        setImagesList(imagesList.filter((e) => e !== item))
-                      }
+                      onClick={(e) => removeImage(index)}
                     >
-                      <HighlightOff color="error" />
-                    </Button>
-                  </Box>
+                      <CloseOutline width={24} />
+                    </IconButton>
+                    <img
+                      src={previewImage(item.image)}
+                      alt={index}
+                      loading="lazy"
+                      style={{
+                        borderRadius: 10,
+                        maxWidth: 300,
+                        maxHeight: 200,
+                      }}
+                    />
+                  </ImageListItem>
                 ))}
-            </Box>
-          ) : (
-            <TextField
-              fullWidth
-              size="small"
-              inputProps={{
-                accept: "image/*",
-                multiple: true,
-              }}
-              InputProps={{
-                style: {
-                  borderRadius: 10,
-                },
-              }}
-              type="file"
-              multiple
-              onChange={handleChangeOtherImages}
-            />
-          )}
+          </ImageList>
         </Grid>
       </Grid>
     </Box>

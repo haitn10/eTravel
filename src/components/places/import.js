@@ -1,23 +1,32 @@
 import {
   Box,
   Button,
-  Grid,
   Typography,
-  FormHelperText,
   useTheme,
+  alpha,
+  LinearProgress,
+  Grid,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import * as XLSX from "xlsx";
+import React, { useRef, useState } from "react";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
-import UploadFile from "../common/UploadFile";
 import { useForm } from "react-hook-form";
+import {
+  FileEarmarkArrowUp,
+  FiletypeMp3,
+  FiletypePng,
+  FiletypeExe,
+} from "@styled-icons/bootstrap";
+
+import { CloseOutline } from "@styled-icons/evaicons-outline";
+import { FileUploader } from "react-drag-drop-files";
 
 const ImportPlaces = () => {
   const theme = useTheme();
-  const [file, setFile] = useState(null);
-  const [showFile, setShowFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const [files, setFiles] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
   const [notification, setNotification] = useState({
     errorState: false,
     errorMessage: "",
@@ -30,43 +39,38 @@ const ImportPlaces = () => {
   const { handleSubmit, setError, clearErrors, formState } = form;
   const { errors } = formState;
 
-  useEffect(() => {
+  const checkExcelFile = (file) => {
     let fileTypes = [
       "application/vnd.ms-excel",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "text/csv",
     ];
+    return fileTypes.includes(file.type);
+  };
 
-    if (file instanceof File) {
-      if (file && fileTypes.includes(file.type)) {
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onload = (e) => {
-          setShowFile(e.target.result);
-        };
-      } else {
-        setError("fileType", {
-          message: "Please select only excel file types!",
-        });
-        setShowFile(null);
-      }
-    } else {
-      setError("fileType", { message: "Please select your file!" });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [file]);
+  const handleChangeFile = (e) => {
+    const filesList = Array.from(e.target.files);
+    const data = [...files];
 
-  const onShow = () => {
-    if (showFile !== null) {
-      const workbook = XLSX.read(showFile, { type: "buffer" });
-      const worksheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[worksheetName];
-      const data = XLSX.utils.sheet_to_json(worksheet);
-      setShowFile(data.slice());
+    if (filesList) {
+      filesList.forEach((file) => {
+        data.push(file);
+      });
+      setFiles(data);
     }
   };
 
-  console.log(showFile);
+  const onDragEnter = () => {
+    fileInputRef.current.classList.add("dragover");
+  };
+  const onDragLeave = () => {
+    fileInputRef.current.classList.remove("dragover");
+  };
+  const onDrop = () => {
+    fileInputRef.current.classList.remove("dragover");
+  };
+
+  console.log(files);
 
   return (
     <Box
@@ -86,61 +90,182 @@ const ImportPlaces = () => {
       <Header
         title={"Import Places List"}
         subTitle={"More Places - More Experiences - More Amenity"}
-        showBack={false}
-        showSearch={false}
-        showFilter={false}
-        buttonAdd={false}
       />
 
-      <Box paddingX={20} flexGrow={1} marginTop={5}>
-        <Grid container gap={1}>
-          <Grid item md={12} lg={3} display="flex" justifyContent="center">
-            <Typography fontWeight="medium">Import places list</Typography>
-          </Grid>
-
+      <Box paddingX={10} marginTop={5}>
+        <Grid container spacing={5}>
           <Grid item md={12} lg={6}>
-            <UploadFile
-              file={file}
-              setFile={setFile}
-              clearErrors={clearErrors}
-            />
-            <FormHelperText htmlFor="render-select" error>
-              {errors.fileType?.message}
-            </FormHelperText>
-          </Grid>
-
-          <Grid item md={12} lg={2} display="flex" justifyContent="center">
-            <Button
-              disabled={!showFile}
-              onClick={onShow}
-              variant="contained"
-              color="error"
+            <Box
               sx={{
-                borderRadius: "50px",
-                width: "120px",
-                height: "40px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                border: `1.5px dashed ${alpha(
+                  theme.palette.text.primary,
+                  0.28
+                )}`,
+                borderRadius: 2.5,
+                height: 300,
               }}
             >
-              Show data
-            </Button>
+              <Button
+                ref={fileInputRef}
+                onDragEnter={onDragEnter}
+                onDragLeave={onDragLeave}
+                onDrop={onDrop}
+                component="label"
+                sx={{
+                  height: "100%",
+                  width: "100%",
+                }}
+              >
+                <FileEarmarkArrowUp width={30} style={{ marginRight: 5 }} />
+                <Typography>Drag & Drop files to upload...</Typography>
+                <input
+                  hidden
+                  multiple
+                  onChange={handleChangeFile}
+                  type="file"
+                  accept=".xlsx, image/*, audio/mpeg, audio/mp3"
+                />
+              </Button>
+            </Box>
+          </Grid>
+
+          <Grid item md={12} lg={6} rowGap={2}>
+            {/* <Box>
+              <Typography
+                fontSize={14}
+                letterSpacing={0.5}
+                fontWeight="medium"
+                textTransform="uppercase"
+                color={theme.palette.text.third}
+              >
+                Excel File
+              </Typography>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                paddingX={3}
+                paddingY={1}
+                borderRadius={5}
+                marginBottom={1}
+                bgcolor={alpha(theme.palette.text.onStatus, 0.2)}
+              >
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
+                  maxWidth={250}
+                  marginRight={2}
+                >
+                  <Box color={theme.palette.text.onStatus}>
+                    <FiletypeExe width={24} />
+                  </Box>
+                  <Typography noWrap>File Name</Typography>
+                </Box>
+                <Box width={"60%"}>
+                  <LinearProgress />
+                </Box>
+                <Box marginLeft={2}>
+                  <CloseOutline width={24} />
+                </Box>
+              </Box>
+            </Box>
+
+            <Box>
+              <Typography
+                fontSize={14}
+                letterSpacing={0.5}
+                fontWeight="medium"
+                textTransform="uppercase"
+                color={theme.palette.text.third}
+              >
+                MP3 Files
+              </Typography>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                paddingX={3}
+                paddingY={1}
+                borderRadius={5}
+                marginBottom={1}
+                bgcolor={alpha(theme.palette.text.active, 0.2)}
+              >
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
+                  maxWidth={250}
+                  marginRight={2}
+                >
+                  <Box color={theme.palette.text.active}>
+                    <FiletypeMp3 width={24} />
+                  </Box>
+                  <Typography noWrap>File Name</Typography>
+                </Box>
+                <Box width={"60%"}>
+                  <LinearProgress />
+                </Box>
+                <Box marginLeft={2}>
+                  <CloseOutline width={24} />
+                </Box>
+              </Box>
+            </Box>
+
+            <Box>
+              <Typography
+                fontSize={14}
+                letterSpacing={0.5}
+                fontWeight="medium"
+                textTransform="uppercase"
+                color={theme.palette.text.third}
+              >
+                Image Files
+              </Typography>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                paddingX={3}
+                paddingY={1}
+                borderRadius={5}
+                marginBottom={1}
+                bgcolor={alpha(theme.palette.text.checked, 0.2)}
+              >
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
+                  maxWidth={250}
+                  marginRight={2}
+                >
+                  <Box color={theme.palette.text.checked}>
+                    <FiletypePng width={24} />
+                  </Box>
+                  <Typography noWrap>File Name</Typography>
+                </Box>
+                <Box width={"60%"}>
+                  <LinearProgress />
+                </Box>
+                <Box marginLeft={2}>
+                  <CloseOutline width={24} />
+                </Box>
+              </Box>
+            </Box> */}
           </Grid>
         </Grid>
 
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          padding={3}
-          marginTop={5}
-          bgcolor={theme.palette.background.secondary}
-        >
-          {showFile ? (
-            <></>
-          ) : (
-            <Box>
-              <Typography>No File is uploaded yet!</Typography>
-            </Box>
-          )}
+        <Box display="flex" justifyContent="center" marginTop={5}>
+          <Button
+            color="error"
+            variant="contained"
+            sx={{ borderRadius: 2.5, width: 200 }}
+          >
+            Import File
+          </Button>
         </Box>
       </Box>
     </Box>

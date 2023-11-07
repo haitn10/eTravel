@@ -8,6 +8,8 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { checkDuplicateName } from "../action";
+import { useDispatch } from "react-redux";
+import { getAllLanguages } from "../../languages/action";
 
 const MultiLanguages = ({
   values,
@@ -15,14 +17,30 @@ const MultiLanguages = ({
   errors,
   setError,
   clearErrors,
+  notification,
+  setNotification,
 }) => {
+  const dispatch = useDispatch();
   const [checkDuplicate, setcheckDuplicate] = useState(false);
-  const [languageList, setLanguageList] = useState(values.placeDescriptions);
+  const [languageList, setLanguageList] = useState([]);
 
   useEffect(() => {
-    setValues({ ...values, placeDescriptions: languageList });
+    async function fetchLanguage() {
+      try {
+        const response = await dispatch(getAllLanguages());
+        setLanguageList(response.languages);
+      } catch (e) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "Can't loading languages for selection!",
+          status: "error",
+        });
+      }
+    }
+    fetchLanguage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [languageList]);
+  }, []);
 
   const onCheck = async (nameFile) => {
     try {
@@ -51,6 +69,7 @@ const MultiLanguages = ({
       // }
     }
     setLanguageList(data);
+    setValues({ ...values, placeDescriptions: data });
   };
 
   return (
@@ -85,6 +104,8 @@ const MultiLanguages = ({
                     }}
                     value={language.placeName ? language.placeName : ""}
                     onChange={(event) => handleChange(index, event)}
+                    error={!!errors.placeName}
+                    helperText={errors.placeName?.message}
                     placeholder={`Type name here`}
                   />
                 </Grid>
@@ -109,6 +130,8 @@ const MultiLanguages = ({
                     onChange={(event) => handleChange(index, event)}
                     placeholder="Type description here"
                     multiline={true}
+                    error={!!errors.description}
+                    helperText={errors.description?.message}
                     rows={7}
                   />
                 </Grid>
@@ -122,6 +145,9 @@ const MultiLanguages = ({
                     type="file"
                     size="small"
                     name="voiceFile"
+                    onChange={(event) => handleChange(index, event)}
+                    error={!!errors.voiceFile}
+                    helperText={errors.voiceFile?.message}
                     InputProps={{
                       style: {
                         borderRadius: 10,
@@ -130,7 +156,6 @@ const MultiLanguages = ({
                     inputProps={{
                       accept: "audio/mpeg, audio/mp3",
                     }}
-                    onChange={(event) => handleChange(index, event)}
                   />
                   <FormHelperText
                     htmlFor="render-select"

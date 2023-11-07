@@ -68,15 +68,17 @@ export const updatePlace = async (placeId, values) => {
           formData.append("listMp3", element.voiceFile);
         }
       });
-      const { data } = await uploadVoiceFile(formData);
-      data.voiceFiles.forEach((itm) => {
-        const indexFile = values.placeDescriptions.findIndex(
-          (file) => itm.fileName === file.voiceFile.name
-        );
-        if (indexFile !== -1) {
-          values.placeDescriptions[indexFile].voiceFile = itm.fileLink;
-        }
-      });
+      if (Array.from(formData).length !== 0) {
+        const { data } = await uploadVoiceFile(formData);
+        data.voiceFiles.forEach((itm) => {
+          const indexFile = values.placeDescriptions.findIndex(
+            (file) => itm.fileName === file.voiceFile.name
+          );
+          if (indexFile !== -1) {
+            values.placeDescriptions[indexFile].voiceFile = itm.fileLink;
+          }
+        });
+      }
     }
 
     if (values.placeImages) {
