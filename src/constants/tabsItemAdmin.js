@@ -1,12 +1,12 @@
 import { Admin, Group } from "@styled-icons/remix-line";
 import { Language } from "@styled-icons/ionicons-sharp";
-import { CategoryAlt } from "@styled-icons/boxicons-regular";
+import { CategoryAlt, Home } from "@styled-icons/boxicons-regular";
 
 const tabsItemAdmin = [
   {
     id: 1,
     title: "Dashboard",
-    icon: <Group width={24} />,
+    icon: <Home width={24} />,
     url: "/dashboard",
   },
   {

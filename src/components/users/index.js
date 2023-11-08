@@ -15,6 +15,7 @@ const ManageUsers = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -43,6 +44,8 @@ const ManageUsers = () => {
           getUsers({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "fullName",
+            Search: search,
           })
         );
         setPageState((old) => ({
@@ -55,14 +58,14 @@ const ManageUsers = () => {
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: "There was a problem loading data!",
+          errorMessage: "There was a problem loading data accounts!",
           status: "error",
         });
       }
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [dispatch, search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
@@ -76,19 +79,27 @@ const ManageUsers = () => {
     {
       field: "action",
       headerName: "Actions",
-      width: 120,
+      width: 80,
       align: "center",
       headerAlign: "center",
       sortable: false,
       renderCell: (params) => {
         return (
           <Action
+            titleAc={"Confirm account activation?"}
+            titleDe={"Confirm account deactivation?"}
+            messageAc={
+              "Activating account will allow this account to perform activities under its authority."
+            }
+            messageDe={
+              "Deactivating account will make this account no longer active in the system."
+            }
             id={params.row.id}
-            accountStatus={params.row.status}
             api="portal/users"
+            getData={getData}
+            status={params.row.status}
             notification={notification}
             setNotification={setNotification}
-            getData={getData}
           />
         );
       },
@@ -97,6 +108,7 @@ const ManageUsers = () => {
 
   return (
     <Box
+      minWidth="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -112,10 +124,9 @@ const ManageUsers = () => {
       <Header
         title={"Manage Users"}
         subTitle={"Manage all them existing users or update status."}
-        showBack={false}
         showSearch={true}
-        showFilter={false}
-        buttonAdd={false}
+        search={search}
+        setSearch={setSearch}
       />
 
       {/* Data Table */}

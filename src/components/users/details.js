@@ -6,262 +6,312 @@ import {
   Avatar,
   Box,
   Grid,
+  Paper,
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Typography,
   alpha,
   useTheme,
 } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import moment from "moment/moment";
+import dayjs from "dayjs";
 
-import Header from "../common/Header";
 import { getUserDetails } from "./action";
 
-import { ArrowIosDownward } from "@styled-icons/evaicons-solid";
+import Header from "../common/Header";
+import ErrorModal from "../common/ErrorModal";
+import { ExpandMore } from "styled-icons/material";
 
 const UserDetails = () => {
   const theme = useTheme();
   const { state } = useLocation();
   const { accountId } = state;
+
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+
+  const [notification, setNotification] = useState({
+    errorState: false,
+    errorMessage: "",
+    status: "error",
+  });
 
   useEffect(() => {
     async function getInfoDetails() {
-      setData(await getUserDetails(accountId));
+      setLoading(true);
+      try {
+        setData(await getUserDetails(accountId));
+        setLoading(false);
+      } catch (err) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "Can't loading data of this account!",
+          status: "error",
+        });
+        setLoading(false);
+      }
     }
     getInfoDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId]);
+
+  console.log(data);
 
   return (
     <Box
+      minWidth="94vh"
       margin="1.25em"
       padding={2}
-      paddingBottom={10}
+      paddingBottom={5}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
-      <Header
-        title={"User Details"}
-        subTitle={"Show information of customers."}
-        showBack={true}
-        showTool={false}
+      <ErrorModal
+        open={notification.errorState}
+        setOpen={setNotification}
+        message={notification.errorMessage}
+        status={notification.status}
       />
 
-      <Box marginX={10} padding={1}>
+      <Header
+        title={"User Details"}
+        subTitle={"Displays all customer information."}
+        loading={loading}
+        showBack={true}
+      />
+
+      <Box marginX={6} padding={3}>
+        {/* ID and Status */}
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          marginBottom={3}
+          marginBottom={1}
         >
-          <Box display="inherit" alignItems="center">
-            <Typography fontWeight="medium">
-              User ID: <strong>#{data.id}</strong>
-            </Typography>
+          <Box display="inherit" alignItems="center" gap={1}>
+            {loading ? (
+              <Skeleton width={100} />
+            ) : (
+              <>
+                <Typography color={theme.palette.text.third}>
+                  Customer ID:
+                </Typography>
+                <Typography fontWeight="medium">#{data.id}</Typography>
+              </>
+            )}
           </Box>
           <Box display="inherit" alignItems="center" gap={1}>
-            <Typography fontWeight="medium">Status: </Typography>
-            {data.status === 1 ? (
-              <Box
-                bgcolor={alpha(theme.palette.text.onStatus, 0.1)}
-                paddingX={1}
-                borderRadius={20}
-                border={1}
-                borderColor={alpha(theme.palette.text.onStatus, 0.2)}
-              >
-                <Typography
-                  fontWeight="semiBold"
-                  color={theme.palette.text.onStatus}
-                >
-                  Active
-                </Typography>
-              </Box>
+            {loading ? (
+              <Skeleton width={100} />
             ) : (
-              <Box
-                bgcolor={alpha(theme.palette.text.active, 0.1)}
-                paddingX={1}
-                borderRadius={20}
-                border={1}
-                borderColor={alpha(theme.palette.text.active, 0.2)}
-              >
-                <Typography
-                  fontWeight="semiBold"
-                  color={theme.palette.text.active}
-                >
-                  Inactice
+              <>
+                <Typography color={theme.palette.text.third}>
+                  Status:
                 </Typography>
-              </Box>
+                {data.status ? (
+                  <Box
+                    bgcolor={alpha(theme.palette.text.onStatus, 0.1)}
+                    paddingX={1}
+                    borderRadius={20}
+                    border={1}
+                    borderColor={alpha(theme.palette.text.onStatus, 0.2)}
+                  >
+                    <Typography
+                      fontWeight="semiBold"
+                      color={theme.palette.text.onStatus}
+                    >
+                      Active
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box
+                    bgcolor={alpha(theme.palette.text.active, 0.1)}
+                    paddingX={1}
+                    borderRadius={20}
+                    border={1}
+                    borderColor={alpha(theme.palette.text.active, 0.2)}
+                  >
+                    <Typography
+                      fontWeight="semiBold"
+                      color={theme.palette.text.active}
+                    >
+                      Inactice
+                    </Typography>
+                  </Box>
+                )}
+              </>
             )}
           </Box>
         </Box>
-      </Box>
 
-      <Box
-        display="flex"
-        flexDirection="column"
-        gap={2}
-        padding={1}
-        marginX={2}
-      >
+        {/* Information Details */}
         <Box
           bgcolor={theme.palette.background.secondary}
           padding={2}
-          borderRadius={2.5}
+          borderRadius={5}
         >
-          <Grid container gap={5} padding={5} marginLeft={10}>
-            <Grid item xs={2} md={2}>
-              <Avatar
-                sx={{
-                  width: "100%",
-                  height: "auto",
-                  bgcolor: theme.palette.background.primary,
-                }}
-                variant="rounded"
-                src={data.image}
-              />
+          {loading ? (
+            <Skeleton width={100} />
+          ) : (
+            <Grid container spacing={7} padding={2}>
+              <Grid item sm={12} md={4}>
+                <Avatar
+                  sx={{
+                    width: "100%",
+                    height: "auto",
+                    borderRadius: 5,
+                    bgcolor: theme.palette.background.primary,
+                  }}
+                  src={data.image}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Box marginBottom={2.5}>
+                  <Typography color={theme.palette.text.third}>
+                    First Name
+                  </Typography>
+                  <Typography fontWeight="medium" noWrap>
+                    {data.firstName}
+                  </Typography>
+                </Box>
+                <Box marginBottom={2.5}>
+                  <Typography color={theme.palette.text.third}>
+                    Gender
+                  </Typography>
+                  <Typography fontWeight="medium" noWrap>
+                    {data.gender}
+                  </Typography>
+                </Box>
+                <Box marginBottom={2.5}>
+                  <Typography color={theme.palette.text.third}>
+                    Phone
+                  </Typography>
+                  <Typography fontWeight="medium" noWrap>
+                    {data.phone}
+                  </Typography>
+                </Box>
+                <Box marginBottom={2.5}>
+                  <Typography color={theme.palette.text.third}>
+                    Address
+                  </Typography>
+                  <Typography fontWeight="medium">{data.address}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Box marginBottom={2.5}>
+                  <Typography color={theme.palette.text.third}>
+                    Last Name
+                  </Typography>
+                  <Typography fontWeight="medium" noWrap>
+                    {data.lastName}
+                  </Typography>
+                </Box>
+                <Box marginBottom={2.5}>
+                  <Typography color={theme.palette.text.third}>
+                    Nationality
+                  </Typography>
+                  <Typography fontWeight="medium" noWrap>
+                    {data.nationality}
+                  </Typography>
+                </Box>
+                <Box marginBottom={2.5}>
+                  <Typography color={theme.palette.text.third}>
+                    Email Address
+                  </Typography>
+                  <Typography fontWeight="medium" noWrap>
+                    {data.email}
+                  </Typography>
+                </Box>
+                <Box marginBottom={2.5}>
+                  <Typography color={theme.palette.text.third}>
+                    Create Time
+                  </Typography>
+                  <Typography fontWeight="medium" noWrap>
+                    {dayjs(data.createTime).format("LL")}
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={4} md={4}>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  First Name
-                </Typography>
-                <Typography fontWeight="medium" noWrap>
-                  {data.firstName}
-                </Typography>
-              </Box>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  Gender
-                </Typography>
-                <Typography fontWeight="medium" noWrap>
-                  {data.gender}
-                </Typography>
-              </Box>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  Phone
-                </Typography>
-                <Typography fontWeight="medium" noWrap>
-                  {data.phone}
-                </Typography>
-              </Box>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  Address
-                </Typography>
-                <Typography fontWeight="medium">
-                  {data.address}
-                </Typography>
-              </Box>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  Payment Latest
-                </Typography>
-                <Typography fontWeight="medium" noWrap>
-                  Nguyen Van A
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={4} md={4}>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  Last Name
-                </Typography>
-                <Typography fontWeight="medium" noWrap>
-                  {data.lastName}
-                </Typography>
-              </Box>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  Nationality
-                </Typography>
-                <Typography fontWeight="medium" noWrap>
-                  {data.nationality}
-                </Typography>
-              </Box>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  Email Address
-                </Typography>
-                <Typography fontWeight="medium" noWrap>
-                  {data.email}
-                </Typography>
-              </Box>
-              <Box marginBottom={2}>
-                <Typography
-                  fontWeight="medium"
-                  color={theme.palette.text.third}
-                  noWrap
-                >
-                  Create Time
-                </Typography>
-                <Typography fontWeight="medium" noWrap>
-                  {moment(data.createTime).format("DD MMMM, YYYY")}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
+          )}
         </Box>
-        <Accordion
-          sx={{
-            boxShadow: "none",
-            "&:before": { height: 0 },
-            border: 1,
-            borderRadius: 2.5,
-            borderColor: theme.palette.background.secondary,
-          }}
-        >
-          <AccordionSummary
-            expandIcon={<ArrowIosDownward width={24} />}
+
+        {/* Transactions */}
+        {loading ? (
+          <Skeleton width={100} />
+        ) : (
+          <Accordion
             sx={{
-              bgcolor: theme.palette.background.secondary,
-              borderStartStartRadius: 2.5,
+              marginTop: 5,
+              boxShadow: "none",
+              "&:before": { height: 0 },
+              border: 1,
+              borderRadius: 5,
+              borderColor: theme.palette.background.secondary,
             }}
           >
-            <Typography fontWeight="medium">Transaction History</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {data.transactionsHistory &&
-            data.transactionsHistory.length !== 0 ? (
-              <Box></Box>
-            ) : (
-              <Box display="flex" justifyContent="center" padding={2}>
-                (No transaction)
-              </Box>
-            )}
-          </AccordionDetails>
-        </Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMore width={24} />}
+              sx={{
+                bgcolor: theme.palette.background.secondary,
+                borderStartStartRadius: 2.5,
+              }}
+            >
+              <Typography fontWeight="medium">Transactions History</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {data.transactionsHistory.length !== 0 ? (
+                <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Transaction ID</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell>Payment Method</TableCell>
+                        <TableCell>Payment Time</TableCell>
+                        <TableCell align="right">Status</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {data.transactionsHistory.map((trans) => (
+                        <TableRow
+                          key={trans.id}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell>{trans.id}</TableCell>
+                          <TableCell>
+                            {trans.total.toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "USD",
+                            })}
+                          </TableCell>
+                          <TableCell>{trans.paymentMethod}</TableCell>
+                          <TableCell>
+                            {dayjs(trans.createTime).format("LLL")}
+                          </TableCell>
+                          <TableCell align="right">
+                            {trans.statusType}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Box display="flex" justifyContent="center" padding={2}>
+                  (No transaction)
+                </Box>
+              )}
+            </AccordionDetails>
+          </Accordion>
+        )}
       </Box>
     </Box>
   );

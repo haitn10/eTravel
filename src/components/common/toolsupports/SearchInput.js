@@ -42,7 +42,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("sm")]: {
-      width: "12ch",
+      width: "16ch",
       borderRadius: 20,
       "&:focus": {
         width: "24ch",
@@ -53,14 +53,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const SearchInput = () => {
+const SearchInput = ({ search, setSearch }) => {
   return (
     <SearchBox>
       <SearchIconWrapper>
         <Search width={24} />
       </SearchIconWrapper>
       <StyledInputBase
-        placeholder="Search…"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by name…"
         inputProps={{ "aria-label": "search" }}
       />
     </SearchBox>

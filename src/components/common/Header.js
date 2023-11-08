@@ -24,6 +24,8 @@ const Header = ({
   showFilter,
   buttonAdd,
   setOpen,
+  search,
+  setSearch,
 }) => {
   const theme = useTheme();
   return (
@@ -75,7 +77,7 @@ const Header = ({
       <Box display="flex" alignItems="center" gap={2}>
         {showSearch ? (
           !loading ? (
-            <SearchInput />
+            <SearchInput search={search} setSearch={setSearch} />
           ) : (
             <Skeleton width={200} />
           )
