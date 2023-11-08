@@ -149,7 +149,7 @@ const ManageStaffs = () => {
         return (
           <Action
             id={params.row.id}
-            accountStatus={params.row.status}
+            status={params.row.status}
             api="portal/users"
             notification={notification}
             setNotification={setNotification}
