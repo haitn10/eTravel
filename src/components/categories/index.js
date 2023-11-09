@@ -22,20 +22,23 @@ import categories from "../../constants/tables/categories";
 import { getCategories, processCategory } from "./action";
 import { getAllLanguages } from "../languages/action";
 
-const initialCategoryLanguage = { languageCode: "zh-cn", nameLanguage: "" };
-
 const ManageCategories = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({ name: "" });
   const [categoryLanguages, setCategoryLanguages] = useState([
-    initialCategoryLanguage,
+    { languageCode: "zh-cn", nameLanguage: "" },
   ]);
   const [languageList, setLanguageList] = useState([]);
   const form = useForm({
-    defaultValues: { name: "", categoryLanguages: [initialCategoryLanguage] },
+    defaultValues: {
+      name: "",
+      categoryLanguages: [{ languageCode: "zh-cn", nameLanguage: "" }],
+    },
   });
 
   const { register, handleSubmit, setError, clearErrors, formState } = form;
@@ -77,6 +80,8 @@ const ManageCategories = () => {
           getCategories({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "fullName",
+            Search: search,
           })
         );
         setPageState((old) => ({
@@ -89,14 +94,14 @@ const ManageCategories = () => {
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: "There was a problem loading data!",
+          errorMessage: "There was a problem loading data categories!",
           status: "error",
         });
       }
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [dispatch, search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
@@ -124,33 +129,33 @@ const ManageCategories = () => {
       });
     }
 
-    if (categoryLanguages.some((item) => item.nameLanguage === "")) {
+    if (categoryLanguages.some((item) => item.nameLanguage.trim() === "")) {
       return setError("nameLanguage", {
         message: "Language Name not empty!",
       });
     }
     const data = { ...values, categoryLanguages: categoryLanguages };
     try {
+      setLoading(true);
       await dispatch(processCategory(data));
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: "Created successfully!",
+        errorMessage: "Created category successfully!",
         status: "success",
       });
       setValues({ name: "" });
-      setCategoryLanguages([initialCategoryLanguage]);
+      setCategoryLanguages([{ languageCode: "zh-cn", nameLanguage: "" }]);
       setOpen(false);
+      setLoading(false);
     } catch (e) {
-      const message = e.response.data
-        ? e.response.data.title
-        : "Something went wrong!";
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: message,
+        errorMessage: "Create category failed!",
         status: "error",
       });
+      setLoading(false);
     }
     getData();
   };
@@ -165,19 +170,27 @@ const ManageCategories = () => {
     {
       field: "action",
       headerName: "Actions",
-      width: 120,
+      width: 80,
       align: "center",
       headerAlign: "center",
       sortable: false,
       renderCell: (params) => {
         return (
           <Action
+            titleAc={"Confirm category activation?"}
+            titleDe={"Confirm category deactivation?"}
+            messageAc={
+              "Activating category will allow users to perform activities with this category."
+            }
+            messageDe={
+              "Deactivating category will cause this category to no longer be executed on the system."
+            }
             id={params.row.id}
-            accountStatus={params.row.status}
             api="portal/categories/changestatus"
+            getData={getData}
+            status={params.row.status}
             notification={notification}
             setNotification={setNotification}
-            getData={getData}
           />
         );
       },
@@ -186,6 +199,7 @@ const ManageCategories = () => {
 
   return (
     <Box
+      minWidth="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -197,12 +211,13 @@ const ManageCategories = () => {
         message={notification.errorMessage}
         status={notification.status}
       />
+
       <Header
         title={"Manage Categories"}
-        subTitle={"Manage all them existing catogories or update status."}
-        showBack={false}
+        subTitle={"Manage all existing categories or update status."}
         showSearch={true}
-        showFilter={false}
+        search={search}
+        setSearch={setSearch}
         buttonAdd={true}
         setOpen={setOpen}
       />
@@ -239,8 +254,9 @@ const ManageCategories = () => {
         open={open}
         onClose={handleClose}
         fullWidth
-        maxWidth="lg"
+        maxWidth="md"
         scroll="paper"
+        PaperProps={{ sx: { borderRadius: 5 } }}
       >
         <DialogTitle
           textAlign="center"
@@ -250,11 +266,12 @@ const ManageCategories = () => {
           borderBottom={1}
           borderColor={theme.palette.background.third}
         >
-          Add New Category
+          New Category
         </DialogTitle>
-        <DialogContent sx={{ paddingX: 20, marginTop: 5 }}>
+        <DialogContent sx={{ paddingX: 15, marginTop: 5 }}>
           <AddCategory
             values={values}
+            loading={loading}
             setValues={setValues}
             categoryLanguages={categoryLanguages}
             setCategoryLanguages={setCategoryLanguages}
@@ -273,6 +290,7 @@ const ManageCategories = () => {
           <Button
             onClick={handleSubmit(onSubmit)}
             variant="contained"
+            disabled={loading}
             sx={{
               borderRadius: 2.5,
               height: 40,
@@ -284,6 +302,7 @@ const ManageCategories = () => {
             onClick={handleClose}
             variant="contained"
             color="error"
+            disabled={loading}
             sx={{
               borderRadius: 2.5,
               height: 40,
