@@ -28,7 +28,6 @@ export const getStaffDetails = async (staffId) => {
     const { data } = await API.get(`portal/users/operator/${staffId}`);
     return Promise.resolve(data.account);
   } catch (e) {
-    console.log(e);
     return Promise.reject(e);
   }
 };
@@ -44,3 +43,12 @@ export const processStaff = (staff) => {
     );
   };
 };
+
+export const updateStaff = async (staffId, staff) => {
+  try {
+    const { data } = await API.put(`portal/users/operator/${staffId}`, staff);
+    return Promise.resolve(data.account);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}

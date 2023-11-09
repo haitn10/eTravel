@@ -7,11 +7,14 @@ const staffs = [
     field: "id",
     headerName: "StaffID",
     headerAlign: "center",
-    width: 85,
+    width: 80,
     align: "center",
   },
   { field: "fullName", headerName: "Full Name", flex: 1 },
-  { field: "email", headerName: "Email", flex: 1 },
+  { field: "gender", headerName: "Gender", width: 120 },
+  { field: "role", headerName: "Role", width: 120 },
+  { field: "phone", headerName: "Phone", width: 150 },
+  { field: "email", headerName: "Email", width: 200 },
   {
     field: "createTime",
     headerName: "Create Time",
@@ -27,7 +30,7 @@ const staffs = [
     headerName: "Status",
     headerAlign: "center",
     align: "center",
-    width: 120,
+    width: 100,
     renderCell: (params) => {
       if (params.row.status === 1) {
         return (
