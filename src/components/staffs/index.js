@@ -12,6 +12,7 @@ import {
   Select,
   MenuItem,
   useTheme,
+  Grid,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
@@ -38,16 +39,19 @@ const ManageStaffs = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [values, setValues] = useState(initialState);
+
+  const form = useForm({ defaultValues: initialState });
+  const { register, handleSubmit, formState } = form;
+  const { errors } = formState;
+
   const [notification, setNotification] = useState({
     errorState: false,
     errorMessage: "",
     status: "error",
   });
-  const [values, setValues] = useState(initialState);
-  const form = useForm({ defaultValues: initialState });
-  const { register, handleSubmit, formState } = form;
-  const { errors } = formState;
 
   const [pageState, setPageState] = useState({
     isLoading: false,
@@ -75,6 +79,8 @@ const ManageStaffs = () => {
           getStaffs({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "fullName",
+            Search: search,
           })
         );
         setPageState((old) => ({
@@ -87,14 +93,14 @@ const ManageStaffs = () => {
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: "There was a problem loading data!",
+          errorMessage: "There was a problem loading data accounts!",
           status: "error",
         });
       }
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [dispatch, search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
@@ -130,30 +136,33 @@ const ManageStaffs = () => {
       });
     }
     getData();
-    //Close error message
-    setTimeout(
-      () => setNotification({ ...notification, errorState: false }),
-      3000
-    );
   };
 
   const action = [
     {
       field: "action",
       headerName: "Actions",
-      width: 120,
+      width: 80,
       align: "center",
       headerAlign: "center",
       sortable: false,
       renderCell: (params) => {
         return (
           <Action
+            titleAc={"Confirm account activation?"}
+            titleDe={"Confirm account deactivation?"}
+            messageAc={
+              "Activating account will allow this account to perform activities under its authority."
+            }
+            messageDe={
+              "Deactivating account will make this account no longer active in the system."
+            }
             id={params.row.id}
-            status={params.row.status}
             api="portal/users"
+            getData={getData}
+            status={params.row.status}
             notification={notification}
             setNotification={setNotification}
-            getData={getData}
           />
         );
       },
@@ -162,6 +171,7 @@ const ManageStaffs = () => {
 
   return (
     <Box
+      minWidth="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -170,18 +180,17 @@ const ManageStaffs = () => {
       <ErrorModal
         open={notification.errorState}
         setOpen={setNotification}
-        title="Info"
         message={notification.errorMessage}
         status={notification.status}
       />
       <Header
-        title={"Manage Staffs"}
-        subTitle={"Manage all them existing staffs or update status."}
-        showBack={false}
+        title={"Manage Tour Operators"}
+        subTitle={"Manage all available tour operators."}
         showSearch={true}
-        showFilter={false}
         buttonAdd={true}
         setOpen={setOpen}
+        search={search}
+        setSearch={setSearch}
       />
 
       {/* Data Table */}
@@ -219,6 +228,7 @@ const ManageStaffs = () => {
         fullWidth
         maxWidth="md"
         scroll="paper"
+        PaperProps={{ sx: { borderRadius: 5 } }}
       >
         <DialogTitle
           textAlign="center"
@@ -228,181 +238,164 @@ const ManageStaffs = () => {
           borderBottom={1}
           borderColor={theme.palette.background.third}
         >
-          Add New Staff
+          New Staff
         </DialogTitle>
-        <DialogContent sx={{ paddingX: 20, marginTop: 5 }}>
+        <DialogContent sx={{ paddingX: 15, marginTop: 5 }}>
           <form noValidate>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginBottom={4}
-            >
-              <Typography sx={{ width: 100 }}>First Name</Typography>
-              <TextField
-                fullWidth
-                autoFocus
-                name="firstName"
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: 10,
-                  },
-                }}
-                value={values.firstName}
-                error={!!errors.firstName}
-                {...register("firstName", {
-                  onChange: handleChange,
-                  required: "First Name is required!",
-                })}
-                helperText={errors.firstName?.message}
-              />
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginBottom={4}
-            >
-              <Typography sx={{ width: 100 }}>Last Name</Typography>
-              <TextField
-                fullWidth
-                name="lastName"
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: 10,
-                  },
-                }}
-                value={values.lastName}
-                error={!!errors.lastName}
-                {...register("lastName", {
-                  onChange: handleChange,
-                  required: "Last Name is required!",
-                })}
-                helperText={errors.lastName?.message}
-              />
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginBottom={4}
-            >
-              <Typography sx={{ width: 100 }}>Phone</Typography>
-              <TextField
-                fullWidth
-                name="phone"
-                type="tel"
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: 10,
-                  },
-                }}
-                value={values.phone}
-                error={!!errors.phone}
-                {...register("phone", {
-                  onChange: handleChange,
-                  required: "Phone Number is required!",
-                })}
-                helperText={errors.phone?.message}
-              />
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginBottom={4}
-            >
-              <Typography sx={{ width: 100 }}>Email</Typography>
-              <TextField
-                fullWidth
-                name="email"
-                type="email"
-                size="small"
-                required
-                InputProps={{
-                  style: {
-                    borderRadius: 10,
-                  },
-                }}
-                value={values.email}
-                error={!!errors.email}
-                {...register("email", {
-                  onChange: handleChange,
-                  required: "Email is required!",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Email is wrong format!",
-                  },
-                })}
-                helperText={
-                  !errors.email
-                    ? '"Login with the character before @"'
-                    : errors.email?.message
-                }
-              />
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginBottom={4}
-            >
-              <Typography sx={{ width: 100 }}>Password</Typography>
-              <TextField
-                fullWidth
-                name="password"
-                type="password"
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: 10,
-                  },
-                }}
-                value={values.password}
-                error={!!errors.password}
-                {...register("password", {
-                  onChange: handleChange,
-                  required: "Password is required!",
-                })}
-                helperText={errors.password?.message}
-              />
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginBottom={4}
-            >
-              <Typography sx={{ width: 100 }}>Role</Typography>
-              <FormControl
-                sx={{
-                  minWidth: 120,
-                }}
-                fullWidth
-                size="small"
-              >
-                <Select
-                  value={values.roleId}
-                  sx={{ borderRadius: 2.5 }}
-                  name="roleId"
+            <Grid container columnSpacing={5} rowSpacing={2}>
+              <Grid item sm={12} md={6}>
+                <Box marginLeft={1}>
+                  <Typography>First Name</Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  autoFocus
+                  name="firstName"
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: 10,
+                    },
+                  }}
+                  value={values.firstName}
+                  {...register("firstName", {
+                    validate: (value, formValues) => value.trim() !== "",
+                    required: "First Name is required!",
+                  })}
                   onChange={handleChange}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName?.message}
+                />
+              </Grid>
+              <Grid item sm={12} md={6}>
+                <Box marginLeft={1}>
+                  <Typography>Last Name</Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  name="lastName"
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: 10,
+                    },
+                  }}
+                  value={values.lastName}
+                  {...register("lastName", {
+                    validate: (value, formValues) => value.trim() !== "",
+                    required: "Last Name is required!",
+                  })}
+                  onChange={handleChange}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName?.message}
+                />
+              </Grid>
+              <Grid item sm={12} md={6}>
+                <Box marginLeft={1}>
+                  <Typography>Phone</Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  name="phone"
+                  type="tel"
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: 10,
+                    },
+                  }}
+                  value={values.phone}
+                  {...register("phone", {
+                    validate: (value, formValues) => value.trim() !== "",
+                    required: "Phone Number is required!",
+                  })}
+                  onChange={handleChange}
+                  error={!!errors.phone}
+                  helperText={errors.phone?.message}
+                />
+              </Grid>
+              <Grid item sm={12} md={6}>
+                <Box marginLeft={1}>
+                  <Typography>Email</Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  name="email"
+                  type="email"
+                  size="small"
+                  required
+                  InputProps={{
+                    style: {
+                      borderRadius: 10,
+                    },
+                  }}
+                  value={values.email}
+                  {...register("email", {
+                    required: "Email is required!",
+                    validate: (value, formValues) => value.trim() !== "",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Email is wrong format!",
+                    },
+                  })}
+                  onChange={handleChange}
+                  error={!!errors.email}
+                  helperText={
+                    !errors.email
+                      ? '"Login with the character before @"'
+                      : errors.email?.message
+                  }
+                />
+              </Grid>
+              <Grid item sm={12}>
+                <Box marginLeft={1}>
+                  <Typography>Password</Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  name="password"
+                  type="password"
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: 10,
+                    },
+                  }}
+                  value={values.password}
+                  {...register("password", {
+                    validate: (value, formValues) => value.trim() !== "",
+                    required: "Password is required!",
+                  })}
+                  onChange={handleChange}
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                />
+              </Grid>
+              <Grid item sm={12}>
+                <Box marginLeft={1}>
+                  <Typography>Role</Typography>
+                </Box>
+                <FormControl
+                  sx={{
+                    minWidth: 120,
+                  }}
+                  fullWidth
+                  size="small"
                 >
-                  <MenuItem value={2} defaultValue>
-                    Tour Operator
-                  </MenuItem>
-                  <MenuItem value={1}>Admin</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
+                  <Select
+                    value={values.roleId}
+                    sx={{ borderRadius: 2.5 }}
+                    name="roleId"
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={2} defaultValue>
+                      Tour Operator
+                    </MenuItem>
+                    <MenuItem value={1}>Admin</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </form>
         </DialogContent>
         <DialogActions
@@ -411,6 +404,16 @@ const ManageStaffs = () => {
             "&.MuiDialogActions-root": { justifyContent: "center" },
           }}
         >
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            variant="contained"
+            sx={{
+              borderRadius: 2.5,
+              height: 40,
+            }}
+          >
+            Add New
+          </Button>
           <Button
             onClick={handleClose}
             variant="contained"
@@ -421,16 +424,6 @@ const ManageStaffs = () => {
             }}
           >
             Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            variant="contained"
-            sx={{
-              borderRadius: 2.5,
-              height: 40,
-            }}
-          >
-            Add New
           </Button>
         </DialogActions>
       </Dialog>

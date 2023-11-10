@@ -15,7 +15,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";

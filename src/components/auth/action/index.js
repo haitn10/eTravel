@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BASE_URL } from "../../../api";
+import { API, BASE_URL } from "../../../api";
 import Cookies from "universal-cookie";
 import { ERR_NETWORK } from "../../../constants/status";
 
@@ -60,3 +60,20 @@ export const login = (credential) => async (dispatch, getState) => {
 export const logOut = () => ({
   type: LOG_OUT,
 });
+
+export const updateStaff = (staffId, staff) => {
+  return async (dispatch, getState) => {
+    const state = getState().auth;
+    if (state.isUpdating) {
+      return Promise.reject(new Error("You are being updating.").message);
+    }
+
+    dispatch(setState({ isUpdating: true }));
+    try {
+      const { data } = await API.put(`portal/users/operator/${staffId}`, staff);
+      return Promise.resolve(data.account);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
+};

@@ -61,7 +61,17 @@ const UserDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId]);
 
-  console.log(data);
+  const colorStatus = (status) => {
+    if (status === 0) {
+      return theme.palette.text.active;
+    } else if (status === 1) {
+      return theme.palette.text.checked;
+    } else if (status === 2) {
+      return theme.palette.text.onStatus;
+    }
+  };
+
+  console.log(colorStatus(0));
 
   return (
     <Box
@@ -287,7 +297,7 @@ const UserDetails = () => {
                         >
                           <TableCell>{trans.id}</TableCell>
                           <TableCell>
-                            {trans.total.toLocaleString("en-US", {
+                            {trans.amount.toLocaleString("en-US", {
                               style: "currency",
                               currency: "USD",
                             })}
@@ -296,7 +306,10 @@ const UserDetails = () => {
                           <TableCell>
                             {dayjs(trans.createTime).format("LLL")}
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell
+                            align="right"
+                            sx={{ color: colorStatus(trans.status) }}
+                          >
                             {trans.statusType}
                           </TableCell>
                         </TableRow>
