@@ -108,6 +108,7 @@ const AppRouter = () => {
               <Route path="/categories/details" element={<CategoryDetails />} />
               <Route path="/languages" element={<ManageLanguages />} />
               <Route path="/languages/details" element={<LanguageDetails />} />
+              <Route path="/settings" element={<Profile />} />
             </Route>
           </Routes>
         </BrowserRouter>
