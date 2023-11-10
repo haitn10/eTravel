@@ -17,7 +17,7 @@ const tabsItemAdmin = [
   },
   {
     id: 3,
-    title: "Staffs",
+    title: "Tour Operators",
     icon: <Admin width={24} />,
     url: "/staffs",
   },

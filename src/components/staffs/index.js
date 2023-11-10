@@ -184,8 +184,8 @@ const ManageStaffs = () => {
         status={notification.status}
       />
       <Header
-        title={"Manage Staffs"}
-        subTitle={"Manage all them existing staffs or update status."}
+        title={"Manage Tour Operators"}
+        subTitle={"Manage all available tour operators."}
         showSearch={true}
         buttonAdd={true}
         setOpen={setOpen}
@@ -244,7 +244,9 @@ const ManageStaffs = () => {
           <form noValidate>
             <Grid container columnSpacing={5} rowSpacing={2}>
               <Grid item sm={12} md={6}>
-                <Typography sx={{ width: 100 }}>First Name</Typography>
+                <Box marginLeft={1}>
+                  <Typography>First Name</Typography>
+                </Box>
                 <TextField
                   fullWidth
                   autoFocus
@@ -256,16 +258,19 @@ const ManageStaffs = () => {
                     },
                   }}
                   value={values.firstName}
-                  error={!!errors.firstName}
                   {...register("firstName", {
-                    onChange: handleChange,
+                    validate: (value, formValues) => value.trim() !== "",
                     required: "First Name is required!",
                   })}
+                  onChange={handleChange}
+                  error={!!errors.firstName}
                   helperText={errors.firstName?.message}
                 />
               </Grid>
               <Grid item sm={12} md={6}>
-                <Typography sx={{ width: 100 }}>Last Name</Typography>
+                <Box marginLeft={1}>
+                  <Typography>Last Name</Typography>
+                </Box>
                 <TextField
                   fullWidth
                   name="lastName"
@@ -276,16 +281,19 @@ const ManageStaffs = () => {
                     },
                   }}
                   value={values.lastName}
-                  error={!!errors.lastName}
                   {...register("lastName", {
-                    onChange: handleChange,
+                    validate: (value, formValues) => value.trim() !== "",
                     required: "Last Name is required!",
                   })}
+                  onChange={handleChange}
+                  error={!!errors.lastName}
                   helperText={errors.lastName?.message}
                 />
               </Grid>
               <Grid item sm={12} md={6}>
-                <Typography sx={{ width: 100 }}>Phone</Typography>
+                <Box marginLeft={1}>
+                  <Typography>Phone</Typography>
+                </Box>
                 <TextField
                   fullWidth
                   name="phone"
@@ -297,16 +305,19 @@ const ManageStaffs = () => {
                     },
                   }}
                   value={values.phone}
-                  error={!!errors.phone}
                   {...register("phone", {
-                    onChange: handleChange,
+                    validate: (value, formValues) => value.trim() !== "",
                     required: "Phone Number is required!",
                   })}
+                  onChange={handleChange}
+                  error={!!errors.phone}
                   helperText={errors.phone?.message}
                 />
               </Grid>
               <Grid item sm={12} md={6}>
-                <Typography sx={{ width: 100 }}>Email</Typography>
+                <Box marginLeft={1}>
+                  <Typography>Email</Typography>
+                </Box>
                 <TextField
                   fullWidth
                   name="email"
@@ -319,15 +330,16 @@ const ManageStaffs = () => {
                     },
                   }}
                   value={values.email}
-                  error={!!errors.email}
                   {...register("email", {
-                    onChange: handleChange,
                     required: "Email is required!",
+                    validate: (value, formValues) => value.trim() !== "",
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                       message: "Email is wrong format!",
                     },
                   })}
+                  onChange={handleChange}
+                  error={!!errors.email}
                   helperText={
                     !errors.email
                       ? '"Login with the character before @"'
@@ -336,7 +348,9 @@ const ManageStaffs = () => {
                 />
               </Grid>
               <Grid item sm={12}>
-                <Typography sx={{ width: 100 }}>Password</Typography>
+                <Box marginLeft={1}>
+                  <Typography>Password</Typography>
+                </Box>
                 <TextField
                   fullWidth
                   name="password"
@@ -348,16 +362,19 @@ const ManageStaffs = () => {
                     },
                   }}
                   value={values.password}
-                  error={!!errors.password}
                   {...register("password", {
-                    onChange: handleChange,
+                    validate: (value, formValues) => value.trim() !== "",
                     required: "Password is required!",
                   })}
+                  onChange={handleChange}
+                  error={!!errors.password}
                   helperText={errors.password?.message}
                 />
               </Grid>
               <Grid item sm={12}>
-                <Typography sx={{ width: 100 }}>Role</Typography>
+                <Box marginLeft={1}>
+                  <Typography>Role</Typography>
+                </Box>
                 <FormControl
                   sx={{
                     minWidth: 120,

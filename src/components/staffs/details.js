@@ -22,13 +22,16 @@ import { getStaffDetails, updateStaff } from "./action";
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
 import { getLanguageCode } from "../languages/action";
+import { useDispatch } from "react-redux";
 
 const StaffDetails = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const { state } = useLocation();
   const { accountId } = state;
 
   const [loading, setLoading] = useState(true);
+  const [update, setUpdate] = useState(false);
   const [data, setData] = useState([]);
   const [national, setNational] = useState([]);
 
@@ -63,6 +66,8 @@ const StaffDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId]);
 
+  console.log(data);
+
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
@@ -74,24 +79,25 @@ const StaffDetails = () => {
     return img;
   };
   const onSubmit = async () => {
-    console.log(data);
-    // try {
-    //   const response = await updateStaff(accountId, data);
-
-    //   setNotification({
-    //     ...notification,
-    //     errorState: true,
-    //     errorMessage: "Update account successfully!",
-    //     status: "success",
-    //   });
-    // } catch (e) {
-    //   setNotification({
-    //     ...notification,
-    //     errorState: true,
-    //     errorMessage: "Update account failed!",
-    //     status: "error",
-    //   });
-    // }
+    setUpdate(true);
+    try {
+      await dispatch(updateStaff(accountId, data));
+      setUpdate(false);
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: "Update account successfully!",
+        status: "success",
+      });
+    } catch (e) {
+      setUpdate(false);
+      setNotification({
+        ...notification,
+        errorState: true,
+        errorMessage: "Update account failed!",
+        status: "error",
+      });
+    }
   };
 
   return (
@@ -111,8 +117,8 @@ const StaffDetails = () => {
       />
 
       <Header
-        title={"User Details"}
-        subTitle={"Show information of customers."}
+        title={"Tour Operator Details"}
+        subTitle={"Display all information of tour operator and update them."}
         loading={loading}
         showBack={true}
       />
@@ -125,13 +131,13 @@ const StaffDetails = () => {
           alignItems="center"
           marginBottom={1}
         >
-          <Box display="inherit" alignItems="center" gap={1}>
+          <Box display="inherit" alignItems="center" gap={1} paddingX={2}>
             {loading ? (
               <Skeleton width={100} />
             ) : (
               <>
                 <Typography color={theme.palette.text.third}>
-                  Staff ID:
+                  {data.roleId === 1 ? "Adminitrator" : "Tour Operator"} ID:
                 </Typography>
                 <Typography fontWeight="medium">#{data.id}</Typography>
               </>
@@ -209,64 +215,79 @@ const StaffDetails = () => {
                   }}
                   src={showImg(data.image)}
                 />
-                <Button component="label">
-                  <input
-                    hidden
-                    type="file"
-                    accept="image/png, image/jpg"
-                    name="image"
-                    onChange={(e) =>
-                      setData({ ...data, [e.target.name]: e.target.files[0] })
-                    }
-                  />
-                  Change Avatar
-                </Button>
+                {data.roleId === 1 ? null : (
+                  <Button component="label">
+                    <input
+                      hidden
+                      disabled={update}
+                      type="file"
+                      accept="image/png, image/jpg"
+                      name="image"
+                      onChange={(e) =>
+                        setData({ ...data, [e.target.name]: e.target.files[0] })
+                      }
+                    />
+                    Change Avatar
+                  </Button>
+                )}
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <Box marginBottom={2}>
                   <Typography color={theme.palette.text.third}>
                     First Name
                   </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    InputProps={{
-                      style: {
-                        borderRadius: 10,
-                      },
-                    }}
-                    name="firstName"
-                    value={data.firstName}
-                    {...register("firstName", {
-                      required: "First Name is required!",
-                    })}
-                    onChange={handleChange}
-                    error={!!errors.firstName}
-                    helperText={errors.firstName?.message}
-                  />
+                  {data.roleId === 1 ? (
+                    <Typography noWrap>{data.firstName}</Typography>
+                  ) : (
+                    <TextField
+                      fullWidth
+                      size="small"
+                      disabled={update}
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                        },
+                      }}
+                      name="firstName"
+                      value={data.firstName}
+                      {...register("firstName", {
+                        validate: (value, formValues) => value.trim() !== "",
+                        required: "First Name is required!",
+                      })}
+                      onChange={handleChange}
+                      error={!!errors.firstName}
+                      helperText={errors.firstName?.message}
+                    />
+                  )}
                 </Box>
                 <Box marginBottom={2}>
                   <Typography color={theme.palette.text.third}>
                     Gender
                   </Typography>
-                  <FormControl
-                    sx={{
-                      minWidth: 120,
-                    }}
-                    fullWidth
-                    size="small"
-                  >
-                    <Select
-                      value={data.gender}
-                      sx={{ borderRadius: 2.5 }}
-                      name="gender"
-                      onChange={handleChange}
+                  {data.roleId === 1 ? (
+                    <Typography noWrap>{data.gender}</Typography>
+                  ) : (
+                    <FormControl
+                      sx={{
+                        minWidth: 120,
+                      }}
+                      fullWidth
+                      size="small"
                     >
-                      <MenuItem value={"Female"}>Female</MenuItem>
-                      <MenuItem value={"Male"}>Male</MenuItem>
-                      <MenuItem value={"Other"}>Other</MenuItem>
-                    </Select>
-                  </FormControl>
+                      <Select
+                        value={data.gender === null ? "" : data.gender}
+                        sx={{ borderRadius: 2.5 }}
+                        name="gender"
+                        defaultValue={""}
+                        disabled={update}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value={"Female"}>Female</MenuItem>
+                        <MenuItem value={"Male"}>Male</MenuItem>
+                        <MenuItem value={"Other"}>Other</MenuItem>
+                      </Select>
+                    </FormControl>
+                  )}
                 </Box>
                 <Box marginBottom={2}>
                   <Typography color={theme.palette.text.third}>
@@ -278,23 +299,23 @@ const StaffDetails = () => {
                   <Typography color={theme.palette.text.third}>
                     Address
                   </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    InputProps={{
-                      style: {
-                        borderRadius: 10,
-                      },
-                    }}
-                    name="address"
-                    value={data.address}
-                    {...register("address", {
-                      required: "Address is required!",
-                    })}
-                    onChange={handleChange}
-                    error={!!errors.address}
-                    helperText={errors.address?.message}
-                  />
+                  {data.roleId === 1 ? (
+                    <Typography>{data.address}</Typography>
+                  ) : (
+                    <TextField
+                      fullWidth
+                      size="small"
+                      disabled={update}
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                        },
+                      }}
+                      name="address"
+                      value={data.address === null ? "" : data.address}
+                      onChange={handleChange}
+                    />
+                  )}
                 </Box>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -302,51 +323,72 @@ const StaffDetails = () => {
                   <Typography color={theme.palette.text.third}>
                     Last Name
                   </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    InputProps={{
-                      style: {
-                        borderRadius: 10,
-                      },
-                    }}
-                    name="lastName"
-                    value={data.lastName}
-                    {...register("lastName", {
-                      required: "Last Name is required!",
-                    })}
-                    onChange={handleChange}
-                    error={!!errors.lastName}
-                    helperText={errors.lastName?.message}
-                  />
+                  {data.roleId === 1 ? (
+                    <Typography>{data.lastName}</Typography>
+                  ) : (
+                    <TextField
+                      fullWidth
+                      size="small"
+                      disabled={update}
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                        },
+                      }}
+                      name="lastName"
+                      value={data.lastName}
+                      {...register("lastName", {
+                        validate: (value, formValues) => value.trim() !== "",
+                        required: "Last Name is required!",
+                      })}
+                      onChange={handleChange}
+                      error={!!errors.lastName}
+                      helperText={errors.lastName?.message}
+                    />
+                  )}
                 </Box>
                 <Box marginBottom={2}>
                   <Typography color={theme.palette.text.third}>
                     Nationality
                   </Typography>
-                  <FormControl
-                    sx={{
-                      minWidth: 120,
-                    }}
-                    fullWidth
-                    size="small"
-                  >
-                    <Select
-                      value={data.nationality}
-                      sx={{ borderRadius: 2.5 }}
-                      name="nationality"
-                      onChange={handleChange}
+                  {data.roleId === 1 ? (
+                    <Typography>
+                      {data.nationalCode ? data.nationalCode : "(No data)"}
+                    </Typography>
+                  ) : (
+                    <FormControl
+                      sx={{
+                        minWidth: 120,
+                      }}
+                      fullWidth
+                      size="small"
                     >
-                      {national.map((national) => (
-                        <MenuItem
-                          key={national.nationalCode}
-                          value={national.nationalCode}
-                        >
-                          {national.nationalName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                      <Select
+                        value={
+                          data.nationalCode === null ? "" : data.nationalCode
+                        }
+                        sx={{ borderRadius: 2.5 }}
+                        name="nationalCode"
+                        defaultValue={""}
+                        disabled={update}
+                        onChange={handleChange}
+                      >
+                        {national.map((national) => (
+                          <MenuItem
+                            key={national.nationalCode}
+                            value={national.nationalCode}
+                          >
+                            <img
+                              src={national.icon}
+                              alt={national.nationalName}
+                              style={{ width: 20, marginRight: 10 }}
+                            />
+                            {national.nationalName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
                 </Box>
                 <Box marginBottom={2}>
                   <Typography color={theme.palette.text.third}>
@@ -374,16 +416,19 @@ const StaffDetails = () => {
                 </Box>
               </Grid>
 
-              <Grid item md={12} display="flex" justifyContent="center">
-                <Button
-                  onClick={handleSubmit(onSubmit)}
-                  variant="contained"
-                  color="error"
-                  sx={{ borderRadius: 2.5 }}
-                >
-                  Save Change
-                </Button>
-              </Grid>
+              {data.roleId === 1 ? null : (
+                <Grid item md={12} display="flex" justifyContent="center">
+                  <Button
+                    disabled={update}
+                    onClick={handleSubmit(onSubmit)}
+                    variant="contained"
+                    color="error"
+                    sx={{ borderRadius: 2.5 }}
+                  >
+                    Save Change
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           )}
         </Box>
