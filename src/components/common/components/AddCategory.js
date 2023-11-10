@@ -15,7 +15,6 @@ import React from "react";
 import { Add } from "@styled-icons/ionicons-solid";
 import { Trash3 } from "@styled-icons/bootstrap";
 
-
 const AddCategory = ({
   values,
   setValues,
@@ -84,6 +83,7 @@ const AddCategory = ({
           value={values.name}
           {...register("name", {
             onChange: handleChange,
+            validate: (value, formValues) => value.trim() !== "",
             required: "Category Name is required!",
           })}
           disabled={loading}

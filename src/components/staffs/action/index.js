@@ -58,7 +58,6 @@ export const updateStaff = (staffId, staff) => {
         formData.append("file", staff.image);
 
         const { data } = await uploadFile(formData, "Account");
-        console.log(data);
         staff.image = data.link;
       }
 

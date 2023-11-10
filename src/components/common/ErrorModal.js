@@ -5,7 +5,7 @@ const ErrorModal = ({ open, setOpen, message, status }) => {
   return (
     <Snackbar
       open={open}
-      autoHideDuration={4000}
+      autoHideDuration={3000}
       onClose={() => setOpen(false)}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >

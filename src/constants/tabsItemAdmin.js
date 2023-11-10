@@ -1,6 +1,7 @@
 import { Admin, Group } from "@styled-icons/remix-line";
 import { Language } from "@styled-icons/ionicons-sharp";
 import { CategoryAlt, Home } from "@styled-icons/boxicons-regular";
+import { Settings2Outline } from "@styled-icons/evaicons-outline";
 
 const tabsItemAdmin = [
   {
@@ -32,6 +33,12 @@ const tabsItemAdmin = [
     title: "Languages",
     icon: <Language width={24} />,
     url: "/languages",
+  },
+  {
+    id: 6,
+    title: "Settings",
+    icon: <Settings2Outline width={24} />,
+    url: "/settings",
   },
 ];
 
