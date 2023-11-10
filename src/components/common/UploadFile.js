@@ -4,7 +4,7 @@ import React from "react";
 import { CloudUploadOutline } from "@styled-icons/evaicons-outline";
 import { CloudCheckFill } from "@styled-icons/bootstrap";
 
-const UploadFile = ({ file, setFile, clearErrors }) => {
+const UploadFile = ({ file, setFile, disabled, clearErrors }) => {
   const theme = useTheme();
   const handleChangeFile = (event) => {
     clearErrors("fileType");
@@ -53,6 +53,7 @@ const UploadFile = ({ file, setFile, clearErrors }) => {
             opacity: 0,
             position: "absolute",
           }}
+          disabled={disabled}
           onChange={handleChangeFile}
           type="file"
           accept=".json"

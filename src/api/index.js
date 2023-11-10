@@ -96,6 +96,23 @@ export const remove = (item) => {
     });
 };
 
+export const uploadFile = (files, path) => {
+  return API.post(
+    "/portal/azures/image",
+    files,
+    { params: { imagePath: path } },
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+};
+
+export const removeFile = (path, name) => {
+  return API.post(`${BASE_URL}/portal/azures/image`, null, {
+    params: { imagePath: path, imageName: name },
+  });
+};
+
 export const fetch = async (state, dispatch, setState, path, payload) => {
   if (state.isFetching) {
     return Promise.resolve(state.items);
@@ -112,7 +129,7 @@ export const fetch = async (state, dispatch, setState, path, payload) => {
   }
 };
 
-export const process = async (state, dispatch, setState, path, item, file) => {
+export const process = async (state, dispatch, setState, path, item) => {
   if (state.isFetching) {
     return Promise.reject(new Error("This item is being processed."));
   }
@@ -150,13 +167,15 @@ export const process = async (state, dispatch, setState, path, item, file) => {
       item.image = response;
     }
 
-    if (file instanceof File) {
-      try {
-        const response = await upload(item, file);
-        item.fileLink = response;
-      } catch (e) {
-        await remove(item);
-      }
+    if (item.fileLink instanceof File) {
+      let formData = new FormData();
+      formData.append("file", item.fileLink);
+
+      const { data } = await uploadFile(
+        formData,
+        "Language/FileTranslate"
+      );
+      item.fileLink = data.link;
     }
 
     await API.post(path, item);

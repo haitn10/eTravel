@@ -7,6 +7,7 @@ import {
   DialogTitle,
   FormControl,
   FormHelperText,
+  Grid,
   MenuItem,
   Select,
   TextField,
@@ -22,26 +23,24 @@ import { useForm } from "react-hook-form";
 import Header from "../common/Header";
 import UploadFile from "../common/UploadFile";
 import ErrorModal from "../common/ErrorModal";
-import Action from "../common/Action";
 
 import { getLanguageCode, getLanguages, processLanguage } from "./action";
 import languages from "../../constants/tables/languages";
-
-const initialState = {
-  name: "",
-  icon: "",
-  languageCode: "",
-};
+import ActionLanguage from "../common/ActionLanguage";
 
 const ManageLanguages = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const [open, setOpen] = useState(false);
-  const [languageId, setLanguageId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const [languageCode, setLanguageCode] = useState([]);
-  const [values, setValues] = useState(initialState);
+  const [values, setValues] = useState({
+    name: "",
+    icon: "",
+    languageCode: "",
+  });
   const [file, setFile] = useState();
   const [notification, setNotification] = useState({
     errorState: false,
@@ -60,7 +59,11 @@ const ManageLanguages = () => {
   });
 
   const form = useForm({
-    defaultValues: initialState,
+    defaultValues: {
+      name: "",
+      icon: "",
+      languageCode: "",
+    },
   });
   const { handleSubmit, setError, clearErrors, formState } = form;
   const { errors } = formState;
@@ -76,6 +79,8 @@ const ManageLanguages = () => {
           getLanguages({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "fullName",
+            search: search,
           })
         );
         setPageState((old) => ({
@@ -95,7 +100,7 @@ const ManageLanguages = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [dispatch, search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     if (languageCode.length > 0) {
@@ -138,22 +143,31 @@ const ManageLanguages = () => {
       return setError("fileType", {
         message: "Only JSON file are allowed!",
       });
+    } else if (file.name?.split(".")[0] !== values.languageCode) {
+      return setError("fileType", {
+        message: "File name must same language code!",
+      });
     }
+
+    const data = { ...values, fileLink: file };
     try {
-      await dispatch(processLanguage(values, file));
+      setLoading(true);
+      await dispatch(processLanguage(data));
+      await setLoading(false);
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: "Created successfully!",
+        errorMessage: "Created language successfully!",
         status: "success",
       });
+
       setOpen(false);
     } catch (e) {
-      const message = e.response.data ? e.response.data.message : e.message;
+      setLoading(false);
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: message,
+        errorMessage: e.response.data.message || "Created language failed!",
         status: "error",
       });
     }
@@ -161,11 +175,14 @@ const ManageLanguages = () => {
   };
 
   const handleClose = () => {
+    clearErrors("values, fileType");
     setOpen(false);
-    setValues(initialState);
-    clearErrors("values");
+    setValues({
+      name: "",
+      icon: "",
+      languageCode: "",
+    });
     setFile();
-    setLanguageId(null);
   };
 
   const onNavigate = async (params) => {
@@ -178,19 +195,18 @@ const ManageLanguages = () => {
     {
       field: "action",
       headerName: "Actions",
-      width: 120,
+      width: 80,
       align: "center",
       headerAlign: "center",
       sortable: false,
       renderCell: (params) => {
         return (
-          <Action
+          <ActionLanguage
             id={params.row.id}
-            accountStatus={params.row.status}
-            api="portal/languages/changestatus"
+            getData={getData}
+            status={params.row.status}
             notification={notification}
             setNotification={setNotification}
-            getData={getData}
           />
         );
       },
@@ -199,6 +215,7 @@ const ManageLanguages = () => {
 
   return (
     <Box
+      minWidth="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -207,16 +224,15 @@ const ManageLanguages = () => {
       <ErrorModal
         open={notification.errorState}
         setOpen={setNotification}
-        title="Info"
         message={notification.errorMessage}
         status={notification.status}
       />
       <Header
         title={"Manage Languages"}
         subTitle={"Manage all them existing languages or update status."}
-        showBack={false}
         showSearch={true}
-        showFilter={false}
+        search={search}
+        setSearch={setSearch}
         buttonAdd={true}
         setOpen={setOpen}
       />
@@ -256,6 +272,7 @@ const ManageLanguages = () => {
         fullWidth
         maxWidth="md"
         scroll="paper"
+        PaperProps={{ sx: { borderRadius: 5 } }}
       >
         <DialogTitle
           textAlign="center"
@@ -265,53 +282,45 @@ const ManageLanguages = () => {
           borderBottom={1}
           borderColor={theme.palette.background.third}
         >
-          {languageId ? "Language Details" : "Add New Languages"}
+          New Languages
         </DialogTitle>
         <DialogContent sx={{ paddingX: 20, marginTop: 5 }}>
-          <FormControl fullWidth size="small" noValidate>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-            >
-              <Typography sx={{ width: 200 }}>Language Name</Typography>
-              <Select
-                sx={{ borderRadius: 2.5 }}
-                name="values"
-                fullWidth
-                defaultValue=""
-                onChange={handleChange}
-                error={!!errors?.values}
-              >
-                {languageCode.map((item, index) => (
-                  <MenuItem key={index} value={item || ""}>
-                    <img
-                      src={item.icon}
-                      alt={item.nationalName}
-                      style={{ width: 20, marginRight: 10 }}
-                    />
-                    {item.nationalName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
-            <FormHelperText
-              htmlFor="render-select"
-              error
-              style={{ marginLeft: 180 }}
-            >
-              {errors.values?.message}
-            </FormHelperText>
+          <Grid container spacing={2}>
+            <Grid item lg={4}>
+              <Typography>Language Name</Typography>
+            </Grid>
+            <Grid item lg={8}>
+              <FormControl fullWidth size="small" noValidate>
+                <Select
+                  sx={{ borderRadius: 2.5 }}
+                  name="values"
+                  fullWidth
+                  defaultValue=""
+                  disabled={loading}
+                  onChange={handleChange}
+                  error={!!errors?.values}
+                >
+                  {languageCode.map((item, index) => (
+                    <MenuItem key={index} value={item || ""}>
+                      <img
+                        src={item.icon}
+                        alt={item.nationalName}
+                        style={{ width: 20, marginRight: 10 }}
+                      />
+                      {item.nationalName}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText htmlFor="render-select" error>
+                  {errors.values?.message}
+                </FormHelperText>
+              </FormControl>
+            </Grid>
 
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginTop={4}
-            >
-              <Typography sx={{ width: 200 }}>Language Code</Typography>
+            <Grid item lg={4}>
+              <Typography>Language Code</Typography>
+            </Grid>
+            <Grid item lg={8}>
               <TextField
                 fullWidth
                 size="small"
@@ -324,33 +333,39 @@ const ManageLanguages = () => {
                 }}
                 value={values?.languageCode}
               />
-            </Box>
-
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={3}
-              marginTop={4}
-            >
-              <Typography sx={{ width: 200 }}>File</Typography>
+            </Grid>
+            <Grid item lg={4}>
+              <Typography>File</Typography>
+            </Grid>
+            <Grid item lg={8}>
               <UploadFile
+                disabled={loading}
                 file={file}
                 setFile={setFile}
                 clearErrors={clearErrors}
               />
-            </Box>
-            <FormHelperText
-              htmlFor="render-select"
-              error
-              style={{ marginLeft: 180 }}
-            >
-              {errors.fileType?.message}
-            </FormHelperText>
-            <Typography color="error" marginTop={4}>
-              (Get data template <Link>here</Link>)
-            </Typography>
-          </FormControl>
+              <FormHelperText htmlFor="render-select" error>
+                {errors.fileType?.message}
+              </FormHelperText>
+            </Grid>
+          </Grid>
+
+          <Box marginTop={2} color={theme.palette.text.third}>
+            <Typography fontWeight="semiBold">Note</Typography>
+            <ul style={{ marginLeft: 20 }}>
+              <li style={{ fontSize: 14 }}>The file must be a json file.</li>
+              <li style={{ fontSize: 14 }}>
+                The file name must same language code.
+              </li>
+              <li style={{ fontSize: 14 }}>
+                Get data template file{" "}
+                <Link to={"/template.json"} download>
+                  here
+                </Link>
+                .
+              </li>
+            </ul>
+          </Box>
         </DialogContent>
         <DialogActions
           sx={{
@@ -359,6 +374,7 @@ const ManageLanguages = () => {
           }}
         >
           <Button
+            disabled={loading}
             onClick={handleSubmit(onSubmit)}
             variant="contained"
             sx={{
@@ -366,9 +382,10 @@ const ManageLanguages = () => {
               height: 40,
             }}
           >
-            {languageId ? "Update" : "Add New"}
+            Add New
           </Button>
           <Button
+            disabled={loading}
             onClick={handleClose}
             variant="contained"
             color="error"

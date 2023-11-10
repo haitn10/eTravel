@@ -60,15 +60,14 @@ export const getLanguageCode = async () => {
   }
 };
 
-export const processLanguage = (language, file) => {
+export const processLanguage = (language) => {
   return async (dispatch, getState) => {
     return process(
       getState().languages,
       dispatch,
       setState,
       "languages",
-      language,
-      file
+      language
     );
   };
 };
@@ -82,7 +81,19 @@ export const updateLanguage = async (languageId, values) => {
     const { data } = await API.put(`portal/languages/${languageId}`, values);
     return Promise.resolve(data);
   } catch (e) {
-    console.log(e);
+    return Promise.reject(e);
+  }
+};
+
+export const changeLanguageState = async (languageId, value) => {
+  try {
+    const { data } = await API.put(
+      `portal/languages/changestatus/${languageId}`,
+      null,
+      { params: value }
+    );
+    return Promise.resolve(data);
+  } catch (e) {
     return Promise.reject(e);
   }
 };
