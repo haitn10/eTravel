@@ -1,36 +1,18 @@
-import { Alert, IconButton, Slide } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Alert, Snackbar } from "@mui/material";
 import React from "react";
 
-const ErrorModal = ({ open, setOpen, title, message }) => {
+const ErrorModal = ({ open, setOpen, message, status }) => {
   return (
-    <Slide
-      in={open}
-      direction="left"
-      mountOnEnter
-      unmountOnExit
-      sx={{ position: "absolute", width: 400, right: 5 }}
+    <Snackbar
+      open={open}
+      autoHideDuration={4000}
+      onClose={() => setOpen(false)}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
-      <Alert
-        color="error"
-        severity="error"
-        action={
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            size="small"
-            onClick={() => {
-              setOpen(false);
-            }}
-          >
-            <CloseIcon fontSize="inherit" />
-          </IconButton>
-        }
-        sx={{ mb: 2 }}
-      >
-        {title} — <strong>{message}</strong>
+      <Alert onClose={setOpen} severity={status} sx={{ width: "100%" }}>
+        <strong>{message}</strong>
       </Alert>
-    </Slide>
+    </Snackbar>
   );
 };
 

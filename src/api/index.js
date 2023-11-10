@@ -1,11 +1,20 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
 
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+import { storage } from "../firebase";
+
 const cookies = new Cookies();
 
 // URL
-export const DEVELOPMENT_URL = "";
 export const BASE_URL = "http://localhost:8000";
+// export const BASE_URL = "https://etravelapi.azurewebsites.net";
+// export const CONVERSION_URL = `https://etravelconversion.azurewebsites.net/${}/valid`;
 
 export const API = axios.create({
   baseURL: `${BASE_URL}/api/`,
@@ -18,24 +27,101 @@ API.interceptors.request.use(function (config) {
   return config;
 });
 
-export const fetch = async (
-  state,
-  dispatch,
-  setState,
-  path,
-  requireFetch = false
-) => {
-  if (!requireFetch) {
-    if (!state.shouldFetch || state.isFetching) {
-      return Promise.resolve(state.items);
+export const uploadImage = async (data, url) => {
+  const checkArr = Array.isArray(data);
+  if (checkArr) {
+    const uploadPromises = data.map(async (item) => {
+      if (item.image instanceof File) {
+        const fileRef = ref(storage, `${url}/${item.image.name}`);
+        await uploadBytes(fileRef, item.image);
+        const downloadURL = await getDownloadURL(fileRef);
+        item.image = downloadURL;
+      }
+    });
+
+    await Promise.all(uploadPromises);
+
+    return data;
+  } else {
+    const fileRef = ref(storage, `${url}/${data.image.name}`);
+    await uploadBytes(fileRef, data.image);
+    const urlRes = await getDownloadURL(fileRef);
+    return urlRes;
+  }
+};
+
+export const removeImage = (item, url) => {
+  const fileRef = ref(storage, `${url}/${item.image.name}`);
+  deleteObject(fileRef)
+    .then(() => {
+      return Promise.resolve();
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+};
+
+export const uploadVoiceFile = (item) => {
+  return API.post("portal/places/convert/mp3", item, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+export const upload = (item, file) => {
+  const fileRef = ref(
+    storage,
+    `Language/FileTranslate/${item.languageCode}.json`
+  );
+  return uploadBytes(fileRef, file).then(async () => {
+    try {
+      const url = await getDownloadURL(fileRef);
+      return Promise.resolve(url);
+    } catch (err) {
+      return Promise.reject(err);
     }
+  });
+};
+
+export const remove = (item) => {
+  const fileRef = ref(
+    storage,
+    `Language/FileTranslate/${item.languageCode}.json`
+  );
+  deleteObject(fileRef)
+    .then(() => {
+      return Promise.resolve();
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+};
+
+export const uploadFile = (files, path) => {
+  return API.post(
+    "/portal/azures/image",
+    files,
+    { params: { imagePath: path } },
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+};
+
+export const removeFile = (path, name) => {
+  return API.post(`${BASE_URL}/portal/azures/image`, null, {
+    params: { imagePath: path, imageName: name },
+  });
+};
+
+export const fetch = async (state, dispatch, setState, path, payload) => {
+  if (state.isFetching) {
+    return Promise.resolve(state.items);
   }
 
   try {
     dispatch(setState({ isFetching: true }));
-
-    const { data } = await API.get(path);
-    dispatch(setState({ shouldFetch: false, isFetching: false, items: data.chart }));
+    const { data } = await API.get(path, { params: payload });
+    dispatch(setState({ isFetching: false, items: data }));
     return Promise.resolve(data);
   } catch (e) {
     dispatch(setState({ isFetching: false }));
@@ -43,59 +129,63 @@ export const fetch = async (
   }
 };
 
-// export const process = async (
-//     processings,
-//     dispatch,
-//     setState,
-//     addProcess,
-//     removeProcess,
-//     processId,
-//     path,
-//     item
-//   ) => {
-//     if (processings.includes(processId)) {
-//       return Promise.reject(new Error("This item is being processed."));
-//     }
+export const process = async (state, dispatch, setState, path, item) => {
+  if (state.isFetching) {
+    return Promise.reject(new Error("This item is being processed."));
+  }
 
-//     try {
-//       dispatch(addProcess(processId));
+  try {
+    dispatch(setState({ isFetching: true }));
+    if (item.placeDescriptions?.length > 0) {
+      let formData = new FormData();
+      item.placeDescriptions.forEach((element) => {
+        if (element.voiceFile instanceof File) {
+          formData.append("listMp3", element.voiceFile);
+        }
+      });
+      const { data } = await uploadVoiceFile(formData);
+      data.voiceFiles.forEach((itm) => {
+        const indexFile = item.placeDescriptions.findIndex(
+          (file) => itm.fileName === file.voiceFile.name
+        );
+        if (indexFile !== -1) {
+          item.placeDescriptions[indexFile].voiceFile = itm.fileLink;
+        }
+      });
+    }
 
-//       if (item.bannerImageUrl instanceof File) {
-//         let formData = new FormData();
-//         if (item.bannerImageUrl.type.includes("video")) {
-//           formData.append("video", item.bannerImageUrl);
-//         } else {
-//           formData.append("image", item.bannerImageUrl);
-//         }
-//         const response = await upload(formData);
-//         item.bannerImageUrl = `${baseURL}${response.data.url}`;
-//       }
+    if (item.placeImages) {
+      const response = await uploadImage(
+        item.placeImages,
+        `place/PlaceImg/${item.name}`
+      );
+      item.placeImages = response;
+    }
 
-//       if (item.thumbnailImageUrl instanceof File) {
-//         let formData = new FormData();
-//         formData.append("image", item.thumbnailImageUrl);
-//         const response = await upload(formData);
-//         item.thumbnailImageUrl = `${baseURL}${response.data.url}`;
-//       }
+    if (item.image instanceof File) {
+      const response = await uploadImage(item, "Tour");
+      item.image = response;
+    }
 
-//       if (item.pdfUrl instanceof File) {
-//         let formData = new FormData();
-//         formData.append("pdf", item.pdfUrl);
-//         const response = await upload(formData);
-//         item.pdfUrl = `${baseURL}${response.data.url}`;
-//       }
+    if (item.fileLink instanceof File) {
+      let formData = new FormData();
+      formData.append("file", item.fileLink);
 
-//       await API.post(path, item);
-//       dispatch(setState({ shouldFetch: true }));
-//       dispatch(removeProcess(processId));
-//       return Promise.resolve();
-//     } catch (e) {
-//       dispatch(removeProcess(processId));
-//       return Promise.reject(e);
-//     }
-//   };
+      const { data } = await uploadFile(
+        formData,
+        "Language/FileTranslate"
+      );
+      item.fileLink = data.link;
+    }
 
-export const update = async () => {};
+    await API.post(path, item);
+    dispatch(setState({ isFetching: false }));
+    return Promise.resolve();
+  } catch (e) {
+    dispatch(setState({ isFetching: false }));
+    return Promise.reject(e);
+  }
+};
 
 //   export const remove = async (
 //     state,

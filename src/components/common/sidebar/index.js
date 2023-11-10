@@ -1,161 +1,231 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Typography,
+  alpha,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import { Sidebar, Menu, SubMenu, MenuItem } from "react-pro-sidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+
+import { logOut } from "../../auth/action";
+
+import { MenuOutline } from "@styled-icons/evaicons-outline";
+import { ErrorOutline } from "@styled-icons/material";
+import { SignOut } from "@styled-icons/octicons";
+
+import Item from "./Item";
 import logo from "../../../assets/etravel-logo.png";
-
-import DoDisturbOnOutlinedIcon from "@mui/icons-material/DoDisturbOnOutlined";
-import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
-
 import tabsItem from "../../../constants/tabsItem";
-import SubItems from "./subItems";
-import { useLocation, useNavigate } from "react-router-dom";
+import tabsItemAdmin from "../../../constants/tabsItemAdmin";
 
-const Sidebar = ({
-  isNonMobile,
-  drawerWidth,
-  isSidebarOpen,
-  setIsSidebarOpen,
-}) => {
+const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const location = useLocation();
-  const navigate = useNavigate();
+  let path = location.pathname.slice();
+  const state = useSelector((state) => state.auth);
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState("dashboard");
 
-  let url = location.pathname.substring(1);
-  const [active, setActive] = useState(url);
+  useEffect(() => {
+    setSelected(path);
+  }, [path]);
+
+  const onLogout = () => {
+    dispatch(logOut());
+  };
 
   return (
-    <Box component="nav">
-      <Drawer
-        open={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        variant="persistent"
-        anchor="left"
-        sx={{
-          width: drawerWidth,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-          },
-        }}
-      >
-        <Box>
-          {/* Logo */}
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+      position="fixed"
+      minHeight="inherit"
+      zIndex={1}
+      left={0}
+      backgroundColor={theme.palette.background.primary}
+    >
+      <Sidebar collapsed={isCollapsed} backgroundColor="inherit">
+        <Menu
+          iconShape="square"
+          menuItemStyles={{
+            root: {
+              color: theme.palette.text.third,
+            },
+            button: {
+              [`&:hover`]: {
+                backgroundColor: alpha(theme.palette.background.hovered, 0.025),
+              },
+            },
+          }}
+        >
           <Box
-            margin={2}
             display="flex"
             alignItems="center"
-            justifyContent="center"
+            justifyContent={isCollapsed ? "center" : "space-between"}
+            padding={1}
           >
-            <Box display="flex" alignItems="center" justifyContent="center">
-              {isNonMobile ? (
-                <img
-                  src={logo}
-                  alt="logo"
-                  style={{ maxHeight: 150, maxWidth: 150 }}
-                />
-              ) : (
-                <img
-                  src={logo}
-                  alt="logo"
-                  style={{ maxHeight: 60, maxWidth: 60 }}
-                />
-              )}
-            </Box>
+            {!isCollapsed && (
+              <Box ml={2}>
+                <Typography
+                  color={theme.palette.text.third}
+                  fontWeight="medium"
+                >
+                  {state.profile.roleName}
+                </Typography>
+              </Box>
+            )}
+
+            <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
+              <MenuOutline width={24} />
+            </IconButton>
           </Box>
 
-          <List>
-            {tabsItem.map(({ id, title, icon, url, options }) => {
-              const lcTitle = title.toLowerCase();
-              return (
-                <ListItem
-                  key={id}
-                  disablePadding
-                  onClick={() => {
-                    if (options.length === 0) {
-                      navigate(`${url}`);
-                    }
-                    setActive(lcTitle);
-                  }}
-                  sx={{
-                    ":hover": {
-                      color: theme.palette.text.active,
-                    },
-                    cursor: "pointer",
-                    color:
-                      active === lcTitle && options.length === 0
-                        ? theme.palette.text.active
-                        : theme.palette.text.secondary,
-                    paddingY: "0.25rem",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    width={isNonMobile ? 260 : null}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        ml: "1.5rem",
-                        color: "inherit",
-                      }}
-                    >
-                      {icon}
-                    </ListItemIcon>
-                    {isNonMobile ? (
-                      <ListItemText
-                        primary={title}
-                        primaryTypographyProps={
-                          active === lcTitle
-                            ? { fontWeight: "700", fontSize: 17, minWidth: 150 }
-                            : { fontWeight: "500", fontSize: 17, minWidth: 150 }
-                        }
-                      />
-                    ) : null}
+          {!isCollapsed && (
+            <Box mb="25px">
+              <Box display="flex" justifyContent="center" alignItems="center">
+                <img
+                  alt="Etravel Logo"
+                  width="150px"
+                  height="150px"
+                  src={logo}
+                />
+              </Box>
+            </Box>
+          )}
 
-                    {isNonMobile && options.length > 0 ? (
-                      active !== lcTitle ? (
-                        <ListItemIcon
-                          sx={{
-                            display: "flex",
-                            justifyContent: "end",
-                          }}
-                        >
-                          <ControlPointOutlinedIcon color="error" />
-                        </ListItemIcon>
-                      ) : (
-                        <ListItemIcon
-                          sx={{
-                            display: "flex",
-                            justifyContent: "end",
-                          }}
-                        >
-                          <DoDisturbOnOutlinedIcon color="error" />
-                        </ListItemIcon>
-                      )
-                    ) : null}
-                  </Box>
-                  {options.length > 0 && active === lcTitle ? (
-                    <SubItems
-                      options={options}
-                      isNonMobile={isNonMobile}
-                      url={url}
-                    />
-                  ) : null}
-                </ListItem>
-              );
+          {state.profile.roleName === "TourOperator" &&
+            tabsItem.map((tab) => {
+              const checkOpen = path.startsWith(tab.url);
+              if (tab.options.length > 0) {
+                return (
+                  <SubMenu
+                    key={tab.id}
+                    defaultOpen={checkOpen}
+                    label={
+                      <Typography
+                        fontWeight={false ? "bold" : "medium"}
+                        color="inherit"
+                      >
+                        {tab.title}
+                      </Typography>
+                    }
+                    icon={tab.icon}
+                  >
+                    {tab.options.map((option, index) => (
+                      <Item
+                        key={index}
+                        title={option.subTitle}
+                        icon={option.subIcon}
+                        linkUrl={option.subUrl}
+                        subMenu={true}
+                        selected={selected === option.subUrl.toLowerCase()}
+                        setSelected={setSelected}
+                      />
+                    ))}
+                  </SubMenu>
+                );
+              } else {
+                return (
+                  <Item
+                    key={tab.id}
+                    title={tab.title}
+                    icon={tab.icon}
+                    linkUrl={tab.url}
+                    subMenu={false}
+                    selected={selected === tab.url.toLowerCase()}
+                    setSelected={setSelected}
+                  />
+                );
+              }
             })}
-          </List>
-        </Box>
-      </Drawer>
+
+          {state.profile.roleName === "Administrator" &&
+            tabsItemAdmin.map((tab) => (
+              <Item
+                key={tab.id}
+                title={tab.title}
+                icon={tab.icon}
+                linkUrl={tab.url}
+                subMenu={false}
+                selected={selected.includes(tab.url.toLowerCase())}
+                setSelected={setSelected}
+              />
+            ))}
+        </Menu>
+      </Sidebar>
+      <Box marginBottom={3}>
+        <Sidebar
+          collapsed={isCollapsed}
+          backgroundColor={theme.palette.background.primary}
+        >
+          <Menu
+            iconShape="square"
+            menuItemStyles={{
+              root: {
+                color: theme.palette.text.third,
+              },
+              button: {
+                [`&:hover`]: {
+                  backgroundColor: alpha(
+                    theme.palette.background.hovered,
+                    0.025
+                  ),
+                },
+              },
+            }}
+          >
+            <MenuItem
+              icon={<ErrorOutline width={24} />}
+              onClick={() => setOpen(true)}
+            >
+              <Typography fontWeight="medium">Help & Information</Typography>
+            </MenuItem>
+            <MenuItem icon={<SignOut height={24} />} onClick={() => onLogout()}>
+              <Typography fontWeight="medium">Log out</Typography>
+            </MenuItem>
+          </Menu>
+        </Sidebar>
+      </Box>
+
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Help & Information"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            The system helps manage all application information. You can perform
+            basic operations to develop tours with the right voice for the
+            language.
+            <Typography fontWeight="medium">
+              <strong>Call us: </strong>
+              0971 520 977
+            </Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="error" onClick={() => setOpen(false)} autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
 
-export default Sidebar;
+export default SidebarApp;

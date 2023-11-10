@@ -1,88 +1,83 @@
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import AirlineStopsRoundedIcon from "@mui/icons-material/AirlineStopsRounded";
-import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
-import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-const tabItems = [
+import { Home, Directions, Import } from "@styled-icons/boxicons-regular";
+import {
+  LocationAdd,
+  CollectionsAdd,
+} from "@styled-icons/fluentui-system-regular";
+import { ListUl, FileEarmarkText } from "@styled-icons/bootstrap";
+import { ExchangeDollar } from "@styled-icons/remix-line";
+import { Settings2Outline } from "@styled-icons/evaicons-outline";
+import { Location } from "@styled-icons/ionicons-outline";
+
+const tabsItem = [
   {
     id: 1,
-    title: "Home",
-    icon: <HomeRoundedIcon />,
-    url: "/home",
+    title: "Dashboard",
+    icon: <Home width={24} />,
+    url: "/dashboard",
     options: [],
   },
   {
     id: 2,
     title: "Tours",
-    icon: <AirlineStopsRoundedIcon />,
+    icon: <Directions width={24} />,
     url: "/tours",
     options: [
       {
         subTitle: "List Tours",
-        subIcon: <FormatListBulletedRoundedIcon />,
-        subUrl: "/",
+        subIcon: <ListUl width={20} />,
+        subUrl: "/tours",
       },
       {
         subTitle: "Create Tour",
-        subIcon: "",
-        subUrl: "/create",
+        subIcon: <CollectionsAdd width={20} />,
+        subUrl: "/tours/create",
       },
     ],
   },
   {
     id: 3,
     title: "Places",
-    icon: <PlaceOutlinedIcon />,
+    icon: <Location width={24} />,
     url: "/places",
     options: [
       {
         subTitle: "List Places",
-        subIcon: <FormatListBulletedRoundedIcon />,
-        subUrl: "/",
+        subIcon: <ListUl width={20} />,
+        subUrl: "/places",
       },
       {
-        subTitle: "Create Place",
-        subIcon: "",
-        subUrl: "/add",
+        subTitle: "Add Place",
+        subIcon: <LocationAdd width={20} />,
+        subUrl: "/places/add",
       },
       {
         subTitle: "Import File",
-        subIcon: "",
-        subUrl: "/import",
+        subIcon: <Import width={20} />,
+        subUrl: "/places/import",
       },
     ],
   },
   {
     id: 4,
-    title: "Transactions",
-    icon: <RequestQuoteOutlinedIcon />,
-    url: "/transactions",
+    title: "Bookings",
+    icon: <FileEarmarkText height={24} />,
+    url: "/bookings",
     options: [],
   },
   {
     id: 5,
-    title: "Settings",
-    icon: <SettingsOutlinedIcon />,
-    url: "/settings",
+    title: "Transactions",
+    icon: <ExchangeDollar height={24} />,
+    url: "/transactions",
     options: [],
   },
   {
     id: 6,
-    title: "Help & Information",
-    icon: <ErrorOutlineOutlinedIcon />,
-    url: "",
-    options: [],
-  },
-  {
-    id: 7,
-    title: "Log out",
-    icon: <LogoutRoundedIcon />,
-    url: "",
+    title: "Settings",
+    icon: <Settings2Outline width={24} />,
+    url: "/settings",
     options: [],
   },
 ];
 
-export default tabItems;
+export default tabsItem;

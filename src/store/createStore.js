@@ -4,11 +4,30 @@ import reduxReset from "redux-reset";
 
 import auth from "../components/auth/reducer";
 import homepage from "../components/home/reducer";
+import users from "../components/users/reducer";
+import staffs from "../components/staffs/reducer";
+import categories from "../components/categories/reducer";
+import languages from "../components/languages/reducer";
+import tours from "../components/tours/reducer";
+import places from "../components/places/reducer";
+import transactions from "../components/places/reducer";
+import bookings from "../components/places/reducer";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
-  combineReducers({ auth, homepage }),
+  combineReducers({
+    auth,
+    homepage,
+    users,
+    staffs,
+    categories,
+    languages,
+    tours,
+    places,
+    transactions,
+    bookings,
+  }),
   composeEnhancers(applyMiddleware(thunk), reduxReset())
 );
 

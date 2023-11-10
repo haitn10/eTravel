@@ -17,8 +17,10 @@ export const theme = createTheme({
       second: color.text[200],
       third: color.text[300],
       onStatus: color.text[400],
+      checked: color.text[500],
       active: color.text[600],
       buttonText: color.text[700],
+      pending: color.text[800],
     },
   },
   typography: {

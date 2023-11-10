@@ -54,11 +54,11 @@ const CountryRanking = ({ loadings, rows }) => {
                       fontWeight: "semiBold",
                     }}
                   >
-                    <Avatar src="" />
+                    <Avatar src={row.icon} />
                     {row.name}
                   </TableCell>
-                  <TableCell align="center">{row.calories}</TableCell>
-                  <TableCell align="right">{row.carbs}</TableCell>
+                  <TableCell align="center">{row.quantity}</TableCell>
+                  <TableCell align="right">{row.ratio}</TableCell>
                 </TableRow>
               ))
             ) : (

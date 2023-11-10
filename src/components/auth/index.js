@@ -1,4 +1,4 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { EyeOutline, EyeOffOutline } from "@styled-icons/evaicons-outline/";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
   Avatar,
@@ -36,6 +36,10 @@ const Profile = () => {
     e.preventDefault();
     setLoading(!loading);
   };
+
+  const [test, setTest] = useState("");
+
+  console.log(new File(test, "utf8"));
 
   return (
     <Box
@@ -330,7 +334,7 @@ const Profile = () => {
                         onMouseDown={(e) => e.preventDefault()}
                         edge="end"
                       >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                        {showPassword ? <EyeOffOutline /> : <EyeOutline />}
                       </IconButton>
                     </InputAdornment>
                   }
@@ -359,9 +363,9 @@ const Profile = () => {
                         edge="end"
                       >
                         {showConfirmPassword ? (
-                          <VisibilityOff />
+                          <EyeOffOutline />
                         ) : (
-                          <Visibility />
+                          <EyeOutline />
                         )}
                       </IconButton>
                     </InputAdornment>

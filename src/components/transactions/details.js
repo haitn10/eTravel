@@ -1,13 +1,10 @@
 import React from "react";
-import { useTheme } from "@emotion/react";
-import { Grid, IconButton, Typography, alpha } from "@mui/material";
+import { Grid, Typography, alpha, useTheme } from "@mui/material";
 import { Box } from "@mui/system";
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import { createBrowserHistory } from "history";
+import Header from "../common/Header";
 
 const TransactionDetails = () => {
   const theme = useTheme();
-  const history = createBrowserHistory();
   return (
     <Box
       margin="1.25em"
@@ -17,32 +14,14 @@ const TransactionDetails = () => {
       borderRadius={5}
     >
       {/* Title */}
-      <Box display="flex" alignItems="center" marginLeft={2} padding={1}>
-        <IconButton
-          aria-label="back"
-          sx={{ border: 1, color: theme.palette.text.buttonText }}
-          onClick={() => history.back()}
-        >
-          <ArrowBackRoundedIcon />
-        </IconButton>
-
-        <Box marginLeft={2}>
-          <Typography
-            color={theme.palette.text.active}
-            fontWeight="bold"
-            fontSize={36}
-          >
-            Transaction Details
-          </Typography>
-          <Typography
-            color={theme.palette.text.third}
-            fontWeight="regular"
-            fontSize={18}
-          >
-            Show information of customers and their tours.
-          </Typography>
-        </Box>
-      </Box>
+      <Header
+        title={"Transactions Details"}
+        subTitle={"Show information about transactions of customers."}
+        showBack={true}
+        showSearch={false}
+        showFilter={false}
+        buttonAdd={false}
+      />
 
       <Box marginX={10} padding={1}>
         <Box
@@ -75,7 +54,7 @@ const TransactionDetails = () => {
           </Box>
         </Box>
 
-        <Grid container rowGap={{ xs: 1, sm: 2, xs: 3 }}>
+        <Grid container rowGap={{ xs: 1, sm: 2 }}>
           <Grid
             item
             xs={7}
