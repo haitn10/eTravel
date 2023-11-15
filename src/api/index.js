@@ -136,6 +136,8 @@ export const process = async (state, dispatch, setState, path, item) => {
 
   try {
     dispatch(setState({ isFetching: true }));
+
+    //Upload voice file
     if (item.placeDescriptions?.length > 0) {
       let formData = new FormData();
       item.placeDescriptions.forEach((element) => {
@@ -162,19 +164,20 @@ export const process = async (state, dispatch, setState, path, item) => {
       item.placeImages = response;
     }
 
+    //Upload image tour
     if (item.image instanceof File) {
-      const response = await uploadImage(item, "Tour");
-      item.image = response;
+      let formData = new FormData();
+      formData.append("file", item.image);
+      const { data } = await uploadFile(formData, "Tour");
+      item.image = data.link;
     }
 
+    //Upload language file
     if (item.fileLink instanceof File) {
       let formData = new FormData();
       formData.append("file", item.fileLink);
 
-      const { data } = await uploadFile(
-        formData,
-        "Language/FileTranslate"
-      );
+      const { data } = await uploadFile(formData, "Language/FileTranslate");
       item.fileLink = data.link;
     }
 

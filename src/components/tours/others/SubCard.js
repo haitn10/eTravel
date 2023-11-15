@@ -37,9 +37,9 @@ const SubCard = ({
     >
       <Box display="flex" gap={1} marginX={1}>
         <DragIndicator color={theme.palette.text.third} width={24} />
-        <Typography fontWeight="medium">{place.name}</Typography>
+        <Typography fontWeight="medium" fontSize={15}>{place.name}</Typography>
       </Box>
-      <Tooltip title="Delete">
+      <Tooltip title="Remove">
         <IconButton
           onClick={removePlaceItem}
           sx={{

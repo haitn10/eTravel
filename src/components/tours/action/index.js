@@ -1,4 +1,4 @@
-import { API, fetch, process, uploadImage } from "../../../api";
+import { API, fetch, process, uploadFile } from "../../../api";
 
 export const SET_TOURS_STATE = "SET_TOURS_STATE";
 
@@ -33,8 +33,10 @@ export const processTour = (tour) => {
 export const updateTour = async (tourId, values) => {
   try {
     if (values.image instanceof File) {
-      const response = await uploadImage(values, "Tour");
-      values.image = response;
+      let formData = new FormData();
+      formData.append("file", values.image);
+      const { data } = await uploadFile(formData, "Tour");
+      values.image = data.link;
     }
 
     const { data } = await API.put(`portal/tours/${tourId}`, values);
