@@ -15,19 +15,15 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Controller, useFieldArray } from "react-hook-form";
 
-import UploadImage from "../../common/UploadImage";
-
-import { getAllLanguages } from "../../languages/action";
+import { getAllLanguages } from "../../../languages/action";
 
 import { Add } from "@styled-icons/ionicons-outline";
 import { Trash3 } from "@styled-icons/bootstrap";
 
-const TourGeneral = ({
-  values,
-  setValues,
+const SubsLanguage = ({
   loading,
-  register,
   control,
+  register,
   errors,
   getValues,
   notification,
@@ -50,14 +46,14 @@ const TourGeneral = ({
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: "Can't loading languages for selection!",
+          errorMessage: "Can't loading details mutil-languages for tour!",
           status: "error",
         });
       }
     }
     fetchLanguage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   const hasDuplicate = () => {
     const formData = getValues();
@@ -73,128 +69,7 @@ const TourGeneral = ({
   };
 
   return (
-    <Box padding={5} marginX={10}>
-      <Box>
-        {loading ? (
-          <Skeleton width={200} />
-        ) : (
-          <Typography
-            fontSize={14}
-            letterSpacing={0.5}
-            fontWeight="medium"
-            textTransform="uppercase"
-            color={theme.palette.text.third}
-          >
-            General Information
-          </Typography>
-        )}
-      </Box>
-
-      <Grid container rowGap={2} padding={1}>
-        {/* Tour Name */}
-        <Grid item sm={12} lg={4}>
-          {loading ? (
-            <Skeleton width="100%" />
-          ) : (
-            <Typography fontWeight="medium">
-              Tour Name Default{" "}
-              <small style={{ color: theme.palette.text.active }}>*</small>
-            </Typography>
-          )}
-        </Grid>
-        <Grid item sm={12} lg={8}>
-          {loading ? (
-            <Skeleton width="100%" />
-          ) : (
-            <TextField
-              fullWidth
-              size="small"
-              value={values.name}
-              {...register("name", {
-                required: "Tour name is required!",
-                validate: (value) => {
-                  return value.trim() !== "" || "Tour name is not empty!";
-                },
-                onChange: (e) => setValues({ ...values, name: e.target.value }),
-              })}
-              error={!!errors.name}
-              helperText={errors.name?.message}
-              InputProps={{
-                style: {
-                  borderRadius: 10,
-                },
-              }}
-              placeholder="Type tour name here"
-            />
-          )}
-        </Grid>
-
-        {/* Tour Image */}
-        <Grid item sm={12} lg={4}>
-          {loading ? (
-            <Skeleton width="100%" />
-          ) : (
-            <Typography fontWeight="medium">
-              Illustration Image{" "}
-              <small style={{ color: theme.palette.text.active }}>*</small>
-            </Typography>
-          )}
-        </Grid>
-        <Grid item sm={12} lg={8}>
-          {loading ? (
-            <Skeleton width="100%" />
-          ) : (
-            <UploadImage
-              values={values}
-              setValues={setValues}
-              errors={errors}
-              register={register}
-            />
-          )}
-        </Grid>
-      </Grid>
-
-      <Box
-        marginTop={2}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        {loading ? (
-          <Skeleton width={300} />
-        ) : (
-          <Typography
-            fontSize={14}
-            letterSpacing={0.5}
-            fontWeight="medium"
-            textTransform="uppercase"
-            color={theme.palette.text.third}
-          >
-            information with multiple languages
-          </Typography>
-        )}
-
-        {fields.length < 4 ? (
-          loading ? (
-            <Skeleton width={100} />
-          ) : (
-            <Button
-              onClick={() => {
-                if (fields.length < languagesList.length) {
-                  append({ languageCode: "en-us", name: "", description: "" });
-                }
-              }}
-              sx={{ borderRadius: 2.5 }}
-            >
-              <Add width={20} />
-              <Typography fontWeight="medium" fontSize={14}>
-                Add More
-              </Typography>
-            </Button>
-          )
-        ) : null}
-      </Box>
-
+    <>
       {fields.map((item, index) => {
         return (
           <Box
@@ -205,7 +80,7 @@ const TourGeneral = ({
             padding={1}
           >
             <Box>
-              <Grid container rowGap={2} marginY={2}>
+              <Grid container spacing={2} marginY={2}>
                 <Grid item sm={12} lg={3}>
                   {loading ? (
                     <Skeleton width={100} />
@@ -220,7 +95,7 @@ const TourGeneral = ({
                 </Grid>
                 <Grid item sm={12} lg={9}>
                   {loading ? (
-                    <Skeleton width={500} />
+                    <Skeleton width="100%" />
                   ) : (
                     <Controller
                       control={control}
@@ -287,7 +162,7 @@ const TourGeneral = ({
                 </Grid>
                 <Grid item sm={12} lg={9}>
                   {loading ? (
-                    <Skeleton width={500} />
+                    <Skeleton width="100%" />
                   ) : (
                     <TextField
                       fullWidth
@@ -317,7 +192,7 @@ const TourGeneral = ({
                 {/* Tour Decription */}
                 <Grid item sm={12} lg={3}>
                   {loading ? (
-                    <Skeleton width={100} />
+                    <Skeleton width={100} height={30} />
                   ) : (
                     <>
                       <Typography fontWeight="medium">
@@ -334,7 +209,7 @@ const TourGeneral = ({
                 </Grid>
                 <Grid item sm={12} lg={9}>
                   {loading ? (
-                    <Skeleton width={500} />
+                    <Skeleton width="100%" height={30} />
                   ) : (
                     <TextField
                       fullWidth
@@ -365,7 +240,9 @@ const TourGeneral = ({
               </Grid>
               <Divider />
             </Box>
-            {fields.length === 1 ? null : (
+            {fields.length === 1 ? null : loading ? (
+              <Skeleton width={100} height={170} />
+            ) : (
               <Button
                 color="error"
                 onClick={() => remove(index)}
@@ -377,8 +254,30 @@ const TourGeneral = ({
           </Box>
         );
       })}
-    </Box>
+
+      <Box marginTop={2} display="flex" justifyContent="center">
+        {fields.length < 4 ? (
+          loading ? (
+            <Skeleton width={200} />
+          ) : (
+            <Button
+              onClick={() => {
+                if (fields.length < languagesList.length) {
+                  append({ languageCode: "en-us", name: "", description: "" });
+                }
+              }}
+              sx={{ borderRadius: 2.5 }}
+            >
+              <Add width={20} />
+              <Typography fontWeight="medium" fontSize={14}>
+                Add More
+              </Typography>
+            </Button>
+          )
+        ) : null}
+      </Box>
+    </>
   );
 };
 
-export default TourGeneral;
+export default SubsLanguage;

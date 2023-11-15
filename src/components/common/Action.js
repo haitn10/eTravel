@@ -49,25 +49,19 @@ const Action = ({
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: response.message || response,
+          errorMessage: "Change state successfully!",
           status: "success",
         });
       }
     } catch (e) {
-      const message = e.response.data ? e.response.data.message : e.message;
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: message,
+        errorMessage: "Change state failed!",
         status: "error",
       });
     }
-    setPopupConfirm(false);
-    //Close error message
-    setTimeout(
-      () => setNotification({ ...notification, errorState: false }),
-      3000
-    );
+    await setPopupConfirm(false);
   };
 
   return (

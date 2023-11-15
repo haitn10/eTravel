@@ -18,6 +18,14 @@ const places = [
     width: 300,
   },
   {
+    field: "languageList",
+    headerName: "Number of Languages",
+    headerAlign: "center",
+    align: "center",
+    flex: 1,
+    renderCell: (params) => params.row.languageList?.length,
+  },
+  {
     field: "price",
     headerName: "Price",
     headerAlign: "center",
@@ -42,7 +50,8 @@ const places = [
           <TimeFive width={14} />
           {params.row.duration
             .toFixed(2)
-            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}h
+            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
+          h
         </Box>
       );
     },

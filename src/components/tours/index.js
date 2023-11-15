@@ -14,6 +14,7 @@ const ManageTours = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -42,6 +43,8 @@ const ManageTours = () => {
           getTours({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "name",
+            Search: search,
           })
         );
         setPageState((old) => ({
@@ -61,7 +64,7 @@ const ManageTours = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
@@ -82,12 +85,16 @@ const ManageTours = () => {
       renderCell: (params) => {
         return (
           <Action
+            titleAc={"Are you sure you want to activate?"}
+            titleDe={"Are you sure you want to deactivate?"}
+            messageAc={"This action of yours will make this tour active again and users can operate directly with this tour."}
+            messageDe={"Your action will cause this tour to no longer be used in the system."}
             id={params.row.id}
-            accountStatus={params.row.status}
             api="portal/tours/changestatus"
+            status={params.row.status}
+            getData={getData}
             notification={notification}
             setNotification={setNotification}
-            getData={getData}
           />
         );
       },
@@ -95,13 +102,12 @@ const ManageTours = () => {
   ];
   return (
     <Box
-      minHeight="95vh"
+      minHeight="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
-      {/* Title */}
 
       <ErrorModal
         open={notification.errorState}
@@ -109,13 +115,14 @@ const ManageTours = () => {
         message={notification.errorMessage}
         status={notification.status}
       />
+      
       <Header
         title={"Manage Tournaments"}
         subTitle={"Manage all them existing tours or update status."}
         showBack={false}
         showSearch={true}
-        showFilter={false}
-        buttonAdd={false}
+        search={search}
+        setSearch={setSearch}
       />
 
       {/* Data Table */}

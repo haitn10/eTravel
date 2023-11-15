@@ -1,40 +1,32 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  Rating,
-  Tab,
-  Typography,
-  alpha,
-  useTheme,
-} from "@mui/material";
+import { Box, Skeleton, Tab, useTheme } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import moment from "moment/moment";
+import { useForm } from "react-hook-form";
 
-import SubsLanguage from "./others/SubsLanguage";
 import PlacesList from "./others/PlacesList";
+import SubsLanguage from "./others/details/SubsLanguage";
+import GeneralInfo from "./others/details/GeneralInfo";
 import Header from "../common/Header";
+import ErrorModal from "../common/ErrorModal";
+import SubmitBtn from "../common/SubmitBtn";
 
-import { labels } from "../../constants/rating";
 import { getTourDetails, updateTour } from "./action";
 import { getPlaces } from "../places/action";
-
-import { CloudCheckFill } from "styled-icons/bootstrap";
-import { CloudUploadOutline } from "styled-icons/evaicons-outline";
-import ErrorModal from "../common/ErrorModal";
 
 const TourDetails = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { state } = useLocation();
   const { tourId } = state;
+
+  const [update, setUpdate] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [values, setValues] = useState({});
-  const [loading, setLoading] = useState(false);
   const [number, setNumber] = useState("1");
+  const [search, setSearch] = useState("");
+  const [searchBy, setSearchBy] = useState("name");
 
   const [notification, setNotification] = useState({
     errorState: false,
@@ -52,12 +44,33 @@ const TourDetails = () => {
     page: 0,
     pageSize: 10,
   });
+
+  const {
+    handleSubmit,
+    setError,
+    clearErrors,
+    register,
+    getValues,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      image: "",
+      tourDescriptions: [{ languageCode: "en-us", name: "", description: "" }],
+    },
+  });
   useEffect(() => {
     async function getInfoDetails() {
+      setLoading(true);
       try {
         const data = await getTourDetails(tourId);
+        reset(data);
         setValues(data);
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         setNotification({
           ...notification,
           errorState: true,
@@ -69,7 +82,7 @@ const TourDetails = () => {
     getInfoDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tourId]);
-  
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -81,6 +94,8 @@ const TourDetails = () => {
           getPlaces({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: searchBy,
+            Search: search,
           })
         );
         setPageState((old) => ({
@@ -100,67 +115,56 @@ const TourDetails = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageModelState.page, pageModelState.pageSize]);
+  }, [search, searchBy, pageModelState.page, pageModelState.pageSize]);
 
   const handleChange = (event, newValue) => {
     setNumber(newValue);
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(!loading);
+  const onSubmit = async () => {
     let data = {
       name: values.name,
       image: values.image,
       total: values.total,
       tourDetails: [],
-      tourDescriptions: [],
+      tourDescriptions: getValues("tourDescriptions"),
     };
     for (const place of values.tourDetails) {
       data.tourDetails.push({ id: place.id, price: place.price });
     }
 
-    for (const language of values.tourDescriptions) {
-      if (language.name && language.description) {
-        data.tourDescriptions.push({
-          languageCode: language.languageCode.trim(),
-          name: language.name,
-          description: language.description,
-        });
-      }
-    }
-
     try {
+      setUpdate(true);
       const res = await updateTour(tourId, data);
       if (res) {
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: "Updated successfully!",
+          errorMessage: "Updated tour successfully!",
           status: "success",
         });
       }
-      setLoading(loading);
+      await setUpdate(false);
     } catch (e) {
-      const message = e.response.data
-        ? e.response.data.errors
-        : "Something went wrong!";
+      console.log(e);
+      // const message = e.response.data
+      //   ? e.response.data.errors
+      //   : "Something went wrong!";
+      setUpdate(false);
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: message,
+        errorMessage: "Something went wrong with processing!",
         status: "error",
       });
-      setLoading(loading);
     }
   };
 
   return (
     <Box
-      minHeight="95vh"
+      minHeight="94vh"
       margin="1.25em"
       padding={2}
-      paddingBottom={10}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
@@ -174,279 +178,112 @@ const TourDetails = () => {
       <Header
         title={"Tour Details"}
         subTitle={"Manage all information of tour and update tour."}
+        loading={loading}
         showBack={true}
-        showSearch={false}
-        showFilter={false}
-        buttonAdd={false}
       />
 
-      <Box marginTop={3}>
+      <Box marginX={6} padding={3}>
         <TabContext value={number}>
-          <Box
-            sx={{
-              paddingLeft: 4,
-              borderBottom: 1,
-              borderTop: 1,
-              marginBottom: 2,
-              borderColor: "divider",
-            }}
-          >
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="General" value="1" />
-              <Tab label="Languages" value="2" />
-              <Tab label="Places List" value="3" />
-            </TabList>
-          </Box>
+          {!loading ? (
+            <Box
+              sx={{
+                borderBottom: 1,
+                borderTop: 1,
+                marginBottom: 2,
+                borderColor: "divider",
+              }}
+            >
+              <TabList
+                onChange={handleChange}
+                aria-label="lab API tabs example"
+              >
+                <Tab label="General Informations" value="1" />
+                <Tab label="Descriptions List" value="2" />
+                <Tab label="Places List" value="3" />
+              </TabList>
+            </Box>
+          ) : (
+            <Skeleton width="100%" height={75} />
+          )}
           <TabPanel value="1">
-            <form
-              style={{
+            <GeneralInfo
+              values={values}
+              setValues={setValues}
+              loading={loading}
+              update={update}
+              register={register}
+              errors={errors}
+            />
+            <Box
+              sx={{
+                marginTop: 5,
                 display: "flex",
+                justifyContent: "center",
                 alignItems: "center",
-                flexDirection: "column",
-                gap: 30,
               }}
-              onSubmit={onSubmit}
             >
-              <Grid container width="80%" display="flex" rowGap={5}>
-                {/* Images */}
-                <Grid item xs={4}>
-                  <Typography fontWeight="medium">Picture</Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    position="relative"
-                    overflow="hidden"
-                    border={1}
-                    borderRadius={2.5}
-                    borderColor={alpha(theme.palette.text.primary, 0.28)}
-                    height={40}
-                  >
-                    <label
-                      htmlFor="image"
-                      style={{
-                        display: "flex",
-                        width: "100%",
-                        color: theme.palette.text.third,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {values.image ? (
-                        <Box display="flex" alignItems="center">
-                          <CloudCheckFill
-                            height={24}
-                            color={theme.palette.text.onStatus}
-                            style={{ margin: 10 }}
-                          />
-                          <Typography noWrap>
-                            {values.image.name
-                              ? values.image.name
-                              : "Change Picture"}
-                          </Typography>
-                        </Box>
-                      ) : (
-                        <Box display="flex" alignItems="center">
-                          <CloudUploadOutline
-                            height={24}
-                            style={{ margin: 10 }}
-                          />
-                          <Typography noWrap>
-                            Import picture for tour here
-                          </Typography>
-                        </Box>
-                      )}
-
-                      <input
-                        id="image"
-                        style={{
-                          opacity: 0,
-                          position: "absolute",
-                        }}
-                        onChange={(e) =>
-                          setValues({ ...values, image: e.target.files[0] })
-                        }
-                        type="file"
-                        accept="image/*"
-                      />
-                    </label>
-                  </Box>
-                  <Box marginTop={2}>
-                    <img
-                      src={
-                        values?.image && values?.image instanceof File
-                          ? URL.createObjectURL(values?.image)
-                          : values?.image
-                      }
-                      style={{
-                        maxWidth: "100%",
-                        maxHeight: 300,
-                      }}
-                      alt=""
-                    />
-                  </Box>
-                </Grid>
-
-                {/* Rating */}
-                <Grid item xs={4}>
-                  <Typography fontWeight="medium">Rate</Typography>
-                </Grid>
-                <Grid item xs={8} display="flex" alignItems="center">
-                  <Rating
-                    readOnly
-                    value={values.rate || 0}
-                    precision={0.5}
-                    sx={{
-                      ".MuiRating-icon": {
-                        borderColor: theme.palette.text.active,
-                      },
-                      "& .MuiRating-iconFilled": {
-                        color: theme.palette.text.active,
-                      },
-                    }}
-                  />
-                  <Box sx={{ marginX: 1 }}>{labels[values.rate || 0]}</Box>
-                  <Typography>(5 rates)</Typography>
-                </Grid>
-
-                {/* Time */}
-                <Grid item xs={4}>
-                  <Typography fontWeight="medium">
-                    Create/Update Time
-                  </Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <Typography fontWeight="regular">
-                    {moment(values?.createTime).format("MMMM DD, YYYY")} /{" "}
-                    {values?.updateTime
-                      ? moment(values?.updateTime).format("MMMM DD, YYYY")
-                      : " (No data)"}
-                  </Typography>
-                </Grid>
-
-                {/* Status */}
-                <Grid item xs={4}>
-                  <Typography fontWeight="medium">Status</Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  {values?.status ? (
-                    <Typography
-                      fontWeight="semiBold"
-                      color={theme.palette.text.onStatus}
-                    >
-                      Active
-                    </Typography>
-                  ) : (
-                    <Typography
-                      fontWeight="semiBold"
-                      color={theme.palette.text.active}
-                    >
-                      Inactive
-                    </Typography>
-                  )}
-                </Grid>
-              </Grid>
-              <Button
-                variant="contained"
-                disabled={loading}
-                color="error"
-                sx={{
-                  marginTop: "30px",
-                  borderRadius: "50px",
-                  width: "250px",
-                  height: "45px",
-                }}
-                type="submit"
-              >
-                {loading ? (
-                  <CircularProgress color="error" size={25} />
-                ) : (
-                  <Typography fontWeight="semiBold" fontSize={18}>
-                    Save Change
-                  </Typography>
-                )}
-              </Button>
-            </form>
+              {!loading ? (
+                <SubmitBtn update={update} onSubmit={handleSubmit(onSubmit)} />
+              ) : (
+                <Skeleton width={100} />
+              )}
+            </Box>
           </TabPanel>
-          <TabPanel value="2">
-            <form
-              style={{
+          <TabPanel value="2" style={{ padding: 0 }}>
+            <SubsLanguage
+              loading={loading}
+              control={control}
+              register={register}
+              errors={errors}
+              getValues={getValues}
+              notification={notification}
+              setNotification={setNotification}
+            />
+            <Box
+              sx={{
+                marginTop: 5,
                 display: "flex",
+                justifyContent: "center",
                 alignItems: "center",
-                flexDirection: "column",
-                gap: 30,
               }}
-              onSubmit={onSubmit}
             >
-              <SubsLanguage
-                values={values}
-                setValues={setValues}
-                notification={notification}
-                setNotification={setNotification}
-              />
-              <Button
-                variant="contained"
-                disabled={loading}
-                color="error"
-                sx={{
-                  marginTop: "30px",
-                  borderRadius: "50px",
-                  width: "250px",
-                  height: "45px",
-                }}
-                type="submit"
-              >
-                {loading ? (
-                  <CircularProgress color="error" size={25} />
-                ) : (
-                  <Typography fontWeight="semiBold" fontSize={18}>
-                    Save Change
-                  </Typography>
-                )}
-              </Button>
-            </form>
+              {!loading ? (
+                <SubmitBtn update={update} onSubmit={handleSubmit(onSubmit)} />
+              ) : (
+                <Skeleton width={100} />
+              )}
+            </Box>
           </TabPanel>
           <TabPanel value="3">
-            <form
-              style={{
+            <PlacesList
+              values={values}
+              setValues={setValues}
+              setSearch={setSearch}
+              setSearchBy={setSearchBy}
+              errors={errors}
+              setError={setError}
+              clearErrors={clearErrors}
+              pageState={pageState}
+              setPageState={setPageState}
+              pageModelState={pageModelState}
+              setPageModelState={setPageModelState}
+              notification={notification}
+              setNotification={setNotification}
+            />
+            <Box
+              sx={{
+                marginTop: 5,
                 display: "flex",
+                justifyContent: "center",
                 alignItems: "center",
-                flexDirection: "column",
-                gap: 30,
               }}
-              onSubmit={onSubmit}
             >
-              <PlacesList
-                values={values}
-                setValues={setValues}
-                pageState={pageState}
-                setPageState={setPageState}
-                pageModelState={pageModelState}
-                setPageModelState={setPageModelState}
-                notification={notification}
-                setNotification={setNotification}
-              />
-              <Button
-                variant="contained"
-                disabled={loading}
-                color="error"
-                sx={{
-                  marginTop: "30px",
-                  borderRadius: "50px",
-                  width: "250px",
-                  height: "45px",
-                }}
-                type="submit"
-              >
-                {loading ? (
-                  <CircularProgress color="error" size={25} />
-                ) : (
-                  <Typography fontWeight="semiBold" fontSize={18}>
-                    Save Change
-                  </Typography>
-                )}
-              </Button>
-            </form>
+              {!loading ? (
+                <SubmitBtn update={update} onSubmit={handleSubmit(onSubmit)} />
+              ) : (
+                <Skeleton width={100} />
+              )}
+            </Box>
           </TabPanel>
         </TabContext>
       </Box>

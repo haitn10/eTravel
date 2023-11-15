@@ -78,7 +78,7 @@ const Profile = () => {
   };
 
   const handleChangePassword = (e) => {
-    clearErrors(["oldPassword","newPassword", "confirmPassword"]);
+    clearErrors(e.target.name);
     setChangePass({ ...changePass, [e.target.name]: e.target.value });
   };
 

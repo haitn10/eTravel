@@ -208,6 +208,11 @@ const PlaceGeneral = ({
               ".MuiOutlinedInput-root": {
                 borderRadius: 2.5,
               },
+              ".MuiOutlinedInput-notchedOutline": {
+                borderColor: errors.placeCategories
+                  ? theme.palette.text.active
+                  : "",
+              },
             }}
             renderInput={(params) => (
               <TextField

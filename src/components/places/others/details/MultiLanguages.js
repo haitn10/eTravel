@@ -84,7 +84,7 @@ const MultiLanguages = ({ values, setValues, errors }) => {
             <Grid container rowGap={2} marginY={5}>
               <Grid item sm={12} lg={3}>
                 <Typography fontWeight="medium">
-                  Choose Language{" "}
+                  Language{" "}
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
               </Grid>

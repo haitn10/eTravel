@@ -111,8 +111,8 @@ const ManagePlaces = () => {
         status={notification.status}
       />
       <Header
-        title={"Manage Tournaments"}
-        subTitle={"Manage all them existing tours or update status."}
+        title={"Manage Places"}
+        subTitle={"Manage all them existing places or update status."}
         showBack={false}
         showSearch={true}
         showFilter={false}
