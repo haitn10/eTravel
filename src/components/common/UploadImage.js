@@ -17,7 +17,7 @@ const UploadImage = ({ values, setValues, errors, register, disabled }) => {
   const theme = useTheme();
 
   const previewImage = (data) => {
-    if (data instanceof File) {
+    if (data instanceof File && imageFileTypes.includes(data.type)) {
       return URL.createObjectURL(data);
     }
     return data;

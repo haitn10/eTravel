@@ -32,6 +32,7 @@ const SubsLanguage = ({
   const theme = useTheme();
   const dispatch = useDispatch();
   const [languagesList, setLanguagesList] = useState([]);
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "tourDescriptions",
@@ -76,7 +77,6 @@ const SubsLanguage = ({
             key={item.id}
             display="flex"
             justifyContent="center"
-            width="100%"
             padding={1}
           >
             <Box>

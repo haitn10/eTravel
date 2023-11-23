@@ -1,25 +1,63 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Grid, TextField, Typography, useTheme } from "@mui/material";
 
 import date from "../../../constants/date";
 import { NumberFormat } from "../../common/NumberFormat";
-import MapGL from "@goongmaps/goong-map-react";
+import ReactMapGL from "@goongmaps/goong-map-react";
+import GoongGeocoder from "@goongmaps/goong-geocoder";
+// import PlaceAutoComplete from "./PlaceAutoComplete";
+import goongJs from "@goongmaps/goong-js";
+import { GOONG_API_KEY, GOONG_MAPTILES_KEY } from "../../../api";
 
-const GOONG_MAPTILES_KEY = "foAIsmKSYDQOdkoRfIj1T1MbkKaIIq5vvwSXb50U";
-
-const Coordinates = ({ values, setValues, errors, register }) => {
+const Coordinates = ({ values, setValues, setValue, errors, register }) => {
   const theme = useTheme();
   const [daysOfWeek, setDaysOfWeek] = useState(date);
+  const mapRef = useRef(null);
   const [viewport, setViewport] = useState({
     latitude: 10.762622,
     longitude: 106.660172,
-    zoom: 14,
+    zoom: 11,
     bearing: 0,
     pitch: 0,
   });
 
+  useEffect(() => {
+    const geocoder = new GoongGeocoder({
+      accessToken: GOONG_API_KEY,
+      goongjs: goongJs,
+    });
+
+    if (mapRef.current && geocoder) {
+      const map = mapRef.current.getMap();
+      map.addControl(geocoder);
+
+      geocoder.on("result", function (e) {
+        setViewport({
+          ...viewport,
+          latitude: e.result.result.geometry.location.lat,
+          longitude: e.result.result.geometry.location.lng,
+        });
+        setValues({
+          ...values,
+          address: e.result.result.formatted_address,
+          latitude: e.result.result.geometry.location.lat,
+          longitude: e.result.result.geometry.location.lng,
+        });
+
+        setValue("address", e.result.result.formatted_address);
+        setValue("latitude", e.result.result.geometry.location.lat);
+        setValue("longitude", e.result.result.geometry.location.lng);
+      });
+    }
+
+    // return () => {
+    //   geocoder.onRemove();
+    // };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleChangeTime = (index, event) => {
-    const dataTime = [...daysOfWeek];
+    const dataTime = [...values.placeTimes];
     dataTime[index][event.target.name] = event.target.value;
     setDaysOfWeek(dataTime);
     setValues({ ...values, placeTimes: dataTime });
@@ -27,42 +65,32 @@ const Coordinates = ({ values, setValues, errors, register }) => {
 
   return (
     <Box paddingX={4} width="100%">
-      <Box marginBottom={3}>
-        <Typography color="error">
-          (You can select place in map to get item)
-        </Typography>
-      </Box>
-
-      <Box maxWidth="50%" marginBottom={2}>
-        {/* {!isLoaded ? <PlaceAutocomplete setMarker={setMarker} /> : "Loading..."} */}
-      </Box>
       <Grid container marginBottom={3} spacing={7}>
         <Grid item xs={12} lg={6}>
           <Box
-            margin={1}
             padding={2}
             minHeight={500}
             borderRadius={2.5}
             bgcolor={theme.palette.background.secondary}
             width="100%"
           >
-            <MapGL
+            <ReactMapGL
               {...viewport}
               width="100%"
-              height="50vh"
-              // mapStyle="https://tiles.goong.io/assets/goong_map_dark.json"
+              height="70vh"
               onViewportChange={setViewport}
               goongApiAccessToken={GOONG_MAPTILES_KEY}
+              ref={mapRef}
             />
           </Box>
         </Grid>
 
         <Grid item xs={12} lg={6}>
-          <Box>
+          <Box marginTop={3}>
             <Typography fontWeight={"semiBold"} textTransform={"uppercase"}>
               Location
             </Typography>
-            <Grid container rowGap={2} paddingX={3} marginTop={2}>
+            <Grid container rowGap={1.5} paddingX={1} marginTop={2}>
               {/* Place Address */}
               <Grid item xs={12} md={4}>
                 <Typography>
@@ -101,13 +129,16 @@ const Coordinates = ({ values, setValues, errors, register }) => {
                 <TextField
                   fullWidth
                   size="small"
-                  name="latitude"
                   value={values.latitude}
                   {...register("latitude", {
                     required: "Latitude is required!",
                     defaultValue: 0,
-                    onChange: (e) =>
-                      setValues({ ...values, latitude: e.target.value }),
+                    onChange: (e) => {
+                      setValues({
+                        ...values,
+                        latitude: Number(e.target.value),
+                      });
+                    },
                   })}
                   error={!!errors.latitude}
                   helperText={errors.latitude?.message}
@@ -136,8 +167,12 @@ const Coordinates = ({ values, setValues, errors, register }) => {
                   {...register("longitude", {
                     required: "Longitude is required!",
                     defaultValue: 0,
-                    onChange: (e) =>
-                      setValues({ ...values, longitude: e.target.value }),
+                    onChange: (e) => {
+                      setValues({
+                        ...values,
+                        longitude: Number(e.target.value),
+                      });
+                    },
                   })}
                   error={!!errors.longitude}
                   helperText={errors.longitude?.message}
@@ -153,24 +188,16 @@ const Coordinates = ({ values, setValues, errors, register }) => {
 
               {/* GooglePlaceID */}
               <Grid item xs={12} md={4}>
-                <Typography>
-                  GooglePlaceID{" "}
-                  <small style={{ color: theme.palette.text.active }}>*</small>
-                </Typography>
+                <Typography>GooglePlaceID</Typography>
               </Grid>
               <Grid item xs={12} md={8}>
                 <TextField
                   fullWidth
                   size="small"
                   value={values.googlePlaceId}
-                  {...register("googlePlaceId", {
-                    required: "Google Place ID is required!",
-                    defaultValue: "",
-                    onChange: (e) =>
-                      setValues({ ...values, googlePlaceId: e.target.value }),
-                  })}
-                  error={!!errors.googlePlaceId}
-                  helperText={errors.googlePlaceId?.message}
+                  onChange={(e) =>
+                    setValues({ ...values, googlePlaceId: e.target.value })
+                  }
                   InputProps={{
                     style: {
                       borderRadius: 10,
@@ -181,7 +208,6 @@ const Coordinates = ({ values, setValues, errors, register }) => {
               </Grid>
             </Grid>
           </Box>
-
           <Box marginTop={3}>
             <Typography fontWeight={"semiBold"} textTransform={"uppercase"}>
               Date Of Week
@@ -191,14 +217,14 @@ const Coordinates = ({ values, setValues, errors, register }) => {
               <Grid
                 key={index}
                 container
-                paddingX={3}
+                paddingX={1}
                 marginTop={1}
                 spacing={1}
               >
-                <Grid item xs={4}>
+                <Grid item xs={12} lg={4}>
                   <Typography width={100}>{data.day}</Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} md={6} lg={4}>
                   <TextField
                     fullWidth
                     required
@@ -214,7 +240,7 @@ const Coordinates = ({ values, setValues, errors, register }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} md={6} lg={4}>
                   <TextField
                     fullWidth
                     required

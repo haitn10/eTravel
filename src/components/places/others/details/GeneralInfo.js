@@ -8,11 +8,13 @@ import {
   ImageListItem,
   Rating,
   TextField,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Controller } from "react-hook-form";
 import { getCategoriesAll } from "../../../categories/action";
 import { NumericFormatCustom } from "../../../common/NumericFormatCustom";
 import { LocalizationProvider, TimeField } from "@mui/x-date-pickers";
@@ -22,14 +24,22 @@ import dayjs from "dayjs";
 import { ImageAdd } from "@styled-icons/remix-line/ImageAdd";
 import { CloseOutline } from "@styled-icons/evaicons-outline";
 import { labels } from "../../../../constants/rating";
-import { NumberFormat } from "../../../common/NumberFormat";
 import date from "../../../../constants/date";
+import MapCoordinates from "./MapCoordinates";
+import { StarFill } from "@styled-icons/bootstrap";
 
-const GeneralInfo = ({ values, setValues, register, errors }) => {
+const GeneralInfo = ({
+  process,
+  values,
+  setValues,
+  control,
+  register,
+  getValues,
+  errors,
+}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [categoriesList, setCategoriesList] = useState([]);
-  const [imagesList, setImagesList] = useState(values.placeImages || []);
   const [daysOfWeek, setDaysOfWeek] = useState(values.placeTimes || []);
 
   useEffect(() => {
@@ -50,31 +60,31 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleChangeCategories = (e, value) => {
-    setValues({ ...values, placeCategories: value });
-  };
-
   const handleChangeImage = (event) => {
     const selectedImageFiles = Array.from(event.target.files);
     const imagesArray = selectedImageFiles.map((file) => {
       return { image: file, isPrimary: false };
     });
 
-    setImagesList((prevImages) => prevImages.concat(imagesArray));
+    setValues({
+      ...values,
+      placeImages: [...values.placeImages.concat(imagesArray)],
+    });
   };
 
   const removeImage = (index) => {
-    const newImagesList = [...imagesList];
+    const newImagesList = [...values.placeImages];
     if (!newImagesList[index].isPrimary === true) {
       newImagesList.splice(index, 1);
     }
-    setImagesList(newImagesList);
+    setValues({ ...values, placeImages: newImagesList });
   };
 
   const handleChangeTime = (index, event) => {
     const dataTime = [...daysOfWeek];
     dataTime[index][event.target.name] = event.target.value;
     setDaysOfWeek(dataTime);
+    setValues({...values, placeTimes: dataTime});
   };
 
   const getTime = (id, time) => {
@@ -106,7 +116,7 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
     <Grid container spacing={5}>
       <Grid item md={12} lg={6}>
         <Box>
-          <Box marginBottom={1}>
+          <Box>
             <Typography
               fontSize={14}
               letterSpacing={0.5}
@@ -118,8 +128,8 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
             </Typography>
           </Box>
 
-          <Box padding={2}>
-            <Box display="flex" alignItems="center" marginBottom={3}>
+          <Box padding={1}>
+            <Box display="flex" marginBottom={2}>
               <Typography fontWeight="medium" width={150}>
                 Place Name{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
@@ -138,65 +148,105 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
                   onChange: (e) =>
                     setValues({ ...values, name: e.target.value }),
                 })}
+                disabled={process}
                 error={!!errors.name}
                 helperText={errors.name?.message}
                 placeholder={`Type place name here`}
               />
             </Box>
 
-            <Box display="flex" alignItems="center" marginBottom={3}>
-              <Typography fontWeight="medium" id="placeName" width={150}>
-                Address{" "}
-                <small style={{ color: theme.palette.text.active }}>*</small>
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: 10,
-                  },
-                }}
-                value={values.address}
-                {...register("address", {
-                  required: "Place Address is required!",
-                  onChange: (e) =>
-                    setValues({
-                      ...values,
-                      address: e.target.value,
-                    }),
-                })}
-                error={!!errors.address}
-                helperText={errors.address?.message}
-                placeholder={`Type place name here`}
-              />
-            </Box>
-
-            <Box display="flex" alignItems="center" marginBottom={3}>
+            <Box display="flex" marginBottom={2}>
               <Typography fontWeight="medium" id="placeName" width={150}>
                 Category{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
-              <Autocomplete
-                fullWidth
-                multiple
-                size="small"
-                value={values.placeCategories}
-                options={categoriesList}
-                getOptionLabel={(option) => option?.name}
-                filterSelectedOptions
-                sx={{
-                  ".MuiOutlinedInput-root": {
-                    borderRadius: 2.5,
-                  },
-                }}
-                onChange={handleChangeCategories}
-                placeholder="Select one or more categories"
-                renderInput={(params) => <TextField {...params} />}
+              <Controller
+                name="placeCategories"
+                disabled={process}
+                control={control}
+                rules={{ required: "Please select an option!" }}
+                render={({ field }) => (
+                  <Autocomplete
+                    fullWidth
+                    multiple
+                    size="small"
+                    sx={{
+                      ".MuiOutlinedInput-root": {
+                        borderRadius: 2.5,
+                      },
+                    }}
+                    {...field}
+                    filterSelectedOptions
+                    options={categoriesList}
+                    isOptionEqualToValue={(option, value) =>
+                      option.name === value.name
+                    }
+                    getOptionLabel={(option) => option.name}
+                    onChange={(_, newValue) => field.onChange(newValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder={
+                          getValues("placeCategories").length === 0
+                            ? "Select one or more categories"
+                            : ""
+                        }
+                        error={!!errors.placeCategories}
+                        helperText={
+                          errors.placeCategories
+                            ? errors.placeCategories.message
+                            : null
+                        }
+                      />
+                    )}
+                  />
+                )}
               />
             </Box>
 
-            <Box display="flex" alignItems="center" marginBottom={3}>
+            <Box display="flex" marginBottom={2}>
+              <Typography fontWeight="medium" id="placeName" width={150}>
+                Duration{" "}
+                <small style={{ color: theme.palette.text.active }}>*</small>
+              </Typography>
+              <Controller
+                control={control}
+                name="hour"
+                disabled={process}
+                rules={{
+                  validate: (value) => {
+                    return (
+                      !dayjs(value).isSame(dayjs("2022-04-17T00:00")) ||
+                      "Duration is required!"
+                    );
+                  },
+                }}
+                render={({ field, fieldState: { error, defaultValue } }) => (
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <TimeField
+                      {...field}
+                      fullWidth
+                      size="small"
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                        },
+                      }}
+                      value={dayjs("0000-00-00T" + field.value)}
+                      format="HH:mm:ss"
+                      onChange={(newValue) => {
+                        field.onChange(newValue);
+                        setValues({ ...values, hour: newValue });
+                      }}
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
+            </Box>
+
+            <Box display="flex" marginBottom={2}>
               <Typography fontWeight="medium" id="placeName" width={150}>
                 Price{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
@@ -216,13 +266,14 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
                   onChange: (e) =>
                     setValues({ ...values, price: e.target.value }),
                 })}
+                disabled={process}
                 error={!!errors.price}
                 helperText={errors.price?.message}
                 placeholder={`Type price here`}
               />
             </Box>
 
-            <Box display="flex" alignItems="center" marginBottom={3}>
+            <Box display="flex" marginBottom={2}>
               <Typography fontWeight="medium" id="placeName" width={150}>
                 Entry Ticket
               </Typography>
@@ -242,104 +293,18 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
                     entryTicket: e.target.value,
                   })
                 }
+                disabled={process}
                 placeholder={`Type entry ticket here`}
               />
             </Box>
-
-            <Box display="flex" alignItems="center" marginBottom={3}>
-              <Typography fontWeight="medium" id="placeName" width={150}>
-                Duration
-              </Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <TimeField
-                  fullWidth
-                  size="small"
-                  value={dayjs("0000-00-00T" + values.hour)}
-                  InputProps={{
-                    style: {
-                      borderRadius: 10,
-                    },
-                  }}
-                  onChange={(newValue) =>
-                    setValues({
-                      ...values,
-                      hour: dayjs(newValue).format("HH:mm:ss"),
-                    })
-                  }
-                  format="HH:mm:ss"
-                />
-              </LocalizationProvider>
-            </Box>
           </Box>
 
-          <Box marginTop={1}>
-            <Box
-              marginBottom={1}
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Typography
-                fontSize={14}
-                letterSpacing={0.5}
-                fontWeight="medium"
-                textTransform="uppercase"
-                color={theme.palette.text.third}
-              >
-                Images List
-              </Typography>
-
-              <Box marginRight={1}>
-                <Button color="error" component="label">
-                  <input
-                    hidden
-                    multiple
-                    onChange={handleChangeImage}
-                    type="file"
-                    accept="image/*"
-                  />
-                  <ImageAdd width={16} style={{ marginRight: 5 }} />
-                  Add Images
-                </Button>
-              </Box>
-            </Box>
-            <Box maxHeight={600}>
-              <ImageList
-                // variant="masonry"
-                cols={3}
-                gap={5}
-                sx={{ height: "100%" }}
-              >
-                {imagesList &&
-                  imagesList.map((item, index) => (
-                    <ImageListItem key={index}>
-                      <IconButton
-                        style={{
-                          position: "absolute",
-                          right: 3,
-                          top: 2,
-                          color: theme.palette.text.active,
-                        }}
-                        onClick={(e) => removeImage(index)}
-                      >
-                        <CloseOutline width={24} />
-                      </IconButton>
-                      <img
-                        src={previewImage(item.image)}
-                        alt={item.id}
-                        loading="lazy"
-                        style={{
-                          borderRadius: 10,
-                          maxWidth: 200,
-                          maxHeight: 200,
-                          border: `1px solid ${theme.palette.background.third}`,
-                        }}
-                      />
-                    </ImageListItem>
-                  ))}
-              </ImageList>
-            </Box>
-          </Box>
+          <MapCoordinates
+            values={values}
+            setValues={setValues}
+            register={register}
+            errors={errors}
+          />
         </Box>
       </Grid>
 
@@ -357,7 +322,7 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
             </Typography>
           </Box>
 
-          <Grid container marginX={1} spacing={1}>
+          <Grid container padding={1} spacing={1}>
             <Grid item xs={6} display="flex" alignItems="center">
               <>
                 <Typography
@@ -444,137 +409,7 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
           </Grid>
         </Box>
 
-        <Box marginTop={3}>
-          <Box marginBottom={1}>
-            <Typography
-              fontSize={14}
-              letterSpacing={0.5}
-              fontWeight="medium"
-              textTransform="uppercase"
-              color={theme.palette.text.third}
-            >
-              Location in Maps
-            </Typography>
-          </Box>
-          <Box padding={1}>
-            <Box
-              border={1}
-              borderColor={theme.palette.background.third}
-              borderRadius={5}
-              padding={1}
-              height={400}
-            >
-              Map
-            </Box>
-          </Box>
-
-          <Box display="flex" alignItems="center" paddingX={2} marginTop={2}>
-            <Box>
-              <Typography
-                fontWeight="medium"
-                width={150}
-                color={theme.palette.text.third}
-              >
-                Longitude{" "}
-                <small style={{ color: theme.palette.text.active }}>*</small>
-              </Typography>
-            </Box>
-            <TextField
-              fullWidth
-              size="small"
-              name="latitude"
-              InputProps={{
-                style: {
-                  borderRadius: 10,
-                },
-                inputComponent: NumberFormat,
-              }}
-              value={values.longitude}
-              {...register("longitude", {
-                required: "Longitude is required!",
-                onChange: (e) =>
-                  setValues({
-                    ...values,
-                    longitude: e.target.value,
-                  }),
-              })}
-              error={!!errors.longitude}
-              helperText={errors.longitude?.message}
-              placeholder={`Type longitude here`}
-            />
-          </Box>
-
-          <Box display="flex" alignItems="center" paddingX={2} marginTop={2}>
-            <Box>
-              <Typography
-                fontWeight="medium"
-                width={150}
-                color={theme.palette.text.third}
-              >
-                Latitude{" "}
-                <small style={{ color: theme.palette.text.active }}>*</small>
-              </Typography>
-            </Box>
-            <TextField
-              fullWidth
-              size="small"
-              InputProps={{
-                style: {
-                  borderRadius: 10,
-                },
-                inputComponent: NumberFormat,
-              }}
-              value={values.latitude}
-              {...register("latitude", {
-                required: "Latitude is required!",
-                onChange: (e) =>
-                  setValues({
-                    ...values,
-                    latitude: e.target.value,
-                  }),
-              })}
-              error={!!errors.latitude}
-              helperText={errors.latitude?.message}
-              placeholder={`Type latitude here`}
-            />
-          </Box>
-
-          <Box display="flex" alignItems="center" paddingX={2} marginTop={2}>
-            <Box>
-              <Typography
-                fontWeight="medium"
-                width={150}
-                color={theme.palette.text.third}
-              >
-                Google Place ID{" "}
-                <small style={{ color: theme.palette.text.active }}>*</small>
-              </Typography>
-            </Box>
-            <TextField
-              fullWidth
-              size="small"
-              InputProps={{
-                style: {
-                  borderRadius: 10,
-                },
-              }}
-              value={values.googlePlaceId}
-              {...register("googlePlaceId", {
-                required: "Google Place ID is required!",
-                onChange: (e) =>
-                  setValues({
-                    ...values,
-                    googlePlaceId: e.target.value,
-                  }),
-              })}
-              error={!!errors.googlePlaceId}
-              helperText={errors.googlePlaceId?.message}
-              placeholder={`Type Google Place ID here`}
-            />
-          </Box>
-        </Box>
-
-        <Box marginTop={3}>
+        <Box>
           <Box marginBottom={1}>
             <Typography
               fontSize={14}
@@ -587,29 +422,22 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
             </Typography>
           </Box>
 
-          <Box marginTop={2}>
-            {date.map((item) => (
-              <Grid
-                key={item.id}
-                container
-                paddingX={3}
-                marginTop={1}
-                spacing={1}
-              >
+          <Box>
+            {date.map((data, index) => (
+              <Grid key={index} container padding={1} spacing={1}>
                 <Grid item xs={4}>
-                  <Typography width={100}>{item.day}</Typography>
+                  <Typography width={100}>{data.day}</Typography>
                 </Grid>
 
                 <Grid item xs={4}>
                   <TextField
                     fullWidth
-                    required
                     size="small"
                     type="time"
                     name="openTime"
-                    step="1"
-                    defaultValue={getTime(item.id, "openTime")}
-                    onChange={(event) => handleChangeTime(item.id - 1, event)}
+                    disabled={process}
+                    defaultValue={getTime(data.id, "openTime")}
+                    onChange={(event) => handleChangeTime(index, event)}
                     InputProps={{
                       style: {
                         borderRadius: 10,
@@ -620,13 +448,12 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
                 <Grid item xs={4}>
                   <TextField
                     fullWidth
-                    required
                     size="small"
                     type="time"
                     name="endTime"
-                    step="1"
-                    defaultValue={getTime(item.id, "endTime")}
-                    onChange={(event) => handleChangeTime(item.id - 1, event)}
+                    disabled={process}
+                    defaultValue={getTime(data.id, "endTime")}
+                    onChange={(event) => handleChangeTime(index, event)}
                     InputProps={{
                       style: {
                         borderRadius: 10,
@@ -636,6 +463,93 @@ const GeneralInfo = ({ values, setValues, register, errors }) => {
                 </Grid>
               </Grid>
             ))}
+          </Box>
+        </Box>
+
+        <Box>
+          <Box
+            marginBottom={1}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography
+              fontSize={14}
+              letterSpacing={0.5}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+            >
+              Images List
+            </Typography>
+
+            <Button color="error" component="label">
+              <input
+                hidden
+                multiple
+                disabled={process}
+                onChange={handleChangeImage}
+                type="file"
+                accept="image/*"
+              />
+              <ImageAdd width={16} style={{ marginRight: 5 }} />
+              Add Images
+            </Button>
+          </Box>
+
+          <Box padding={1}>
+            <ImageList cols={3} gap={5} sx={{ maxHeight: 500 }}>
+              {values.placeImages &&
+                values.placeImages.map((item, index) => (
+                  <ImageListItem key={index}>
+                    {item.isPrimary ? (
+                      <Tooltip title={"Primary Image"}>
+                        <Box
+                          style={{
+                            position: "absolute",
+                            width: 25,
+                            height: 25,
+                            borderRadius: "10px 0 5px 0",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            left: 0,
+                            top: 0,
+                            backgroundColor: theme.palette.background.secondary,
+                            color: theme.palette.text.pending,
+                          }}
+                        >
+                          <StarFill width={18} />
+                        </Box>
+                      </Tooltip>
+                    ) : null}
+                    {!item.isPrimary ? (
+                      <IconButton
+                        style={{
+                          position: "absolute",
+                          right: 3,
+                          top: 2,
+                          color: theme.palette.text.active,
+                        }}
+                        onClick={(e) => removeImage(index)}
+                      >
+                        <CloseOutline width={24} />
+                      </IconButton>
+                    ) : null}
+                    <img
+                      src={previewImage(item.image)}
+                      alt={item.id}
+                      loading="lazy"
+                      style={{
+                        borderRadius: 10,
+                        maxWidth: 200,
+                        maxHeight: 200,
+                        border: `1px solid ${theme.palette.background.third}`,
+                      }}
+                    />
+                  </ImageListItem>
+                ))}
+            </ImageList>
           </Box>
         </Box>
       </Grid>
