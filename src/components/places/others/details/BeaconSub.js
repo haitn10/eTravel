@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Box,
   Button,
@@ -33,22 +33,10 @@ const BeaconSub = ({
   getValues,
 }) => {
   const theme = useTheme();
-  const { fields, append, remove, insert } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "placeItems",
   });
-
-  useEffect(() => {
-    var arrLang = [];
-    for (const desc of getValues("placeDescriptions")) {
-      arrLang.push({
-        languageCode: desc.languageCode,
-        nameItem: "",
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const addNewBeacon = () => {
     var arrLang = [];
 
@@ -62,8 +50,8 @@ const BeaconSub = ({
       name: "",
       beaconId: "",
       image: "",
-      startTime: "00:00:00",
-      endTime: "00:00:00",
+      startTime: "00:00",
+      endTime: "00:00",
       beaconMajorNumber: 0,
       beaconMinorNumber: 0,
       itemDescriptions: arrLang,
@@ -298,7 +286,7 @@ const BeaconSub = ({
                             validate: (value) => {
                               return (
                                 !dayjs(value).isSame(
-                                  dayjs("2022-04-17T00:00")
+                                  dayjs("2022-04-17T00:00:00")
                                 ) ||
                                 "Start time must be different from 00:00:00!"
                               );
@@ -315,7 +303,11 @@ const BeaconSub = ({
                                     borderRadius: 10,
                                   },
                                 }}
-                                value={dayjs("0000-00-00T" + field.value)}
+                                value={
+                                  dayjs(field.value).isValid()
+                                    ? field.value
+                                    : dayjs("2022-04-17T" + field.value)
+                                }
                                 format="HH:mm:ss"
                                 onChange={(newValue) =>
                                   field.onChange(newValue)
@@ -351,7 +343,7 @@ const BeaconSub = ({
                             validate: (value) => {
                               return (
                                 (!dayjs(value).isSame(
-                                  dayjs("2022-04-17T00:00")
+                                  dayjs("2022-04-17T00:00:00")
                                 ) &&
                                   dayjs(value).isAfter(
                                     dayjs(
@@ -373,11 +365,15 @@ const BeaconSub = ({
                                     borderRadius: 10,
                                   },
                                 }}
-                                value={dayjs("0000-00-00T" + field.value)}
-                                format="HH:mm:ss"
-                                onChange={(newValue) =>
-                                  field.onChange(newValue)
+                                value={
+                                  dayjs(field.value).isValid()
+                                    ? field.value
+                                    : dayjs("2022-04-17T" + field.value)
                                 }
+                                format="HH:mm:ss"
+                                onChange={(newValue) => {
+                                  field.onChange(newValue);
+                                }}
                                 error={!!error}
                                 helperText={error?.message}
                               />
@@ -393,6 +389,7 @@ const BeaconSub = ({
               <Grid item sm={12} lg={6}>
                 <Grid container marginBottom={2} spacing={1}>
                   <BeaconLanguage
+                    languageSelect={getValues("placeDescriptions")}
                     languageList={language}
                     beaconIndex={index}
                     control={control}

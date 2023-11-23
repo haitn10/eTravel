@@ -9,7 +9,7 @@ const places = [
     field: "id",
     headerName: "PlaceID",
     headerAlign: "center",
-    width: 100,
+    width: 90,
     align: "center",
   },
   {
@@ -19,7 +19,7 @@ const places = [
   },
   {
     field: "languageList",
-    headerName: "Number of Languages",
+    headerName: "Languages",
     headerAlign: "center",
     align: "center",
     flex: 1,
