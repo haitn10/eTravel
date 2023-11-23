@@ -49,6 +49,7 @@ const PlaceDetails = () => {
     register,
     getValues,
     reset,
+    resetField,
     control,
     formState: { errors },
   } = useForm();
@@ -93,12 +94,7 @@ const PlaceDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleTabs = (event, newValue) => {
-    setNumber(newValue);
-  };
-
-  const onSubmit = async () => {
-    setProcess(true);
+  const mergeData = () => {
     let arrCate = [],
       arrDesc = [],
       arrImgs = [],
@@ -120,8 +116,12 @@ const PlaceDetails = () => {
         name: beacon.name,
         beaconId: beacon.beaconId,
         image: beacon.image,
-        startTime: dayjs(beacon.startTime).format("HH:mm:ss"),
-        endTime: dayjs(beacon.endTime).format("HH:mm:ss"),
+        startTime: dayjs(beacon.startTime).isValid()
+          ? dayjs(beacon.startTime).format("HH:mm:ss")
+          : beacon.startTime,
+        endTime: dayjs(beacon.endTime).isValid()
+          ? dayjs(beacon.endTime).format("HH:mm:ss")
+          : beacon.endTime,
         beaconMajorNumber: beacon.beaconMajorNumber,
         beaconMinorNumber: beacon.beaconMinorNumber,
         itemDescriptions: beacon.itemDescriptions,
@@ -142,7 +142,9 @@ const PlaceDetails = () => {
       googlePlaceId: values.googlePlaceId,
       entryTicket: values.entryTicket,
       price: values.price,
-      hour: values.hour,
+      hour: dayjs(values.hour).isValid()
+        ? dayjs(values.hour).format("HH:mm:ss")
+        : values.hour,
       placeCategories: arrCate,
       placeDescriptions: arrDesc,
       placeImages: arrImgs,
@@ -150,8 +152,19 @@ const PlaceDetails = () => {
       placeItems: arrBeac,
     };
 
+    return data;
+  };
+
+  const handleTabs = (event, newValue) => {
+    setNumber(newValue);
+  };
+
+  const onSubmit = async () => {
     try {
-      const res = await updatePlace(placeId, data);
+      setProcess(true);
+      const values = mergeData();
+
+      const res = await updatePlace(placeId, values);
       if (res) {
         reset(res.place);
         setValues(res.place);
@@ -270,6 +283,7 @@ const PlaceDetails = () => {
                 loading={loading}
                 control={control}
                 register={register}
+                resetField={resetField}
                 errors={errors}
                 getValues={getValues}
               />

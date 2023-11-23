@@ -84,7 +84,7 @@ const GeneralInfo = ({
     const dataTime = [...daysOfWeek];
     dataTime[index][event.target.name] = event.target.value;
     setDaysOfWeek(dataTime);
-    setValues({...values, placeTimes: dataTime});
+    setValues({ ...values, placeTimes: dataTime });
   };
 
   const getTime = (id, time) => {
@@ -187,7 +187,7 @@ const GeneralInfo = ({
                       <TextField
                         {...params}
                         placeholder={
-                          getValues("placeCategories").length === 0
+                          getValues("placeCategories")?.length === 0
                             ? "Select one or more categories"
                             : ""
                         }
@@ -216,12 +216,13 @@ const GeneralInfo = ({
                 rules={{
                   validate: (value) => {
                     return (
-                      !dayjs(value).isSame(dayjs("2022-04-17T00:00")) ||
+                      (!dayjs(value).isSame(dayjs("2022-04-17T00:00")) &&
+                        value !== null) ||
                       "Duration is required!"
                     );
                   },
                 }}
-                render={({ field, fieldState: { error, defaultValue } }) => (
+                render={({ field, fieldState: { error } }) => (
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <TimeField
                       {...field}
@@ -232,7 +233,11 @@ const GeneralInfo = ({
                           borderRadius: 10,
                         },
                       }}
-                      value={dayjs("0000-00-00T" + field.value)}
+                      value={
+                        dayjs(field.value).isValid()
+                          ? field.value
+                          : dayjs("2022-04-17T" + field.value)
+                      }
                       format="HH:mm:ss"
                       onChange={(newValue) => {
                         field.onChange(newValue);
@@ -424,7 +429,7 @@ const GeneralInfo = ({
 
           <Box>
             {date.map((data, index) => (
-              <Grid key={index} container padding={1} spacing={1}>
+              <Grid key={data.id} container padding={1} spacing={1}>
                 <Grid item xs={4}>
                   <Typography width={100}>{data.day}</Typography>
                 </Grid>

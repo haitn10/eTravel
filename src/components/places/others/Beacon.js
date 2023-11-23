@@ -386,6 +386,7 @@ const Beacon = ({
               <Grid item sm={12} lg={6}>
                 <Grid container marginBottom={2} spacing={1}>
                   <BeaconLanguage
+                    languageSelect={getValues("placeDescriptions")}
                     languageList={language}
                     beaconIndex={index}
                     control={control}

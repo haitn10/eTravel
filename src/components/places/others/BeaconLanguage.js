@@ -1,8 +1,9 @@
 import { Grid, TextField, Typography, useTheme } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useFieldArray } from "react-hook-form";
 
 const BeaconLanguage = ({
+  languageSelect,
   languageList,
   beaconIndex,
   control,
@@ -10,10 +11,25 @@ const BeaconLanguage = ({
   errors,
 }) => {
   const theme = useTheme();
-  const { fields } = useFieldArray({
+  const { fields, insert } = useFieldArray({
     control,
     name: `placeItems.${beaconIndex}.itemDescriptions`,
   });
+
+  // useEffect(() => {
+  //   for (const desc of languageSelect) {
+  //     const existLanguage = fields.filter(
+  //       (field) => field.languageCode === desc.languageCode
+  //     );
+  // if (existLanguage.length === 0) {
+  //   insert(`placeItems.${beaconIndex}.itemDescriptions`, {
+  //     languageCode: desc.languageCode,
+  //     nameItem: "",
+  //   });
+  // }
+  // }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const getLanguage = (languagecode) => {
     const value = languageList.filter(
@@ -25,7 +41,7 @@ const BeaconLanguage = ({
   return (
     <>
       {fields.map((item, i) => (
-        <>
+        <Grid container key={i}>
           <Grid
             item
             sm={12}
@@ -49,6 +65,7 @@ const BeaconLanguage = ({
               <small style={{ color: theme.palette.text.active }}>*</small>
             </Typography>
           </Grid>
+
           <Grid item sm={12} lg={7}>
             <TextField
               key={item.id}
@@ -79,7 +96,7 @@ const BeaconLanguage = ({
               placeholder={`Name by ${getLanguage(item.languageCode)[0]?.name}`}
             />
           </Grid>
-        </>
+        </Grid>
       ))}
     </>
   );

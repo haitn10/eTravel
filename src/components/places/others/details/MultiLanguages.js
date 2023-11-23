@@ -12,7 +12,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 import { Controller, useFieldArray } from "react-hook-form";
 import ReactPlayer from "react-player";
 
@@ -28,11 +28,11 @@ const MultiLanguages = ({
   loading,
   control,
   register,
+  resetField,
   errors,
   getValues,
 }) => {
   const theme = useTheme();
-  const [isDuplicateName, setIsDuplicateName] = useState(true);
   const { fields, append, remove } = useFieldArray({
     control,
     name: "placeDescriptions",
@@ -52,26 +52,33 @@ const MultiLanguages = ({
   };
 
   const hasDuplicateVoiceFile = async (nameFile) => {
-    const formData = getValues();
-    const languageCodes = new Set();
-    for (const data of formData.placeDescriptions) {
-      if (languageCodes.has(data.voiceFile?.name)) {
-        return setIsDuplicateName(false);
+    console.log(nameFile);
+
+    const data = getValues("placeDescriptions");
+    console.log(data);
+    const voiceFile = new Set();
+    for (const value of data) {
+      if (value.voiceFile instanceof File) {
+        if (voiceFile.has(value.voiceFile.name)) {
+          return false;
+        }
+        voiceFile.add(value.voiceFile.name);
       }
-      languageCodes.add(data.voiceFile?.name);
     }
 
     if (nameFile !== undefined && nameFile !== "") {
       nameFile = nameFile.slice(0, -4);
       try {
         await checkDuplicateName(nameFile);
-        return setIsDuplicateName(true);
+        return true;
       } catch (err) {
-        return setIsDuplicateName(false);
+        return false;
       }
     }
-    return;
+    return true;
   };
+
+  console.log(errors);
 
   return (
     <>
@@ -84,6 +91,7 @@ const MultiLanguages = ({
         >
           <Box>
             <Grid container spacing={2} marginY={2}>
+              {/* Language */}
               <Grid item sm={12} lg={3}>
                 {loading ? (
                   <Skeleton width={100} />
@@ -151,6 +159,7 @@ const MultiLanguages = ({
                 )}
               </Grid>
 
+              {/* Tour Name */}
               <Grid item sm={12} lg={3}>
                 {loading ? (
                   <Skeleton width={100} />
@@ -248,77 +257,75 @@ const MultiLanguages = ({
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
               </Grid>
-              <Grid item sm={12} lg={9} alignItems="center">
-                <Controller
-                  name={`placeDescriptions.${index}.voiceFile`}
-                  control={control}
-                  rules={{
-                    required: "Voice file is required!",
-                    validate: (e) => {
-                      if (e instanceof File) {
-                        hasDuplicateVoiceFile(e.name);
-                        return (
-                          isDuplicateName ||
-                          "This file name already exists in the system!"
-                        );
-                      } else return;
-                    },
-                  }}
-                  render={({ field, fieldState: { error } }) => (
-                    <>
-                      <Box display="flex" alignItems="center" gap={2}>
-                        <Button
-                          component="label"
-                          variant="contained"
-                          sx={{
-                            borderRadius: 2.5,
-                          }}
-                        >
-                          <Box display="flex" gap={1}>
-                            <Voiceprint width={16} />
-                            <Typography fontSize={14} noWrap>
-                              Change File
-                            </Typography>
-                          </Box>
-                          <input
-                            type="file"
-                            hidden
-                            onChange={(e) => field.onChange(e.target.files[0])}
-                            accept="audio/mpeg, audio/mp3"
-                          />
-                        </Button>
-                        <Box width="100%">
-                          {field.value instanceof File ? (
-                            <Box
-                              display="flex"
-                              justifyContent="space-between"
-                              alignItems="center"
+              <Grid item sm={12} lg={9}>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Button
+                    component="label"
+                    sx={{ borderRadius: 2.5, width: 180, height: 35, gap: 0.5 }}
+                    htmlFor={`placeDescriptions.${index}.voiceFile`}
+                    variant="contained"
+                  >
+                    <Voiceprint width={20} />
+                    <Typography fontSize={14}>Change File</Typography>
+                  </Button>
+                  <Controller
+                    name={`placeDescriptions.${index}.voiceFile`}
+                    control={control}
+                    rules={{
+                      required: "Voice file is required!",
+                      validate: (value) => {
+                        return hasDuplicateVoiceFile(value.name);
+                      },
+                    }}
+                    render={({ field }) => (
+                      <>
+                        <input
+                          id={`placeDescriptions.${index}.voiceFile`}
+                          type="file"
+                          hidden
+                          onChange={(e) => field.onChange(e.target.files[0])}
+                          accept="audio/mpeg, audio/mp3"
+                        />
+
+                        {field.value instanceof File ? (
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            width="100%"
+                          >
+                            {field.value.name}
+                            <IconButton
+                              onClick={(e) =>
+                                resetField(
+                                  `placeDescriptions.${index}.voiceFile`
+                                )
+                              }
                             >
-                              {field.value.name}
-                              <IconButton
-                                onClick={() =>
-                                  field.onChange(description.voiceFile)
-                                }
-                              >
-                                <CloseOutline width={20} />
-                              </IconButton>
-                            </Box>
-                          ) : (
-                            <ReactPlayer
-                              url={description.voiceFile}
-                              controls={true}
-                              height={40}
-                              width="100%"
-                            />
-                          )}
-                        </Box>
-                      </Box>
-                      <FormHelperText htmlFor="render-select" error>
-                        {error?.message}
-                      </FormHelperText>
-                    </>
-                  )}
-                />
+                              <CloseOutline width={24} />
+                            </IconButton>
+                          </Box>
+                        ) : (
+                          <ReactPlayer
+                            url={description.voiceFile}
+                            controls={true}
+                            height={40}
+                            width="100%"
+                          />
+                        )}
+                      </>
+                    )}
+                  />
+                </Box>
+
+                <FormHelperText
+                  error
+                  htmlFor={`placeDescriptions.${index}.voiceFile`}
+                >
+                  {errors?.placeDescriptions?.[index]?.voiceFile?.type === "validate"
+                    ? "This file name already exists in the system!"
+                    : errors?.placeDescriptions?.[index]?.voiceFile?.message}
+                </FormHelperText>
               </Grid>
             </Grid>
             <Divider />
