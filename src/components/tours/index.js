@@ -50,7 +50,7 @@ const ManageTours = () => {
         setPageState((old) => ({
           ...old,
           isLoading: false,
-          data: data.tours.data,
+          data: data.tours?.data,
           totalCount: data.tours.totalCount,
         }));
       } catch (error) {

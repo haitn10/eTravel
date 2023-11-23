@@ -15,6 +15,7 @@ const ManagePlaces = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -43,12 +44,14 @@ const ManagePlaces = () => {
           getPlaces({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "name",
+            Search: search,
           })
         );
         setPageState((old) => ({
           ...old,
           isLoading: false,
-          data: data.places.data,
+          data: data.places?.data,
           totalCount: data.places.totalCount,
         }));
       } catch (error) {
@@ -62,7 +65,7 @@ const ManagePlaces = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
@@ -83,12 +86,20 @@ const ManagePlaces = () => {
       renderCell: (params) => {
         return (
           <Action
+            titleAc={"Are you sure you want to activate?"}
+            titleDe={"Are you sure you want to deactivate?"}
+            messageAc={
+              "This action of yours will make this place active again and users can operate directly with this place."
+            }
+            messageDe={
+              "Your action will cause this place to no longer be used in the system."
+            }
             id={params.row.id}
-            accountStatus={params.row.status}
             api="portal/places/changestatus"
+            status={params.row.status}
+            getData={getData}
             notification={notification}
             setNotification={setNotification}
-            getData={getData}
           />
         );
       },
@@ -96,7 +107,7 @@ const ManagePlaces = () => {
   ];
   return (
     <Box
-      minHeight="95vh"
+      minHeight="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -113,10 +124,9 @@ const ManagePlaces = () => {
       <Header
         title={"Manage Places"}
         subTitle={"Manage all them existing places or update status."}
-        showBack={false}
         showSearch={true}
-        showFilter={false}
-        buttonAdd={false}
+        search={search}
+        setSearch={setSearch}
       />
 
       {/* Data Table */}

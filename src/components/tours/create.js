@@ -66,6 +66,7 @@ const CreateNewTour = () => {
     setError,
     clearErrors,
     getValues,
+    reset,
     register,
     control,
     formState: { errors },
@@ -198,6 +199,7 @@ const CreateNewTour = () => {
         errorMessage: "Created Tour Successfully!",
         status: "success",
       });
+      reset(initialState);
       setValues(initialState);
       setCreate(false);
       setActiveStep(0);

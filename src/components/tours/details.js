@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Box, Skeleton, Tab, useTheme } from "@mui/material";
+import {
+  Box,
+  Backdrop,
+  CircularProgress,
+  Skeleton,
+  Tab,
+  useTheme,
+} from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
+
+import { getTourDetails, updateTour } from "./action";
+import { getPlaces } from "../places/action";
 
 import PlacesList from "./others/PlacesList";
 import SubsLanguage from "./others/details/SubsLanguage";
@@ -11,9 +21,6 @@ import GeneralInfo from "./others/details/GeneralInfo";
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
 import SubmitBtn from "../common/SubmitBtn";
-
-import { getTourDetails, updateTour } from "./action";
-import { getPlaces } from "../places/action";
 
 const TourDetails = () => {
   const theme = useTheme();
@@ -174,6 +181,13 @@ const TourDetails = () => {
         message={notification.errorMessage}
         status={notification.status}
       />
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={update}
+      >
+        <CircularProgress color="error" />
+      </Backdrop>
 
       <Header
         title={"Tour Details"}

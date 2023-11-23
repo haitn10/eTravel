@@ -17,7 +17,7 @@ import { Controller, useFieldArray } from "react-hook-form";
 
 import UploadImage from "../../common/UploadImage";
 
-import { getAllLanguages } from "../../languages/action";
+import { getLanguages } from "../../languages/action";
 
 import { Add } from "@styled-icons/ionicons-outline";
 import { Trash3 } from "@styled-icons/bootstrap";
@@ -44,8 +44,8 @@ const TourGeneral = ({
   useEffect(() => {
     async function fetchLanguage() {
       try {
-        const response = await dispatch(getAllLanguages());
-        setLanguagesList(response.languages);
+        const response = await dispatch(getLanguages());
+        setLanguagesList(response.languages.data);
       } catch (e) {
         setNotification({
           ...notification,
