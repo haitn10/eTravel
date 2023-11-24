@@ -7,7 +7,7 @@ const setState = (state) => ({
   state,
 });
 
-export const getHomePageData = () => {
+export const getTotalData = () => {
   return async (dispatch, getState) => {
     return fetch(
       getState().homepage,
@@ -36,6 +36,29 @@ export const getLanguagesData = () => {
       dispatch,
       setState,
       "portal/charts/language"
+    );
+  };
+};
+
+export const getReveneData = (values) => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().homepage,
+      dispatch,
+      setState,
+      "portal/charts/booking",
+      values
+    );
+  };
+};
+
+export const getTopPlace = () => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().homepage,
+      dispatch,
+      setState,
+      "portal/charts/top/place"
     );
   };
 };

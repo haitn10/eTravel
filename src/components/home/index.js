@@ -7,49 +7,72 @@ import {
   Avatar,
   Typography,
   Grid,
-  useMediaQuery,
   Skeleton,
 } from "@mui/material";
-import moment from "moment/moment";
+import dayjs from "dayjs";
 
-import { getHomePageData, getLanguagesData, getOrdersData } from "./action";
-
-import ChartCard from "./others/ChartCard";
+import PieLanguage from "./others/PieLanguage";
+import ChartRevenue from "./others/ChartRevenue";
 import CustomersOrder from "./others/CustomersOrder";
-import CountryRanking from "./others/CountryRanking";
-import ArrowData from "../common/ArrowData";
 import { StyledBadge } from "../common/styled/StyledBadge";
 
+import {
+  getLanguagesData,
+  getOrdersData,
+  getReveneData,
+  getTopPlace,
+  getTotalData,
+} from "./action";
+
 import { Calendar } from "@styled-icons/ionicons-outline";
-import { FileEarmarkText, ClipboardCheck } from "@styled-icons/bootstrap";
-import { Location } from "@styled-icons/ionicons-outline";
-import { Directions } from "@styled-icons/boxicons-regular";
+
+import CardTotalTO from "./others/CardTotalTO";
+import PlaceRank from "./others/PlaceRank";
 
 const HomePage = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const isNonMobile = useMediaQuery("(min-width: 1200px)");
   const profile = useSelector((state) => state.auth.profile);
-  const [loadings, setLoadings] = useState(true);
-  const [languageList, setLanguageList] = useState([]);
-  const [ordersList, setOrdersList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [option, setOption] = useState(3);
+  const [total, setTotal] = useState([]);
+  const [revenue, setRevenue] = useState([]);
+  const [language, setLanguage] = useState([]);
+  const [order, setOrder] = useState([]);
+  const [topPlace, setTopPlace] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      setLoadings(false);
+      setLoading(true);
       try {
-        // await dispatch(getHomePageData());
-        const res1 = await dispatch(getOrdersData());
-        setOrdersList(res1.staticticalOrder);
-        const res2 = await dispatch(getLanguagesData());
-        setLanguageList(res2.statictical);
-        setLoadings(true);
+        const totalData = await dispatch(getTotalData());
+        setTotal(totalData.chart);
+        const languageData = await dispatch(getLanguagesData());
+        setLanguage(languageData.statictical);
+        const orderData = await dispatch(getOrdersData());
+        setOrder(orderData.staticticalOrder);
+        const topData = await dispatch(getTopPlace());
+        setTopPlace(topData.charts);
+        setLoading(false);
       } catch (error) {
-        setLoadings(true);
+        setLoading(false);
       }
     }
     fetchData();
-  }, [dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data } = await dispatch(getReveneData({ options: option }));
+        setRevenue(data.charts);
+      } catch (error) {}
+    }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [option]);
 
   return (
     <Box
@@ -60,259 +83,148 @@ const HomePage = () => {
       borderRadius={5}
     >
       {/* Header HomePage */}
-      <Box display="flex" gap={2} paddingX={1.5}>
-        <Box flexGrow={2}>
-          <Box minHeight={111}>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignContent="center"
-            >
-              <Typography variant="h4" fontWeight="semiBold">
-                {loadings ? (
-                  `Hello, ${profile.firstName + " " + profile.lastName}`
-                ) : (
-                  <Skeleton width={300} />
-                )}
-              </Typography>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Typography fontWeight="medium">
-                  {loadings ? (
-                    moment(Date.now()).format("DD MMMM, YYYY")
+      <Box marginX={2}>
+        <Grid container spacing={2.5}>
+          <Grid item sm={12} lg={9}>
+            <Box minHeight={100}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography variant="h4" fontWeight="semiBold">
+                  {loading ? (
+                    <Skeleton width={300} />
                   ) : (
-                    <Skeleton width={200} />
+                    `Hello, ${profile.firstName + " " + profile.lastName}`
                   )}
                 </Typography>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Typography fontWeight="medium">
+                    {loading ? (
+                      <Skeleton width={200} />
+                    ) : (
+                      dayjs(Date.now()).format("LL")
+                    )}
+                  </Typography>
 
-                {loadings ? (
-                  <Avatar sx={{ bgcolor: theme.palette.background.third }}>
-                    <Calendar width={22} color={theme.palette.text.active} />
-                  </Avatar>
-                ) : (
-                  <Skeleton variant="circular">
-                    <Avatar />
-                  </Skeleton>
-                )}
+                  {loading ? (
+                    <Skeleton variant="circular">
+                      <Avatar />
+                    </Skeleton>
+                  ) : (
+                    <Avatar
+                      sx={{ bgcolor: theme.palette.background.secondary }}
+                    >
+                      <Calendar width={22} color={theme.palette.text.active} />
+                    </Avatar>
+                  )}
+                </Box>
               </Box>
+              <Typography color={theme.palette.text.third} fontWeight="medium">
+                {loading ? (
+                  <Skeleton width={200} />
+                ) : (
+                  "Try your best every day!!"
+                )}
+              </Typography>
             </Box>
-            <Typography color={theme.palette.text.third} fontWeight="medium">
-              {loadings ? (
-                "Try your best every day!!"
-              ) : (
-                <Skeleton width={200} />
-              )}
-            </Typography>
-          </Box>
+
+            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
+              <CardTotalTO loading={loading} data={total} />
+            ) : null}
+          </Grid>
 
           <Grid
-            container={isNonMobile}
-            sx={{ flexGrow: 1 }}
-            minHeight={111}
-            borderBottom={2}
-            borderTop={2}
-            borderColor={theme.palette.background.secondary}
-          >
-            <Grid
-              item
-              xs={3}
-              flexDirection="row"
-              display="flex"
-              alignItems="center"
-              columnGap={2}
-              paddingX={3}
-              marginY={1}
-              borderRight={2}
-              borderLeft={2}
-              borderColor={theme.palette.background.secondary}
-            >
-              <Avatar
-                sx={{
-                  bgcolor: theme.palette.background.secondary,
-                  color: theme.palette.text.active,
-                }}
-              >
-                <Location width={24} />
-              </Avatar>
-              <Box width="100%">
-                <Typography
-                  sx={{
-                    fontWeight: "medium",
-                    fontSize: "1em",
-                    marginBottom: 1,
-                  }}
-                >
-                  Places
-                </Typography>
-                <ArrowData totalNum={80} direction={true} numDirection={10} />
-              </Box>
-            </Grid>
-            <Grid
-              item
-              xs={3}
-              flexDirection="row"
-              display="flex"
-              alignItems="center"
-              columnGap={2}
-              paddingX={3}
-              marginY={1}
-              borderRight={2}
-              borderLeft={2}
-              borderColor={theme.palette.background.secondary}
-            >
-              <Avatar
-                sx={{
-                  bgcolor: theme.palette.background.secondary,
-                  color: theme.palette.text.active,
-                }}
-              >
-                <Directions width={24} />
-              </Avatar>
-              <Box width="100%">
-                <Typography
-                  sx={{
-                    fontWeight: "medium",
-                    fontSize: "1em",
-                    marginBottom: 1,
-                  }}
-                >
-                  Tours
-                </Typography>
-                <ArrowData totalNum={80} direction={true} numDirection={10} />
-              </Box>
-            </Grid>
-            <Grid
-              item
-              xs={3}
-              flexDirection="row"
-              display="flex"
-              alignItems="center"
-              columnGap={2}
-              paddingX={3}
-              marginY={1}
-              borderRight={2}
-              borderLeft={2}
-              borderColor={theme.palette.background.secondary}
-            >
-              <Avatar
-                sx={{
-                  bgcolor: theme.palette.background.secondary,
-                  color: theme.palette.text.active,
-                }}
-              >
-                <FileEarmarkText width={24} />
-              </Avatar>
-              <Box width="100%">
-                <Typography
-                  sx={{
-                    fontWeight: "medium",
-                    fontSize: "1em",
-                    marginBottom: 1,
-                  }}
-                >
-                  Bookings
-                </Typography>
-                <ArrowData totalNum={80} direction={true} numDirection={10} />
-              </Box>
-            </Grid>
-            <Grid
-              item
-              xs={3}
-              flexDirection="row"
-              display="flex"
-              alignItems="center"
-              columnGap={2}
-              paddingX={3}
-              marginY={1}
-              borderRight={2}
-              borderLeft={2}
-              borderColor={theme.palette.background.secondary}
-            >
-              <Avatar
-                sx={{
-                  bgcolor: theme.palette.background.secondary,
-                  color: theme.palette.text.active,
-                }}
-              >
-                <ClipboardCheck width={24} />
-              </Avatar>
-              <Box width="100%">
-                <Typography
-                  sx={{
-                    fontWeight: "medium",
-                    fontSize: "0.875em",
-                    marginBottom: 1,
-                  }}
-                >
-                  Success Transactions
-                </Typography>
-                <ArrowData totalNum={80} direction={true} numDirection={10} />
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-
-        {isNonMobile && loadings ? (
-          <Box
-            display="flex"
+            item
+            sx={{ display: { sm: "none", lg: "flex" } }}
             justifyContent="center"
-            alignItems="center"
-            flexDirection="column"
-            minWidth={222}
-            minHeight={222}
-            bgcolor={alpha(theme.palette.background.hovered, 0.1)}
-            borderRadius={8}
-            gap={2}
+            lg={3}
           >
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              variant="dot"
-            >
-              <Avatar
-                alt={profile.firstName + " " + profile.lastName}
-                src={profile.image}
-                sx={{
-                  width: 111,
-                  height: 111,
-                  border: 2,
-                  borderColor: theme.palette.background.secondary,
-                }}
-              />
-            </StyledBadge>
-
-            <Box alignItems="center" flexDirection="column" display="flex">
-              <Typography fontWeight="medium" noWrap>
-                {profile.firstName + " " + profile.lastName}
-              </Typography>
-              <Typography
-                variant="caption"
-                fontWeight="light"
-                color={theme.palette.text.third}
+            {loading ? (
+              <Skeleton variant="rounded" width={222} height={222}>
+                <Avatar />
+              </Skeleton>
+            ) : (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                flexDirection="column"
+                minWidth={222}
+                minHeight={222}
+                bgcolor={alpha(theme.palette.background.hovered, 0.1)}
+                borderRadius={8}
+                gap={2}
               >
-                #
-                {(
-                  profile.id +
-                  "" +
-                  profile.roleId +
-                  "" +
-                  profile.languageCode
-                ).toUpperCase()}
-              </Typography>
-            </Box>
-          </Box>
-        ) : null}
+                <StyledBadge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  variant="dot"
+                >
+                  <Avatar
+                    alt={profile.firstName + " " + profile.lastName}
+                    src={profile.image}
+                    sx={{
+                      width: 111,
+                      height: 111,
+                      border: 2,
+                      borderColor: theme.palette.background.secondary,
+                    }}
+                  />
+                </StyledBadge>
+
+                <Box alignItems="center" flexDirection="column" display="flex">
+                  <Typography fontWeight="medium" noWrap>
+                    {profile.firstName + " " + profile.lastName}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    fontWeight="light"
+                    color={theme.palette.text.third}
+                  >
+                    #
+                    {(
+                      profile.id +
+                      "" +
+                      profile.roleId +
+                      "" +
+                      profile.languageCode
+                    ).toUpperCase()}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+          </Grid>
+        </Grid>
       </Box>
 
       <Box marginX={2}>
-        <Grid container paddingTop={5} spacing={2.5}>
-          <Grid item xs={12}>
-            <ChartCard />
+        <Grid container paddingTop={3} spacing={2.5}>
+          <Grid item sm={12} lg={8}>
+            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
+              <ChartRevenue
+                loading={loading}
+                data={revenue}
+                option={option}
+                setOption={setOption}
+              />
+            ) : null}
           </Grid>
-          <Grid item xs={12} lg={6}>
-            <CustomersOrder loadings={loadings} rows={ordersList} />
+          <Grid item sm={12} lg={4} maxHeight="100%">
+            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
+              <PlaceRank loading={loading} data={topPlace} />
+            ) : null}
           </Grid>
-          <Grid item xs={12} lg={6}>
-            <CountryRanking loadings={loadings} rows={languageList} />
+          <Grid item sm={12} lg={6}>
+            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
+              <CustomersOrder loading={loading} data={order} />
+            ) : null}
+          </Grid>
+          <Grid item sm={12} lg={6}>
+            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
+              <PieLanguage loading={loading} data={language} />
+            ) : null}
           </Grid>
         </Grid>
       </Box>
