@@ -7,13 +7,13 @@ const users = [
     field: "id",
     headerName: "UserID",
     headerAlign: "center",
-    width: 65,
+    width: 80,
     align: "center",
   },
   { field: "fullName", headerName: "Full Name", flex: 1 },
-  { field: "nationality", headerName: "National", flex: 1 },
-  { field: "phone", headerName: "Phone", flex: 1 },
-  { field: "gender", headerName: "Gender", flex: 1 },
+  { field: "nationality", headerName: "National", width: 150 },
+  { field: "phone", headerName: "Phone", width: 150 },
+  { field: "gender", headerName: "Gender", width: 150 },
   {
     field: "createTime",
     headerName: "Create Time",
@@ -29,7 +29,7 @@ const users = [
     headerName: "Status",
     headerAlign: "center",
     align: "center",
-    width: 120,
+    width: 150,
     renderCell: (params) => {
       if (params.row.status === 1) {
         return (

@@ -5,7 +5,7 @@ import {
 } from "../action";
 
 const staffs = (
-  state = { isFetching: false, items: [], details: [] },
+  state = { isFetching: false, isUpdating: false, items: [], details: [] },
   action
 ) => {
   switch (action.type) {

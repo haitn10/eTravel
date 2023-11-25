@@ -72,7 +72,7 @@ const ManageBookings = () => {
 
   return (
     <Box
-      minHeight="95vh"
+      minHeight="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -87,12 +87,9 @@ const ManageBookings = () => {
         status={notification.status}
       />
       <Header
-        title={"Manage Tournaments"}
-        subTitle={"Manage all them existing tours or update status."}
-        showBack={false}
+        title={"Manage Bookings"}
+        subTitle={"Manage all them existing bookings."}
         showSearch={true}
-        showFilter={false}
-        buttonAdd={false}
       />
 
       {/* Data Table */}

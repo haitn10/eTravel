@@ -2,169 +2,252 @@ import {
   Box,
   Button,
   Divider,
-  FormControl,
   FormHelperText,
   Grid,
+  IconButton,
   MenuItem,
   Select,
+  Skeleton,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { getAllLanguages } from "../../../languages/action";
-
-import { Voiceprint } from "@styled-icons/remix-fill";
-import { Trash3 } from "@styled-icons/bootstrap";
+import React from "react";
+import { Controller, useFieldArray } from "react-hook-form";
 import ReactPlayer from "react-player";
 
-const MultiLanguages = ({ values, setValues, errors }) => {
-  const theme = useTheme();
-  const dispatch = useDispatch();
-  const [descriptionsList, setDescriptionsList] = useState(
-    values.placeDescriptions
-  );
-  const [languagesList, setLanguagesList] = useState([]);
+import { Voiceprint } from "@styled-icons/remix-fill";
+import { Add } from "@styled-icons/ionicons-outline";
+import { Trash3 } from "@styled-icons/bootstrap";
+import { CloseOutline } from "@styled-icons/evaicons-outline";
 
-  useEffect(() => {
-    async function getInfo() {
-      try {
-        const langsList = await dispatch(getAllLanguages());
-        setLanguagesList(langsList.languages);
-      } catch (error) {
-        // setNotification({
-        //   ...notification,
-        //   errorState: true,
-        //   errorMessage: "Can't get data details for place!",
-        //   status: "error",
-        // });
+import { checkDuplicateName } from "../../action";
+
+const MultiLanguages = ({
+  language,
+  loading,
+  control,
+  register,
+  resetField,
+  errors,
+  getValues,
+}) => {
+  const theme = useTheme();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "placeDescriptions",
+  });
+
+  const hasDuplicate = () => {
+    const formData = getValues();
+    const languageCodes = new Set();
+    for (const data of formData.placeDescriptions) {
+      if (languageCodes.has(data.languageCode)) {
+        return false;
+      }
+      languageCodes.add(data.languageCode);
+    }
+
+    return true;
+  };
+
+  const hasDuplicateVoiceFile = async (nameFile) => {
+    console.log(nameFile);
+
+    const data = getValues("placeDescriptions");
+    console.log(data);
+    const voiceFile = new Set();
+    for (const value of data) {
+      if (value.voiceFile instanceof File) {
+        if (voiceFile.has(value.voiceFile.name)) {
+          return false;
+        }
+        voiceFile.add(value.voiceFile.name);
       }
     }
-    getInfo();
-  }, [dispatch]);
 
-  const addToSelectLanguagesList = () => {
-    const value = [...descriptionsList];
-    if (value.length < descriptionsList.length) {
-      setDescriptionsList([
-        ...value,
-        { languageCode: "en-us", name: "", description: "" },
-      ]);
+    if (nameFile !== undefined && nameFile !== "") {
+      nameFile = nameFile.slice(0, -4);
+      try {
+        await checkDuplicateName(nameFile);
+        return true;
+      } catch (err) {
+        return false;
+      }
     }
+    return true;
   };
 
-  const removeToSelectLanguagesList = (index) => {
-    const value = [...descriptionsList];
-    value.splice(index, 1);
-    setDescriptionsList(value);
-  };
-
-  const handleChangeDescs = (index, event) => {
-    const value = [...descriptionsList];
-    value[index][event.target.name] = event.target.value;
-    setDescriptionsList(value);
-  };
-
-  const handleChangeFile = (index, event) => {
-    const data = [...values.placeDescriptions];
-    if (!event.target.files) {
-      data[index][event.target.name] = event.target.value;
-    } else {
-      data[index][event.target.name] = event.target.files[0];
-    }
-    setValues({ ...values, placeDescriptions: data });
-  };
+  console.log(errors);
 
   return (
-    <Box>
-      {descriptionsList.map((description, index) => (
-        <Box key={index} display="flex" justifyContent="center">
+    <>
+      {fields.map((description, index) => (
+        <Box
+          key={description.id}
+          display="flex"
+          justifyContent="center"
+          padding={1}
+        >
           <Box>
-            <Grid container rowGap={2} marginY={5}>
+            <Grid container spacing={2} marginY={2}>
+              {/* Language */}
               <Grid item sm={12} lg={3}>
-                <Typography fontWeight="medium">
-                  Choose Language{" "}
-                  <small style={{ color: theme.palette.text.active }}>*</small>
-                </Typography>
+                {loading ? (
+                  <Skeleton width={100} />
+                ) : (
+                  <Typography fontWeight="medium">
+                    Choose Language{" "}
+                    <small style={{ color: theme.palette.text.active }}>
+                      *
+                    </small>
+                  </Typography>
+                )}
               </Grid>
               <Grid item sm={12} lg={9}>
-                <FormControl fullWidth size="small">
-                  <Select
-                    sx={{ borderRadius: 2.5 }}
-                    value={description.languageCode.trim()}
-                    name="languageCode"
-                    onChange={(event) => handleChangeDescs(index, event)}
-                  >
-                    {languagesList.map((item) => (
-                      <MenuItem key={item.id} value={item.languageCode}>
-                        <img
-                          src={item.icon}
-                          alt={item.name}
-                          style={{
-                            width: 16,
-                            border: "1px solid #ccc",
-                            marginRight: 10,
+                {loading ? (
+                  <Skeleton width="100%" />
+                ) : (
+                  <Controller
+                    control={control}
+                    name={`placeDescriptions[${index}].languageCode`}
+                    rules={{
+                      validate: () => {
+                        return (
+                          hasDuplicate() ||
+                          "There are duplicate language. Please check again!"
+                        );
+                      },
+                    }}
+                    render={({ field, fieldState: { error } }) => (
+                      <>
+                        <Select
+                          {...field}
+                          defaultValue={""}
+                          fullWidth
+                          size="small"
+                          sx={{
+                            borderRadius: 2.5,
                           }}
-                        />
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                          error={!!error}
+                        >
+                          {language.map((item) => (
+                            <MenuItem key={item.id} value={item.languageCode}>
+                              <img
+                                src={item.icon}
+                                alt={item.name}
+                                style={{
+                                  width: 16,
+                                  border: "1px solid #ccc",
+                                  marginRight: 10,
+                                }}
+                              />
+                              {item.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText
+                          htmlFor="render-select"
+                          error
+                          sx={{ marginLeft: 2 }}
+                        >
+                          {error?.message}
+                        </FormHelperText>
+                      </>
+                    )}
+                  />
+                )}
               </Grid>
 
+              {/* Tour Name */}
               <Grid item sm={12} lg={3}>
-                <Typography fontWeight="medium">
-                  Tour Name{" "}
-                  <small style={{ color: theme.palette.text.active }}>*</small>
-                </Typography>
+                {loading ? (
+                  <Skeleton width={100} />
+                ) : (
+                  <Typography fontWeight="medium">
+                    Place Name{" "}
+                    <small style={{ color: theme.palette.text.active }}>
+                      *
+                    </small>
+                  </Typography>
+                )}
               </Grid>
               <Grid item sm={12} lg={9}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  name="name"
-                  value={description.name}
-                  onChange={(event) => handleChangeDescs(index, event)}
-                  error={!!errors.name}
-                  helperText={errors.name?.message}
-                  placeholder="Type tour name here"
-                  InputProps={{
-                    style: {
-                      borderRadius: 10,
-                    },
-                  }}
-                />
+                {loading ? (
+                  <Skeleton width="100%" />
+                ) : (
+                  <TextField
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      style: {
+                        borderRadius: 10,
+                      },
+                    }}
+                    {...register(`placeDescriptions.${index}.name`, {
+                      validate: (value) => {
+                        return (
+                          value.trim() !== "" || "Place name is not empty!"
+                        );
+                      },
+                      required: "Place Name is required!",
+                    })}
+                    error={!!errors.placeDescriptions?.[index]?.name}
+                    helperText={
+                      errors.placeDescriptions?.[index]?.name?.message
+                    }
+                    placeholder="Type place name here"
+                  />
+                )}
               </Grid>
 
               {/* Tour Decription */}
               <Grid item sm={12} lg={3}>
-                <Typography fontWeight="medium">
-                  Decription{" "}
-                  <small style={{ color: theme.palette.text.active }}>*</small>
-                </Typography>
-                <Typography>
-                  <small>Write a short decription</small>
-                </Typography>
+                {loading ? (
+                  <Skeleton width={100} height={30} />
+                ) : (
+                  <>
+                    <Typography fontWeight="medium">
+                      Decription{" "}
+                      <small style={{ color: theme.palette.text.active }}>
+                        *
+                      </small>
+                    </Typography>
+                    <Typography>
+                      <small>Write a short decription</small>
+                    </Typography>
+                  </>
+                )}
               </Grid>
               <Grid item sm={12} lg={9}>
-                <TextField
-                  fullWidth
-                  name="description"
-                  value={description.description}
-                  onChange={(event) => handleChangeDescs(index, event)}
-                  error={!!errors.description}
-                  helperText={errors.description?.message}
-                  placeholder="Type description here"
-                  InputProps={{
-                    style: {
-                      borderRadius: 10,
-                    },
-                  }}
-                  multiline={true}
-                  rows={7}
-                />
+                {loading ? (
+                  <Skeleton width="100%" height={30} />
+                ) : (
+                  <TextField
+                    fullWidth
+                    rows={7}
+                    multiline
+                    size="small"
+                    InputProps={{
+                      style: {
+                        borderRadius: 10,
+                      },
+                    }}
+                    {...register(`placeDescriptions.${index}.description`, {
+                      validate: (value) => {
+                        return (
+                          value.trim() !== "" || "Description is not empty!"
+                        );
+                      },
+                      required: "Description is required!",
+                    })}
+                    error={!!errors.placeDescriptions?.[index]?.description}
+                    helperText={
+                      errors.placeDescriptions?.[index]?.description?.message
+                    }
+                    placeholder="Type description here"
+                  />
+                )}
               </Grid>
 
               {/* Voice File */}
@@ -174,55 +257,119 @@ const MultiLanguages = ({ values, setValues, errors }) => {
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
               </Grid>
-              <Grid item xs={9} md={6}>
-                <ReactPlayer
-                  url={description.voiceFile}
-                  controls={true}
-                  height={40}
-                  width="100%"
-                />
-              </Grid>
-              <Grid item xs={3} md={3}>
-                <Button
-                  component="label"
-                  variant="contained"
-                  sx={{
-                    marginLeft: 2,
-                    borderRadius: 2.5,
-                    width: "85%",
-                  }}
-                >
-                  <Voiceprint width={16} style={{ marginRight: 5 }} />
-                  <Typography noWrap>Change Voice File</Typography>
-                  <input
-                    hidden
-                    multiple
-                    name="voiceFile"
-                    onChange={(event) => handleChangeFile(index, event)}
-                    type="file"
-                    accept="audio/mpeg, audio/mp3"
+              <Grid item sm={12} lg={9}>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Button
+                    component="label"
+                    sx={{ borderRadius: 2.5, width: 180, height: 35, gap: 0.5 }}
+                    htmlFor={`placeDescriptions.${index}.voiceFile`}
+                    variant="contained"
+                  >
+                    <Voiceprint width={20} />
+                    <Typography fontSize={14}>Change File</Typography>
+                  </Button>
+                  <Controller
+                    name={`placeDescriptions.${index}.voiceFile`}
+                    control={control}
+                    rules={{
+                      required: "Voice file is required!",
+                      validate: (value) => {
+                        return hasDuplicateVoiceFile(value.name);
+                      },
+                    }}
+                    render={({ field }) => (
+                      <>
+                        <input
+                          id={`placeDescriptions.${index}.voiceFile`}
+                          type="file"
+                          hidden
+                          onChange={(e) => field.onChange(e.target.files[0])}
+                          accept="audio/mpeg, audio/mp3"
+                        />
+
+                        {field.value instanceof File ? (
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            width="100%"
+                          >
+                            {field.value.name}
+                            <IconButton
+                              onClick={(e) =>
+                                resetField(
+                                  `placeDescriptions.${index}.voiceFile`
+                                )
+                              }
+                            >
+                              <CloseOutline width={24} />
+                            </IconButton>
+                          </Box>
+                        ) : (
+                          <ReactPlayer
+                            url={description.voiceFile}
+                            controls={true}
+                            height={40}
+                            width="100%"
+                          />
+                        )}
+                      </>
+                    )}
                   />
-                </Button>
+                </Box>
 
                 <FormHelperText
-                  htmlFor="render-select"
-                  style={{ marginLeft: 14 }}
                   error
-                ></FormHelperText>
+                  htmlFor={`placeDescriptions.${index}.voiceFile`}
+                >
+                  {errors?.placeDescriptions?.[index]?.voiceFile?.type === "validate"
+                    ? "This file name already exists in the system!"
+                    : errors?.placeDescriptions?.[index]?.voiceFile?.message}
+                </FormHelperText>
               </Grid>
             </Grid>
             <Divider />
           </Box>
-          <Button
-            color="error"
-            onClick={removeToSelectLanguagesList}
-            sx={{ marginLeft: 2 }}
-          >
-            <Trash3 width={20} />
-          </Button>
+          {fields.length === 1 ? null : loading ? (
+            <Skeleton width={100} height={170} />
+          ) : (
+            <Button
+              color="error"
+              onClick={() => remove(index)}
+              sx={{ marginLeft: 2 }}
+            >
+              <Trash3 width={20} />
+            </Button>
+          )}
         </Box>
       ))}
-    </Box>
+      <Box marginTop={2} display="flex" justifyContent="center">
+        {fields.length < language.length ? (
+          loading ? (
+            <Skeleton width={200} />
+          ) : (
+            <Button
+              onClick={() => {
+                if (fields.length < language.length) {
+                  append({
+                    languageCode: "en-us",
+                    name: "",
+                    description: "",
+                    voiceFile: null,
+                  });
+                }
+              }}
+              sx={{ borderRadius: 2.5 }}
+            >
+              <Add width={20} />
+              <Typography fontWeight="medium" fontSize={14}>
+                Add More
+              </Typography>
+            </Button>
+          )
+        ) : null}
+      </Box>
+    </>
   );
 };
 

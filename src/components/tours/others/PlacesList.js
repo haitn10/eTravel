@@ -4,6 +4,7 @@ import {
   Grid,
   IconButton,
   InputAdornment,
+  ListSubheader,
   MenuItem,
   Select,
   TextField,
@@ -12,19 +13,22 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { DataGrid } from "@mui/x-data-grid";
 
 import SubCard from "./SubCard";
 import subPlaces from "../../../constants/tables/subPlaces";
 
 import { FilterAlt } from "@styled-icons/boxicons-regular";
 import { Search } from "@styled-icons/evaicons-solid";
-import { AddCircle } from "@styled-icons/fluentui-system-regular";
+import { AddCircle, MoreCircle } from "@styled-icons/fluentui-system-regular";
 import { CheckCircleFill } from "@styled-icons/bootstrap";
+import { DataGrid } from "@mui/x-data-grid";
 
 const PlacesList = ({
   values,
   setValues,
+  setSearch,
+  setSearchBy,
+  errors,
   setError,
   clearErrors,
   pageState,
@@ -40,6 +44,17 @@ const PlacesList = ({
   const [filterValue, setFilterValue] = useState("");
 
   useEffect(() => {
+    if (placesList.length < 2) {
+      setError("minimumPlace", {
+        message: `(Please select at least ${
+          2 - placesList.length
+        } additional places to continue.)`,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placesList]);
+
+  useEffect(() => {
     setValues({ ...values, tourDetails: placesList, total: price });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placesList]);
@@ -50,7 +65,13 @@ const PlacesList = ({
   }, []);
 
   const handleChange = (event) => {
-    clearErrors("placesList");
+    if (event.target.value === "") {
+      setSearchBy("");
+      setSearch(event.target.value);
+    } else if (["Travel", "Food"].includes(event.target.value)) {
+      setSearchBy("category");
+      setSearch(event.target.value);
+    }
     setFilterValue(event.target.value);
   };
 
@@ -75,6 +96,7 @@ const PlacesList = ({
 
   const onAdd = (data) => {
     if (!isDuplicate(data)) {
+      clearErrors("minimumPlace");
       setPlacesList(placesList.concat([data]));
       setPrice(price + data.price);
     } else {
@@ -91,19 +113,27 @@ const PlacesList = ({
     {
       field: "action",
       headerName: "Action",
-      width: 70,
+      width: 80,
       align: "center",
       headerAlign: "center",
       sortable: false,
       renderCell: (params) => {
         return (
-          <IconButton aria-label="more" onClick={(e) => onAdd(params.row)}>
-            {!isDuplicate(params.row) ? (
-              <AddCircle width={24} color={theme.palette.text.active} />
-            ) : (
-              <CheckCircleFill width={24} color={theme.palette.text.onStatus} />
-            )}
-          </IconButton>
+          <>
+            <IconButton aria-label="add" onClick={(e) => onAdd(params.row)}>
+              {!isDuplicate(params.row) ? (
+                <AddCircle width={24} color={theme.palette.text.active} />
+              ) : (
+                <CheckCircleFill
+                  width={24}
+                  color={theme.palette.text.onStatus}
+                />
+              )}
+            </IconButton>
+            <IconButton aria-label="more" onClick={(e) => {}}>
+              <MoreCircle width={24} />
+            </IconButton>
+          </>
         );
       },
     },
@@ -132,14 +162,17 @@ const PlacesList = ({
               }}
               size="small"
               fullWidth
-              placeholder="Search..."
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setSearchBy("name");
+              }}
+              placeholder="Search by name..."
             />
             <FormControl size="small" sx={{ m: 1, minWidth: 200 }}>
               <Select
                 value={filterValue}
                 onChange={handleChange}
                 displayEmpty
-                inputProps={{ "aria-label": "Without label" }}
                 startAdornment={
                   <InputAdornment position="start">
                     <FilterAlt height={24} />
@@ -149,10 +182,15 @@ const PlacesList = ({
                   borderRadius: 2.5,
                 }}
               >
-                <MenuItem value="">All</MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                <MenuItem value="" selected>
+                  All
+                </MenuItem>
+                <ListSubheader>Category</ListSubheader>
+                <MenuItem value="Travel">Travel</MenuItem>
+                <MenuItem value="Food">Food</MenuItem>
+                {/* <ListSubheader>Language</ListSubheader>
+                <MenuItem value={3}>Option 3</MenuItem>
+                <MenuItem value={4}>Option 4</MenuItem> */}
               </Select>
             </FormControl>
           </Box>
@@ -210,49 +248,40 @@ const PlacesList = ({
 
           <Box>
             <Box minHeight={300} marginTop={5}>
-              {placesList.length > 0 ? (
-                <DragDropContext onDragEnd={handleOnDragEnd}>
-                  <Droppable droppableId="ROOT" type="group">
-                    {(provided) => (
-                      <Box ref={provided.innerRef} {...provided.droppableProps}>
-                        {placesList.map((place, index) => (
-                          <Draggable
-                            key={place.id}
-                            draggableId={place.name}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <SubCard
-                                provided={provided}
-                                place={place}
-                                placesList={placesList}
-                                setPlacesList={setPlacesList}
-                                price={price}
-                                setPrice={setPrice}
-                              />
-                            )}
-                          </Draggable>
-                        ))}
-                      </Box>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-              ) : (
+              <DragDropContext onDragEnd={handleOnDragEnd}>
+                <Droppable droppableId="ROOT" type="group">
+                  {(provided) => (
+                    <Box ref={provided.innerRef} {...provided.droppableProps}>
+                      {placesList.map((place, index) => (
+                        <Draggable
+                          key={place.id}
+                          draggableId={place.name}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <SubCard
+                              provided={provided}
+                              place={place}
+                              placesList={placesList}
+                              setPlacesList={setPlacesList}
+                              price={price}
+                              setPrice={setPrice}
+                            />
+                          )}
+                        </Draggable>
+                      ))}
+                    </Box>
+                  )}
+                </Droppable>
+              </DragDropContext>
+              {placesList.length < 2 ? (
                 <Box display="flex" justifyContent="center">
-                  <Typography color="error" fontWeight="medium">
-                    (Not have places for tour)
+                  <Typography color="error" fontWeight="medium" fontSize={14}>
+                    {errors?.minimumPlace?.message}
                   </Typography>
                 </Box>
-              )}
+              ) : null}
             </Box>
-
-            {/* {placesList.length === 5 ? (
-              <Box>
-                <Typography color="error" fontWeight="medium">
-                  The maximum number of places has been reached!
-                </Typography>
-              </Box>
-            ) : null} */}
 
             <Box display="flex" justifyContent="space-between" marginTop={5}>
               <Typography fontSize={18} fontWeight="semiBold">

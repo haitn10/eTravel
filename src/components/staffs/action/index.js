@@ -1,4 +1,4 @@
-import { API, fetch, process } from "../../../api";
+import { API, fetch, process, uploadFile } from "../../../api";
 
 export const SET_STAFFS_STATE = "SET_STAFFS_STATE";
 export const ADD_STAFF_PROCESS = "ADD_STAFF_PROCESS";
@@ -28,7 +28,6 @@ export const getStaffDetails = async (staffId) => {
     const { data } = await API.get(`portal/users/operator/${staffId}`);
     return Promise.resolve(data.account);
   } catch (e) {
-    console.log(e);
     return Promise.reject(e);
   }
 };
@@ -42,5 +41,32 @@ export const processStaff = (staff) => {
       "portal/users/operator",
       staff
     );
+  };
+};
+
+export const updateStaff = (staffId, staff) => {
+  return async (dispatch, getState) => {
+    const state = getState().staffs;
+    if (state.isUpdating) {
+      return Promise.reject(new Error("You are being updating.").message);
+    }
+
+    dispatch(setState({ isUpdating: true }));
+    try {
+      if (staff.image instanceof File) {
+        let formData = new FormData();
+        formData.append("file", staff.image);
+
+        const { data } = await uploadFile(formData, "Account");
+        staff.image = data.link;
+      }
+
+      const { data } = await API.put(`portal/users/staff/${staffId}`, staff);
+      dispatch(setState({ isUpdating: false }));
+      return Promise.resolve(data.account);
+    } catch (e) {
+      dispatch(setState({ isUpdating: false }));
+      return Promise.reject(e);
+    }
   };
 };

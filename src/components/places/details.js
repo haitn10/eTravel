@@ -1,32 +1,37 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Backdrop,
   Button,
   CircularProgress,
   Skeleton,
   Tab,
-  Typography,
   useTheme,
 } from "@mui/material";
-import { Box } from "@mui/system";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
+import { getPlaceDetails, updatePlace } from "./action";
+
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
-
-import { getPlaceDetails, updatePlace } from "./action";
-import { Save } from "@styled-icons/boxicons-regular";
 import GeneralInfo from "./others/details/GeneralInfo";
 import MultiLanguages from "./others/details/MultiLanguages";
 
+import BeaconSub from "./others/details/BeaconSub";
+import { getLanguages } from "../languages/action";
+import { useDispatch } from "react-redux";
+import dayjs from "dayjs";
+
 const PlaceDetails = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const { state } = useLocation();
   const { placeId } = state;
 
   const [values, setValues] = useState({});
+  const [languagesList, setLanguagesList] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [process, setProcess] = useState(false);
@@ -39,8 +44,15 @@ const PlaceDetails = () => {
     status: "error",
   });
 
-  const { handleSubmit, register, reset, formState } = useForm();
-  const { errors } = formState;
+  const {
+    handleSubmit,
+    register,
+    getValues,
+    reset,
+    resetField,
+    control,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     setLoading(true);
@@ -64,28 +76,56 @@ const PlaceDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeId]);
 
-  const handleTabs = (event, newValue) => {
-    setNumber(newValue);
-  };
-
-  const onSubmit = async () => {
-    // setProcess(true);
-    let arrCates = [],
-      arrDescs = [],
-      arrImgs = [];
-
-    for (const categories of values.placeCategories) {
-      arrCates.push({ id: categories.id });
-    }
-    for (const desc of values.placeDescriptions) {
-      if (desc.name && desc.voiceFile && desc.description) {
-        arrDescs.push({
-          languageCode: desc.languageCode.trim(),
-          voiceFile: desc.voiceFile,
-          name: desc.name,
-          description: desc.description,
+  useEffect(() => {
+    async function getInfo() {
+      try {
+        const langsList = await dispatch(getLanguages());
+        setLanguagesList(langsList.languages.data);
+      } catch (error) {
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "Can't loading details mutil-languages for place!",
+          status: "error",
         });
       }
+    }
+    getInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const mergeData = () => {
+    let arrCate = [],
+      arrDesc = [],
+      arrImgs = [],
+      arrBeac = [];
+
+    for (const cate of getValues("placeCategories")) {
+      arrCate.push({ id: cate.id });
+    }
+    for (const desc of getValues("placeDescriptions")) {
+      arrDesc.push({
+        languageCode: desc.languageCode,
+        voiceFile: desc.voiceFile,
+        name: desc.name,
+        description: desc.description,
+      });
+    }
+    for (const beacon of getValues("placeItems")) {
+      arrBeac.push({
+        name: beacon.name,
+        beaconId: beacon.beaconId,
+        image: beacon.image,
+        startTime: dayjs(beacon.startTime).isValid()
+          ? dayjs(beacon.startTime).format("HH:mm:ss")
+          : beacon.startTime,
+        endTime: dayjs(beacon.endTime).isValid()
+          ? dayjs(beacon.endTime).format("HH:mm:ss")
+          : beacon.endTime,
+        beaconMajorNumber: beacon.beaconMajorNumber,
+        beaconMinorNumber: beacon.beaconMinorNumber,
+        itemDescriptions: beacon.itemDescriptions,
+      });
     }
     for (const img of values.placeImages) {
       arrImgs.push({
@@ -102,18 +142,31 @@ const PlaceDetails = () => {
       googlePlaceId: values.googlePlaceId,
       entryTicket: values.entryTicket,
       price: values.price,
-      hour: values.hour,
-      placeCategories: arrCates,
-      placeDescriptions: arrDescs,
+      hour: dayjs(values.hour).isValid()
+        ? dayjs(values.hour).format("HH:mm:ss")
+        : values.hour,
+      placeCategories: arrCate,
+      placeDescriptions: arrDesc,
       placeImages: arrImgs,
       placeTimes: values.placeTimes,
+      placeItems: arrBeac,
     };
 
-    console.log(data);
+    return data;
+  };
 
+  const handleTabs = (event, newValue) => {
+    setNumber(newValue);
+  };
+
+  const onSubmit = async () => {
     try {
-      const res = await updatePlace(placeId, data);
+      setProcess(true);
+      const values = mergeData();
+
+      const res = await updatePlace(placeId, values);
       if (res) {
+        reset(res.place);
         setValues(res.place);
         setNotification({
           ...notification,
@@ -148,6 +201,7 @@ const PlaceDetails = () => {
         message={notification.errorMessage}
         status={notification.status}
       />
+
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={process}
@@ -155,16 +209,11 @@ const PlaceDetails = () => {
         <CircularProgress color="error" />
       </Backdrop>
 
-      {/* Title */}
-
       <Header
         title={"Place Details"}
         subTitle={"Manage all information of place and update place."}
         loading={loading}
         showBack={true}
-        showSearch={false}
-        showFilter={false}
-        buttonAdd={false}
       />
 
       <Box marginTop={3} marginX={7}>
@@ -180,6 +229,8 @@ const PlaceDetails = () => {
               <TabList onChange={handleTabs} aria-label="lab API tabs example">
                 <Tab label="General" value="1" />
                 <Tab label="Languages" value="2" />
+                <Tab label="Beacons" value="3" />
+                <Tab label="Feedback" value="4" />
               </TabList>
             </Box>
           ) : (
@@ -190,9 +241,12 @@ const PlaceDetails = () => {
               {!loading ? (
                 <>
                   <GeneralInfo
+                    process={process}
                     values={values}
                     setValues={setValues}
+                    control={control}
                     register={register}
+                    getValues={getValues}
                     errors={errors}
                   />
 
@@ -208,13 +262,11 @@ const PlaceDetails = () => {
                     <Button
                       type="submit"
                       color="error"
+                      disabled={process}
                       variant="contained"
-                      sx={{ borderRadius: 5, paddingY: 1, paddingX: 2 }}
+                      sx={{ borderRadius: 2.5 }}
                     >
-                      <Save width={20} />
-                      <Typography marginLeft={1} fontSize={16}>
-                        Save Changes
-                      </Typography>
+                      Save Changes
                     </Button>
                   </Box>
                 </>
@@ -227,9 +279,13 @@ const PlaceDetails = () => {
           <TabPanel value="2">
             <form onSubmit={handleSubmit(onSubmit)}>
               <MultiLanguages
-                values={values}
-                setValues={setValues}
+                language={languagesList}
+                loading={loading}
+                control={control}
+                register={register}
+                resetField={resetField}
                 errors={errors}
+                getValues={getValues}
               />
               <Box
                 sx={{
@@ -243,13 +299,67 @@ const PlaceDetails = () => {
                 <Button
                   type="submit"
                   color="error"
+                  disabled={process}
                   variant="contained"
-                  sx={{ borderRadius: 5, paddingY: 1, paddingX: 2 }}
+                  sx={{ borderRadius: 2.5 }}
                 >
-                  <Save width={20} />
-                  <Typography marginLeft={1} fontSize={16}>
-                    Save Changes
-                  </Typography>
+                  Save Changes
+                </Button>
+              </Box>
+            </form>
+          </TabPanel>
+
+          <TabPanel value="3">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <BeaconSub
+                language={languagesList}
+                loading={loading}
+                control={control}
+                register={register}
+                errors={errors}
+                getValues={getValues}
+              />
+              <Box
+                sx={{
+                  marginTop: 5,
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                  marginRight: 3,
+                }}
+              >
+                <Button
+                  type="submit"
+                  color="error"
+                  disabled={process}
+                  variant="contained"
+                  sx={{ borderRadius: 2.5 }}
+                >
+                  Save Changes
+                </Button>
+              </Box>
+            </form>
+          </TabPanel>
+
+          <TabPanel value="4">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Box
+                sx={{
+                  marginTop: 5,
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                  marginRight: 3,
+                }}
+              >
+                <Button
+                  type="submit"
+                  color="error"
+                  disabled={process}
+                  variant="contained"
+                  sx={{ borderRadius: 2.5 }}
+                >
+                  Save Changes
                 </Button>
               </Box>
             </form>

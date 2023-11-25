@@ -1,15 +1,11 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
 
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
-import { storage } from "../firebase";
-
 const cookies = new Cookies();
+
+export const GOONG_MAPTILES_KEY = "foAIsmKSYDQOdkoRfIj1T1MbkKaIIq5vvwSXb50U";
+export const GOONG_API_KEY = "lufMpKjvYBPBQqq13Zwl0vTLnPUHtkksPTV1YcEs";
+export const GOONG_URL = "https://rsapi.goong.io/Place/AutoComplete";
 
 // URL
 export const BASE_URL = "http://localhost:8000";
@@ -27,73 +23,33 @@ API.interceptors.request.use(function (config) {
   return config;
 });
 
-export const uploadImage = async (data, url) => {
-  const checkArr = Array.isArray(data);
-  if (checkArr) {
-    const uploadPromises = data.map(async (item) => {
-      if (item.image instanceof File) {
-        const fileRef = ref(storage, `${url}/${item.image.name}`);
-        await uploadBytes(fileRef, item.image);
-        const downloadURL = await getDownloadURL(fileRef);
-        item.image = downloadURL;
-      }
-    });
-
-    await Promise.all(uploadPromises);
-
-    return data;
-  } else {
-    const fileRef = ref(storage, `${url}/${data.image.name}`);
-    await uploadBytes(fileRef, data.image);
-    const urlRes = await getDownloadURL(fileRef);
-    return urlRes;
-  }
-};
-
-export const removeImage = (item, url) => {
-  const fileRef = ref(storage, `${url}/${item.image.name}`);
-  deleteObject(fileRef)
-    .then(() => {
-      return Promise.resolve();
-    })
-    .catch((error) => {
-      return Promise.reject(error);
-    });
-};
-
-export const uploadVoiceFile = (item) => {
+export const convertVoiceFile = (item) => {
   return API.post("portal/places/convert/mp3", item, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 };
 
-export const upload = (item, file) => {
-  const fileRef = ref(
-    storage,
-    `Language/FileTranslate/${item.languageCode}.json`
-  );
-  return uploadBytes(fileRef, file).then(async () => {
-    try {
-      const url = await getDownloadURL(fileRef);
-      return Promise.resolve(url);
-    } catch (err) {
-      return Promise.reject(err);
-    }
+export const removeVoiceFile = (name) => {
+  return API.delete("portal/azures/fileName", {
+    params: { fileName: name },
   });
 };
 
-export const remove = (item) => {
-  const fileRef = ref(
-    storage,
-    `Language/FileTranslate/${item.languageCode}.json`
+export const uploadFile = (files, path) => {
+  return API.post(
+    "/portal/azures/image",
+    files,
+    { params: { imagePath: path } },
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
   );
-  deleteObject(fileRef)
-    .then(() => {
-      return Promise.resolve();
-    })
-    .catch((error) => {
-      return Promise.reject(error);
-    });
+};
+
+export const removeFile = (path, name) => {
+  return API.delete("portal/azures/image", {
+    params: { imagePath: path, imageName: name },
+  });
 };
 
 export const fetch = async (state, dispatch, setState, path, payload) => {
@@ -112,51 +68,108 @@ export const fetch = async (state, dispatch, setState, path, payload) => {
   }
 };
 
-export const process = async (state, dispatch, setState, path, item, file) => {
+export const process = async (state, dispatch, setState, path, item) => {
   if (state.isFetching) {
     return Promise.reject(new Error("This item is being processed."));
   }
 
   try {
     dispatch(setState({ isFetching: true }));
-    if (item.placeDescriptions?.length > 0) {
+
+    //Convert voice file
+    if (item.placeDescriptions) {
       let formData = new FormData();
-      item.placeDescriptions.forEach((element) => {
-        if (element.voiceFile instanceof File) {
-          formData.append("listMp3", element.voiceFile);
+      item.placeDescriptions.forEach((description) => {
+        if (description.voiceFile instanceof File) {
+          formData.append("listMp3", description.voiceFile);
         }
       });
-      const { data } = await uploadVoiceFile(formData);
-      data.voiceFiles.forEach((itm) => {
-        const indexFile = item.placeDescriptions.findIndex(
-          (file) => itm.fileName === file.voiceFile.name
-        );
-        if (indexFile !== -1) {
-          item.placeDescriptions[indexFile].voiceFile = itm.fileLink;
-        }
-      });
-    }
 
-    if (item.placeImages) {
-      const response = await uploadImage(
-        item.placeImages,
-        `place/PlaceImg/${item.name}`
-      );
-      item.placeImages = response;
-    }
-
-    if (item.image instanceof File) {
-      const response = await uploadImage(item, "Tour");
-      item.image = response;
-    }
-
-    if (file instanceof File) {
-      try {
-        const response = await upload(item, file);
-        item.fileLink = response;
-      } catch (e) {
-        await remove(item);
+      // Check if formData has data before calling convertVoiceFile
+      if (
+        formData &&
+        formData.getAll &&
+        formData.getAll("listMp3").length > 0
+      ) {
+        const { data } = await convertVoiceFile(formData);
+        data.voiceFiles.forEach((itm) => {
+          const indexFile = item.placeDescriptions.findIndex(
+            (file) => itm.fileName === file.voiceFile.name
+          );
+          if (indexFile !== -1) {
+            item.placeDescriptions[indexFile].voiceFile = itm.fileLink;
+          }
+        });
       }
+    }
+
+    //Upload image place
+    if (item.placeImages) {
+      let formData = new FormData();
+      item.placeImages.forEach((img) => {
+        if (img.image instanceof File) {
+          formData.append("file", img.image);
+        }
+      });
+
+      // Check if formData has data before calling uploadFile
+      if (formData && formData.getAll && formData.getAll("file").length > 0) {
+        const { data } = await uploadFile(
+          formData,
+          `place/PlaceImg/${item.name}`
+        );
+        data.imageFiles.forEach((itm) => {
+          const indexItem = item.placeImages.findIndex(
+            (file) => itm.fileName === file.image.name
+          );
+          if (indexItem !== -1) {
+            item.placeImages[indexItem].image = itm.fileLink;
+          }
+        });
+      }
+    }
+
+    //Upload image beacon
+    if (item.placeItems && item.placeItems.length > 0) {
+      let formData = new FormData();
+      item.placeItems.forEach((beacon) => {
+        if (beacon.image instanceof File) {
+          formData.append("file", beacon.image);
+        }
+      });
+
+      // Check if formData has data before calling uploadFile
+      if (formData && formData.getAll && formData.getAll("file").length > 0) {
+        const { data } = await uploadFile(
+          formData,
+          `place/PlaceItemImg/${item.name}`
+        );
+        data.imageFiles.forEach((itm) => {
+          const indexItem = item.placeItems.findIndex(
+            (file) => itm.fileName === file.image.name
+          );
+          if (indexItem !== -1) {
+            item.placeItems[indexItem].image = itm.fileLink;
+          }
+        });
+      }
+    }
+
+    //Upload image tour
+    if (item.image instanceof File) {
+      let formData = new FormData();
+      formData.append("file", item.image);
+      const { data } = await uploadFile(formData, "Tour");
+      item.image = data.link;
+    }
+
+    //Upload language file
+    if (item.fileLink instanceof File) {
+      let formData = new FormData();
+      formData.append("file", item.fileLink);
+
+      const { data } = await uploadFile(formData, "Language/FileTranslate");
+      item.fileLink = data.link;
     }
 
     await API.post(path, item);

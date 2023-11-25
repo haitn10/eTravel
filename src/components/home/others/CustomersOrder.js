@@ -6,6 +6,8 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  IconButton,
+  Skeleton,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -13,41 +15,69 @@ import React from "react";
 import TableSkeletion from "../../common/skeletion/TableSkeletion";
 import { TimeFive } from "@styled-icons/boxicons-regular/TimeFive";
 import { MoreHoriz } from "@styled-icons/material-outlined";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const CustomersOrder = ({ loadings, rows }) => {
+const CustomersOrder = ({ loading, data }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
+  const getColor = (status) => {
+    let color = theme.palette.text.primary;
+    if (status === 0) {
+      color = theme.palette.text.primary;
+    } else if (status === 1) {
+      color = theme.palette.text.pending;
+    } else if (status === 2) {
+      color = theme.palette.text.onStatus;
+    } else if (status === 3) {
+      color = theme.palette.text.active;
+    } else if (status === 4) {
+      color = theme.palette.text.checked;
+    }
+
+    return color;
+  };
+
+  const onNavigate = (id) => {
+    navigate("/bookings/details", { state: { bookingId: id } });
+  };
   return (
     <Box
       bgcolor={theme.palette.background.secondary}
       borderRadius={2.5}
       padding={2}
     >
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography
-          sx={{
-            fontWeight: "semiBold",
-            fontSize: "1.5em",
-            paddingY: 1.25,
-          }}
-        >
-          Customer Orders
-        </Typography>
-        <Link to={"/transactions"} style={{ textDecoration: "none" }}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        marginTop={1}
+        paddingX={1}
+      >
+        {loading ? (
+          <Skeleton width={100} />
+        ) : (
+          <Typography fontWeight="semiBold" fontSize={20}>
+            Customer Orders
+          </Typography>
+        )}
+
+        {loading ? (
+          <Skeleton width={50} />
+        ) : (
           <Typography
-            sx={{
-              fontWeight: "semiBold",
-              fontSize: "0.75em",
-              marginRight: 1.25,
-              color: theme.palette.text.active,
-            }}
+            fontWeight="semiBold"
+            fontSize={12}
+            sx={{ cursor: "pointer" }}
+            color={theme.palette.text.active}
+            onClick={() => navigate("/bookings")}
           >
             Show More
           </Typography>
-        </Link>
+        )}
       </Box>
-      <TableContainer>
+
+      <TableContainer sx={{ padding: 2 }}>
         <Table
           sx={{
             minWidth: 350,
@@ -56,8 +86,10 @@ const CustomersOrder = ({ loadings, rows }) => {
           aria-label="simple table"
         >
           <TableBody>
-            {loadings ? (
-              rows.map((row, index) => {
+            {loading ? (
+              <TableSkeletion rowsNum={4} columnsNum={3} />
+            ) : (
+              data.map((item, index) => {
                 return (
                   <TableRow
                     key={index}
@@ -74,19 +106,24 @@ const CustomersOrder = ({ loadings, rows }) => {
                         gap: 2,
                       }}
                     >
-                      <Avatar src={row.customerImage} />
-                      {row.customerName}
+                      <Avatar src={item.customerImage} />
+                      {item.customerName}
                     </TableCell>
-                    <TableCell align="left">
+                    <TableCell align="left" component="th" scope="row">
                       <Box
                         sx={{
                           display: "flex",
                           alignItems: "center",
+                          gap: 1,
                         }}
                       >
-                        <Typography textTransform="capitalize">
-                          {row.carbs}
-                        </Typography>
+                        <Box
+                          width={10}
+                          height={10}
+                          borderRadius={10}
+                          bgcolor={getColor(item.status)}
+                        />
+                        <Typography fontSize={14}>{item.statusType}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell align="left">
@@ -105,17 +142,22 @@ const CustomersOrder = ({ loadings, rows }) => {
                         >
                           <TimeFive width={14} />
                         </Avatar>
-                        <Typography>{}h</Typography>
+                        <Typography fontSize={14}>
+                          {item.tourTotalTime
+                            .toFixed(2)
+                            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
+                          h
+                        </Typography>
                       </Box>
                     </TableCell>
                     <TableCell align="right">
-                      <MoreHoriz width={24} />
+                      <IconButton onClick={() => onNavigate(item.id)}>
+                        <MoreHoriz width={24} />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 );
               })
-            ) : (
-              <TableSkeletion rowsNum={3} columnsNum={3} />
             )}
           </TableBody>
         </Table>

@@ -1,60 +1,59 @@
-import { Box, Typography, alpha, useTheme } from "@mui/material";
+import { Box, Typography, alpha, useTheme, Skeleton } from "@mui/material";
 import React from "react";
 
-import { TrendingUp, TrendingDown } from "@styled-icons/evaicons-solid";
-
-const ArrowData = ({ totalNum, direction, numDirection }) => {
+const ArrowData = ({ loading, totalNum, direction, numDirection }) => {
   const theme = useTheme();
   return (
-    <Box display="flex" flexDirection="row" justifyContent="space-between">
-      <Typography sx={{ fontWeight: "semiBold", fontSize: "1.125em" }}>
-        {totalNum}
-      </Typography>
-      <Box
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-        bgcolor={alpha(
-          direction ? theme.palette.text.onStatus : theme.palette.text.active,
-          0.1
-        )}
-        paddingX={1}
-        borderRadius={10}
-        color={
-          direction ? theme.palette.text.onStatus : theme.palette.text.active
-        }
-      >
-        <Typography
-          sx={{
-            fontWeight: "bold",
-            fontSize: ".75em",
-          }}
+    <Box
+      display="flex"
+      flexDirection="row"
+      justifyContent="space-between"
+      padding={1}
+    >
+      {loading ? (
+        <Skeleton width={50} />
+      ) : (
+        <Typography variant="h5" fontWeight="semiBold">
+          {totalNum.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+        </Typography>
+      )}
+
+      {loading ? (
+        <Skeleton width={50} />
+      ) : (
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          bgcolor={alpha(
+            numDirection > 0
+              ? theme.palette.text.onStatus
+              : theme.palette.text.third,
+            0.1
+          )}
+          paddingX={1}
+          borderRadius={10}
           color={
-            direction ? theme.palette.text.onStatus : theme.palette.text.active
+            numDirection > 0
+              ? theme.palette.text.onStatus
+              : theme.palette.text.third
           }
         >
-          {(direction ? "+" : "-") + numDirection}
-        </Typography>
-        {direction ? (
-          <TrendingUp
-            width={14}
+          <Typography
+            sx={{
+              fontWeight: "bold",
+              fontSize: ".75em",
+            }}
             color={
               direction
                 ? theme.palette.text.onStatus
                 : theme.palette.text.active
             }
-          />
-        ) : (
-          <TrendingDown
-            width={14}
-            color={
-              direction
-                ? theme.palette.text.onStatus
-                : theme.palette.text.active
-            }
-          />
-        )}
-      </Box>
+          >
+            {(numDirection > 0 ? "+" : "") + numDirection}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };

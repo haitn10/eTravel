@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BASE_URL } from "../../../api";
+import { API, BASE_URL, uploadFile } from "../../../api";
 import Cookies from "universal-cookie";
 import { ERR_NETWORK } from "../../../constants/status";
 
@@ -60,3 +60,49 @@ export const login = (credential) => async (dispatch, getState) => {
 export const logOut = () => ({
   type: LOG_OUT,
 });
+
+export const updateProfile = (profile) => {
+  return async (dispatch, getState) => {
+    const state = getState().auth;
+    if (state.isUpdating) {
+      return Promise.reject(new Error("You are being updating.").message);
+    }
+
+    dispatch(setState({ isUpdating: true }));
+    try {
+      if (profile.image instanceof File) {
+        let formData = new FormData();
+        formData.append("file", profile.image);
+
+        const { data } = await uploadFile(formData, "Account");
+        profile.image = data.link;
+      }
+
+      const { data } = await API.put(`portal/accounts/profile`, profile);
+      dispatch(setState({ isUpdating: false }));
+      return Promise.resolve(data.account);
+    } catch (e) {
+      dispatch(setState({ isUpdating: false }));
+      return Promise.reject(e);
+    }
+  };
+};
+
+export const changePassword = (profile) => {
+  return async (dispatch, getState) => {
+    const state = getState().auth;
+    if (state.isUpdating) {
+      return Promise.reject(new Error("You are being updating.").message);
+    }
+
+    dispatch(setState({ isUpdating: true }));
+    try {
+      const { data } = await API.put(`portal/accounts/changepassword`, profile);
+      dispatch(setState({ isUpdating: false }));
+      return Promise.resolve(data);
+    } catch (e) {
+      dispatch(setState({ isUpdating: false }));
+      return Promise.reject(e);
+    }
+  };
+};

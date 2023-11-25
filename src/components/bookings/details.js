@@ -215,8 +215,92 @@ const BookingDetails = () => {
                     </AccordionDetails>
                   </Accordion>
                 </Box>
-              </>
-            )}
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Nationality:
+                  </Typography>
+                  <Typography noWrap>
+                    {values?.customerInfor?.nationality}
+                  </Typography>
+                </Box>
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Phone Number:
+                  </Typography>
+                  <Typography noWrap>{values?.customerInfor?.phone}</Typography>
+                </Box>
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Email Address:
+                  </Typography>
+                  <Typography noWrap>{values?.customerInfor?.email}</Typography>
+                </Box>
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Address:
+                  </Typography>
+                  <Typography noWrap>{values?.customerInfor?.address}</Typography>
+                </Box>
+              )}
+            </Box>
+            <Box>
+              <Accordion
+                sx={{
+                  boxShadow: "none",
+                  bgcolor: alpha(theme.palette.background.third, 0.1),
+                }}
+              >
+                <AccordionSummary expandIcon={<ExpandMore width={24} />}>
+                  <Typography fontWeight="medium">Price Details</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {values?.placeDetail?.map((place) => (
+                    <Box
+                      key={place.name}
+                      borderBottom={1}
+                      borderColor={theme.palette.background.third}
+                      marginTop={2}
+                    >
+                      <Typography fontWeight="medium">{place.name}</Typography>
+                      <Grid
+                        container
+                        color={theme.palette.text.third}
+                        padding={1}
+                      >
+                        <Grid item xs={4} textAlign="left">
+                          <Typography noWrap>Price</Typography>
+                          <Typography noWrap>$ {place.price}</Typography>
+                        </Grid>
+                        <Grid item xs={4} textAlign="center">
+                          <Typography noWrap>Duration</Typography>
+                          <Typography noWrap>{place.hour}</Typography>
+                        </Grid>
+                        <Grid item xs={4} textAlign="right">
+                          <Typography noWrap>Category</Typography>
+                          <Typography noWrap>{place.categoryName}</Typography>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            </Box>
           </Grid>
           <Grid item md={12} lg={5}>
             {loading ? (

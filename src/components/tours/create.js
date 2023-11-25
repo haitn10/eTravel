@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Skeleton,
   Step,
   StepLabel,
   Stepper,
@@ -36,8 +37,12 @@ const CreateNewTour = () => {
   const dispatch = useDispatch();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [create, setCreate] = useState(false);
   const [values, setValues] = useState(initialState);
+  const [search, setSearch] = useState("");
+  const [SearchBy, setSearchBy] = useState("name");
 
   const [pageState, setPageState] = useState({
     isLoading: false,
@@ -56,11 +61,22 @@ const CreateNewTour = () => {
     status: "error",
   });
 
-  const form = useForm({
-    defaultValues: { name: "", image: "" },
+  const {
+    handleSubmit,
+    setError,
+    clearErrors,
+    getValues,
+    reset,
+    register,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      image: "",
+      tourDescriptions: [{ languageCode: "en-us", name: "", description: "" }],
+    },
   });
-  const { handleSubmit, setError, clearErrors, register, formState } = form;
-  const { errors } = formState;
 
   useEffect(() => {
     async function fetchData() {
@@ -73,6 +89,8 @@ const CreateNewTour = () => {
           getPlaces({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: SearchBy,
+            Search: search,
           })
         );
         setPageState((old) => ({
@@ -81,7 +99,9 @@ const CreateNewTour = () => {
           data: data.places.data,
           totalCount: data.places.totalCount,
         }));
+        await setLoading(false);
       } catch (error) {
+        await setLoading(false);
         setNotification({
           ...notification,
           errorState: true,
@@ -92,7 +112,7 @@ const CreateNewTour = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageModelState.page, pageModelState.pageSize]);
+  }, [search, SearchBy, pageModelState.page, pageModelState.pageSize]);
 
   const isStepSkipped = (step) => {
     return skipped.has(step);
@@ -120,10 +140,13 @@ const CreateNewTour = () => {
           <TourGeneral
             values={values}
             setValues={setValues}
+            loading={loading}
             register={register}
+            control={control}
             errors={errors}
-            setError={setError}
-            clearErrors={clearErrors}
+            getValues={getValues}
+            notification={notification}
+            setNotification={setNotification}
           />
         );
       case 1:
@@ -131,6 +154,9 @@ const CreateNewTour = () => {
           <PlacesList
             values={values}
             setValues={setValues}
+            setSearch={setSearch}
+            setSearchBy={setSearchBy}
+            errors={errors}
             setError={setError}
             clearErrors={clearErrors}
             pageState={pageState}
@@ -142,19 +168,29 @@ const CreateNewTour = () => {
           />
         );
       case 2:
-        return <PreviewData data={values} />;
+        return (
+          <PreviewData
+            data={values}
+            descriptionList={getValues("tourDescriptions")}
+          />
+        );
       default:
         return;
     }
   };
 
   const onSubmit = async () => {
-    setLoading(true);
+    setCreate(true);
     let arr = [];
     for (const place of values.tourDetails) {
       arr.push({ id: place.id, price: place.price });
     }
-    const data = { ...values, tourDetails: arr };
+    const data = {
+      ...values,
+      tourDescriptions: getValues("tourDescriptions"),
+      tourDetails: arr,
+    };
+
     try {
       await dispatch(processTour(data));
       setNotification({
@@ -163,19 +199,18 @@ const CreateNewTour = () => {
         errorMessage: "Created Tour Successfully!",
         status: "success",
       });
+      reset(initialState);
       setValues(initialState);
-      setLoading(false);
+      setCreate(false);
       setActiveStep(0);
     } catch (e) {
-      console.log(e);
-      const message = e.response.data ? e.response.data.message : e.message;
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: message,
+        errorMessage: e.response?.data?.message || "Created Tour Failed!",
         status: "error",
       });
-      setLoading(false);
+      setCreate(false);
     }
   };
 
@@ -195,7 +230,7 @@ const CreateNewTour = () => {
       />
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
+        open={create}
       >
         <CircularProgress color="error" />
       </Backdrop>
@@ -203,94 +238,106 @@ const CreateNewTour = () => {
       <Header
         title={"Create New Tour"}
         subTitle={"New Tour - New Experiences"}
+        loading={loading}
       />
       <Box marginTop={2} padding={1} marginX={2}>
-        <Stepper
-          activeStep={activeStep}
-          alternativeLabel
-          sx={{
-            "& .MuiStepConnector-root.Mui-completed .MuiStepConnector-line": {
-              borderColor: theme.palette.background.hovered,
-            },
-            "& .MuiStepConnector-root.Mui-active .MuiStepConnector-line": {
-              borderColor: theme.palette.background.hovered,
-            },
-          }}
-        >
-          {steps.map((label, index) => {
-            const stepProps = {};
+        {loading ? (
+          <Skeleton width="100%" />
+        ) : (
+          <Stepper
+            activeStep={activeStep}
+            alternativeLabel
+            sx={{
+              "& .MuiStepConnector-root.Mui-completed .MuiStepConnector-line": {
+                borderColor: theme.palette.background.hovered,
+              },
+              "& .MuiStepConnector-root.Mui-active .MuiStepConnector-line": {
+                borderColor: theme.palette.background.hovered,
+              },
+            }}
+          >
+            {steps.map((label, index) => {
+              const stepProps = {};
 
-            if (isStepSkipped(index)) {
-              stepProps.completed = false;
-            }
-            return (
-              <Step
-                key={label}
-                sx={{
-                  "& .MuiStepLabel-root .Mui-completed": {
-                    color: theme.palette.background.hovered,
-                  },
-                  "& .MuiStepLabel-root .Mui-active": {
-                    color: theme.palette.background.hovered,
-                    bgColor: theme.palette.background.hovered,
-                  },
-                  "& .MuiStepLabel-label.MuiStepLabel-alternativeLabel": {
-                    fontSize: "1rem",
-                    fontWeight: "regular",
-                  },
-                  "& .MuiStepLabel-label.Mui-active.MuiStepLabel-alternativeLabel":
-                    {
-                      fontWeight: "medium",
+              if (isStepSkipped(index)) {
+                stepProps.completed = false;
+              }
+              return (
+                <Step
+                  key={label}
+                  sx={{
+                    "& .MuiStepLabel-root .Mui-completed": {
+                      color: theme.palette.background.hovered,
                     },
-                  "& .MuiSvgIcon-root": {
-                    fontSize: 30,
-                  },
-                }}
-              >
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
+                    "& .MuiStepLabel-root .Mui-active": {
+                      color: theme.palette.background.hovered,
+                      bgColor: theme.palette.background.hovered,
+                    },
+                    "& .MuiStepLabel-label.MuiStepLabel-alternativeLabel": {
+                      fontSize: "1rem",
+                      fontWeight: "regular",
+                    },
+                    "& .MuiStepLabel-label.Mui-active.MuiStepLabel-alternativeLabel":
+                      {
+                        fontWeight: "medium",
+                      },
+                    "& .MuiSvgIcon-root": {
+                      fontSize: 30,
+                    },
+                  }}
+                >
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              );
+            })}
+          </Stepper>
+        )}
 
         <Fragment>
           <form>{getStepContent(activeStep)}</form>
 
-          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-            <Button
-              disabled={activeStep === 0 || loading}
-              onClick={handleBack}
-              variant="contained"
-              color="error"
-              sx={{
-                marginTop: "30px",
-                borderRadius: "50px",
-                width: "150px",
-                height: "45px",
-              }}
-            >
-              Back
-            </Button>
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            {loading ? (
+              <Skeleton width={100} />
+            ) : (
+              <Button
+                disabled={activeStep === 0 || create}
+                onClick={handleBack}
+                variant="contained"
+                color="error"
+                sx={{
+                  borderRadius: 10,
+                  width: 100,
+                  height: 36,
+                }}
+              >
+                Back
+              </Button>
+            )}
+
             <Box sx={{ flex: "1 1 auto" }} />
 
-            <Button
-              onClick={
-                activeStep === 2
-                  ? handleSubmit(onSubmit)
-                  : handleSubmit(handleNext)
-              }
-              disabled={loading}
-              variant="contained"
-              color="error"
-              sx={{
-                marginTop: "30px",
-                borderRadius: "50px",
-                width: "150px",
-                height: "45px",
-              }}
-            >
-              {activeStep === steps.length - 1 ? "Finish" : "Next"}
-            </Button>
+            {loading ? (
+              <Skeleton width={100} />
+            ) : (
+              <Button
+                onClick={
+                  activeStep === 2
+                    ? handleSubmit(onSubmit)
+                    : handleSubmit(handleNext)
+                }
+                disabled={create}
+                variant="contained"
+                color="error"
+                sx={{
+                  borderRadius: 10,
+                  width: 100,
+                  height: 36,
+                }}
+              >
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              </Button>
+            )}
           </Box>
         </Fragment>
       </Box>

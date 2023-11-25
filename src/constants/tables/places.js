@@ -9,13 +9,21 @@ const places = [
     field: "id",
     headerName: "PlaceID",
     headerAlign: "center",
-    width: 100,
+    width: 90,
     align: "center",
   },
   {
     field: "name",
     headerName: "Place Name",
     width: 300,
+  },
+  {
+    field: "languageList",
+    headerName: "Languages",
+    headerAlign: "center",
+    align: "center",
+    flex: 1,
+    renderCell: (params) => params.row.languageList?.length,
   },
   {
     field: "price",
@@ -42,7 +50,8 @@ const places = [
           <TimeFive width={14} />
           {params.row.duration
             .toFixed(2)
-            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}h
+            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
+          h
         </Box>
       );
     },

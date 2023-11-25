@@ -15,12 +15,16 @@ import { MoreHoriz } from "@styled-icons/material";
 import { changeState } from "../users/action";
 
 const Action = ({
+  titleAc,
+  titleDe,
+  messageAc,
+  messageDe,
   id,
-  accountStatus,
   api,
+  status,
+  getData,
   notification,
   setNotification,
-  getData,
 }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -45,25 +49,19 @@ const Action = ({
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: response.message || response,
+          errorMessage: "Change state successfully!",
           status: "success",
         });
       }
     } catch (e) {
-      const message = e.response.data ? e.response.data.message : e.message;
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: message,
+        errorMessage: "Change state failed!",
         status: "error",
       });
     }
-    setPopupConfirm(false);
-    //Close error message
-    setTimeout(
-      () => setNotification({ ...notification, errorState: false }),
-      3000
-    );
+    await setPopupConfirm(false);
   };
 
   return (
@@ -81,7 +79,7 @@ const Action = ({
         }}
       >
         <MenuItem onClick={handleConfirm}>
-          {!accountStatus ? "Enable" : "Disable"}
+          {status ? "Deactivate" : "Activate"}
         </MenuItem>
       </Menu>
       <Dialog
@@ -90,13 +88,11 @@ const Action = ({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {`Confirm ${!accountStatus ? "ban" : "unban"} action?`}
+          {status ? titleDe : titleAc}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {!accountStatus
-              ? "Banning this account will make this account unable to operate in the system."
-              : "This action of unbanning an account will give the account the specified rights and function normally in the system."}
+            {status ? messageDe : messageAc}
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ padding: 3 }}>

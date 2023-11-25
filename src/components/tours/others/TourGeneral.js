@@ -2,51 +2,50 @@ import {
   Box,
   Button,
   Divider,
-  FormControl,
   FormHelperText,
   Grid,
   MenuItem,
   Select,
+  Skeleton,
   TextField,
   Typography,
-  alpha,
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Controller, useFieldArray } from "react-hook-form";
 
-import {
-  CloudCheckmark,
-  CloudDismiss,
-} from "@styled-icons/fluentui-system-filled";
-import { CloudArrowUp } from "@styled-icons/fluentui-system-regular";
+import UploadImage from "../../common/UploadImage";
+
+import { getLanguages } from "../../languages/action";
+
 import { Add } from "@styled-icons/ionicons-outline";
 import { Trash3 } from "@styled-icons/bootstrap";
-
-import { getAllLanguages } from "../../languages/action";
 
 const TourGeneral = ({
   values,
   setValues,
+  loading,
   register,
+  control,
   errors,
-  setError,
-  clearErrors,
+  getValues,
   notification,
   setNotification,
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [languagesList, setLanguagesList] = useState([]);
-  const [selectLanguagesList, setselectLanguagesList] = useState(
-    values.tourDescriptions
-  );
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "tourDescriptions",
+  });
 
   useEffect(() => {
     async function fetchLanguage() {
       try {
-        const response = await dispatch(getAllLanguages());
-        setLanguagesList(response.languages);
+        const response = await dispatch(getLanguages());
+        setLanguagesList(response.languages.data);
       } catch (e) {
         setNotification({
           ...notification,
@@ -60,320 +59,324 @@ const TourGeneral = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    let fileTypes = [
-      "image/apng",
-      "image/avif",
-      "image/gif",
-      "image/jpeg",
-      "image/png",
-      "image/svg+xml",
-      "image/webp",
-    ];
-    if (values.image) {
-      if (values.image instanceof File) {
-        if (values.image && !fileTypes.includes(values.image.type)) {
-          setError("fileType", {
-            message: "Please choose image file!",
-          });
-        }
+  const hasDuplicate = () => {
+    const formData = getValues();
+    const languageCodes = new Set();
+    for (const data of formData.tourDescriptions) {
+      if (languageCodes.has(data.languageCode)) {
+        return false;
       }
-    } else {
-      setError("fileType", {
-        message: "Image is required!",
-      });
+      languageCodes.add(data.languageCode);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.image]);
 
-  const handleChangeLanguage = (index, event) => {
-    clearErrors(event.target.name);
-    const value = [...selectLanguagesList];
-    value[index][event.target.name] = event.target.value;
-    setselectLanguagesList(value);
-  };
-
-  const addToSelectLanguagesList = () => {
-    const value = [...selectLanguagesList];
-    if (value.length < languagesList.length) {
-      setselectLanguagesList([
-        ...value,
-        { languageCode: "en-us", name: "", description: "" },
-      ]);
-    }
-  };
-
-  const removeToSelectLanguagesList = (index) => {
-    const value = [...selectLanguagesList];
-    value.splice(index, 1);
-    setselectLanguagesList(value);
+    return true;
   };
 
   return (
     <Box padding={5} marginX={10}>
-      <Box marginBottom={3}>
-        <Typography
-          fontSize={14}
-          letterSpacing={0.5}
-          fontWeight="medium"
-          textTransform="uppercase"
-          color={theme.palette.text.third}
-        >
-          General Information
-        </Typography>
+      <Box>
+        {loading ? (
+          <Skeleton width={200} />
+        ) : (
+          <Typography
+            fontSize={14}
+            letterSpacing={0.5}
+            fontWeight="medium"
+            textTransform="uppercase"
+            color={theme.palette.text.third}
+          >
+            General Information
+          </Typography>
+        )}
       </Box>
 
-      <Grid container rowGap={2}>
+      <Grid container rowGap={2} padding={1}>
         {/* Tour Name */}
         <Grid item sm={12} lg={4}>
-          <Typography fontWeight="medium">
-            Tour Name Default{" "}
-            <small style={{ color: theme.palette.text.active }}>*</small>
-          </Typography>
+          {loading ? (
+            <Skeleton width="100%" />
+          ) : (
+            <Typography fontWeight="medium">
+              Tour Name Default{" "}
+              <small style={{ color: theme.palette.text.active }}>*</small>
+            </Typography>
+          )}
         </Grid>
         <Grid item sm={12} lg={8}>
-          <TextField
-            fullWidth
-            size="small"
-            value={values.name}
-            {...register("namedefault", {
-              required: "Tour name is required!",
-              validate: (value) => value.trim() !== "",
-              onChange: (e) => setValues({ ...values, name: e.target.value }),
-            })}
-            error={!!errors.namedefault}
-            helperText={errors.namedefault?.message}
-            InputProps={{
-              style: {
-                borderRadius: 10,
-              },
-            }}
-            placeholder="Type tour name here"
-          />
+          {loading ? (
+            <Skeleton width="100%" />
+          ) : (
+            <TextField
+              fullWidth
+              size="small"
+              value={values.name}
+              {...register("name", {
+                required: "Tour name is required!",
+                validate: (value) => {
+                  return value.trim() !== "" || "Tour name is not empty!";
+                },
+                onChange: (e) => setValues({ ...values, name: e.target.value }),
+              })}
+              error={!!errors.name}
+              helperText={errors.name?.message}
+              InputProps={{
+                style: {
+                  borderRadius: 10,
+                },
+              }}
+              placeholder="Type tour name here"
+            />
+          )}
         </Grid>
 
         {/* Tour Image */}
         <Grid item sm={12} lg={4}>
-          <Typography fontWeight="medium">
-            Illustration Image{" "}
-            <small style={{ color: theme.palette.text.active }}>*</small>
-          </Typography>
+          {loading ? (
+            <Skeleton width="100%" />
+          ) : (
+            <Typography fontWeight="medium">
+              Illustration Image{" "}
+              <small style={{ color: theme.palette.text.active }}>*</small>
+            </Typography>
+          )}
         </Grid>
         <Grid item sm={12} lg={8}>
-          <Box
-            display="flex"
-            alignItems="center"
-            position="relative"
-            overflow="hidden"
-            border={1}
-            borderRadius={2.5}
-            borderColor={
-              errors.fileType
-                ? theme.palette.text.active
-                : alpha(theme.palette.text.primary, 0.28)
-            }
-            height={40}
-          >
-            <label
-              htmlFor="image"
-              style={{
-                display: "flex",
-                width: "100%",
-                color: theme.palette.text.third,
-                cursor: "pointer",
-              }}
-            >
-              {values.image ? (
-                <Box display="flex" alignItems="center">
-                  {errors.fileType ? (
-                    <CloudDismiss
-                      height={24}
-                      color={theme.palette.text.active}
-                      style={{ margin: 10 }}
-                    />
-                  ) : (
-                    <CloudCheckmark
-                      height={24}
-                      color={theme.palette.text.onStatus}
-                      style={{ margin: 10 }}
-                    />
-                  )}
-                  <Typography noWrap>{values.image.name}</Typography>
-                </Box>
-              ) : (
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  color={alpha(theme.palette.text.secondary, 0.4)}
-                >
-                  <CloudArrowUp height={24} style={{ margin: 10 }} />
-                  <Typography noWrap>Import picture for tour here</Typography>
-                </Box>
-              )}
-
-              <input
-                id="image"
-                style={{
-                  opacity: 0,
-                  position: "absolute",
-                }}
-                onChange={(e) => {
-                  clearErrors("fileType");
-                  setValues({ ...values, image: e.target.files[0] });
-                }}
-                type="file"
-                accept="image/*"
-              />
-            </label>
-          </Box>
-          <FormHelperText htmlFor="render-select" error sx={{ marginLeft: 2 }}>
-            {errors.fileType?.message}
-          </FormHelperText>
-          <Box marginTop={2}>
-            <img
-              src={values.image && URL.createObjectURL(values.image)}
-              style={{
-                maxWidth: "100%",
-                maxHeight: 300,
-              }}
-              alt=""
+          {loading ? (
+            <Skeleton width="100%" />
+          ) : (
+            <UploadImage
+              values={values}
+              setValues={setValues}
+              errors={errors}
+              register={register}
             />
-          </Box>
+          )}
         </Grid>
       </Grid>
+
       <Box
-        marginBottom={3}
+        marginTop={2}
         display="flex"
         justifyContent="space-between"
         alignItems="center"
       >
-        <Typography
-          fontSize={14}
-          letterSpacing={0.5}
-          fontWeight="medium"
-          textTransform="uppercase"
-          color={theme.palette.text.third}
-        >
-          information with multiple languages
-        </Typography>
+        {loading ? (
+          <Skeleton width={300} />
+        ) : (
+          <Typography
+            fontSize={14}
+            letterSpacing={0.5}
+            fontWeight="medium"
+            textTransform="uppercase"
+            color={theme.palette.text.third}
+          >
+            information with multiple languages
+          </Typography>
+        )}
 
-        {selectLanguagesList.length < 4 ? (
-          <Button onClick={addToSelectLanguagesList} sx={{ borderRadius: 2.5 }}>
-            <Add width={20} />
-            <Typography fontWeight="medium" fontSize={14}>
-              Add More
-            </Typography>
-          </Button>
+        {fields.length < 4 ? (
+          loading ? (
+            <Skeleton width={100} />
+          ) : (
+            <Button
+              onClick={() => {
+                if (fields.length < languagesList.length) {
+                  append({ languageCode: "en-us", name: "", description: "" });
+                }
+              }}
+              sx={{ borderRadius: 2.5 }}
+            >
+              <Add width={20} />
+              <Typography fontWeight="medium" fontSize={14}>
+                Add More
+              </Typography>
+            </Button>
+          )
         ) : null}
       </Box>
 
-      {selectLanguagesList &&
-        selectLanguagesList.map((selectLanguage, index) => (
-          <Box key={index} display="flex" justifyContent='center' width='100%'>
+      {fields.map((item, index) => {
+        return (
+          <Box
+            key={item.id}
+            display="flex"
+            justifyContent="center"
+            width="100%"
+            padding={1}
+          >
             <Box>
               <Grid container rowGap={2} marginY={2}>
                 <Grid item sm={12} lg={3}>
-                  <Typography fontWeight="medium">
-                    Choose Language{" "}
-                    <small style={{ color: theme.palette.text.active }}>
-                      *
-                    </small>
-                  </Typography>
+                  {loading ? (
+                    <Skeleton width={100} />
+                  ) : (
+                    <Typography fontWeight="medium">
+                      Choose Language{" "}
+                      <small style={{ color: theme.palette.text.active }}>
+                        *
+                      </small>
+                    </Typography>
+                  )}
                 </Grid>
                 <Grid item sm={12} lg={9}>
-                  <FormControl fullWidth size="small">
-                    <Select
-                      sx={{ borderRadius: 2.5 }}
-                      value={selectLanguage.languageCode}
-                      name="languageCode"
-                      onChange={(event) => handleChangeLanguage(index, event)}
-                    >
-                      {languagesList.map((item) => (
-                        <MenuItem key={item.id} value={item.languageCode}>
-                          <img
-                            src={item.icon}
-                            alt={item.name}
-                            style={{
-                              width: 16,
-                              border: "1px solid #ccc",
-                              marginRight: 10,
+                  {loading ? (
+                    <Skeleton width={500} />
+                  ) : (
+                    <Controller
+                      control={control}
+                      name={`tourDescriptions[${index}].languageCode`}
+                      rules={{
+                        validate: () => {
+                          return (
+                            hasDuplicate() ||
+                            "There are duplicate language. Please check again!"
+                          );
+                        },
+                      }}
+                      render={({ field, fieldState: { error } }) => (
+                        <>
+                          <Select
+                            {...field}
+                            defaultValue={""}
+                            fullWidth
+                            size="small"
+                            sx={{
+                              borderRadius: 2.5,
                             }}
-                          />
-                          {item.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                            error={error}
+                          >
+                            {languagesList.map((item) => (
+                              <MenuItem key={item.id} value={item.languageCode}>
+                                <img
+                                  src={item.icon}
+                                  alt={item.name}
+                                  style={{
+                                    width: 16,
+                                    border: "1px solid #ccc",
+                                    marginRight: 10,
+                                  }}
+                                />
+                                {item.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          <FormHelperText
+                            htmlFor="render-select"
+                            error
+                            sx={{ marginLeft: 2 }}
+                          >
+                            {error?.message}
+                          </FormHelperText>
+                        </>
+                      )}
+                    />
+                  )}
                 </Grid>
 
                 <Grid item sm={12} lg={3}>
-                  <Typography fontWeight="medium">
-                    Tour Name{" "}
-                    <small style={{ color: theme.palette.text.active }}>
-                      *
-                    </small>
-                  </Typography>
+                  {loading ? (
+                    <Skeleton width={100} />
+                  ) : (
+                    <Typography fontWeight="medium">
+                      Tour Name{" "}
+                      <small style={{ color: theme.palette.text.active }}>
+                        *
+                      </small>
+                    </Typography>
+                  )}
                 </Grid>
                 <Grid item sm={12} lg={9}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    name="name"
-                    value={selectLanguage.name}
-                    onChange={(event) => handleChangeLanguage(index, event)}
-                    error={!!errors.name}
-                    helperText={errors.name?.message}
-                    placeholder="Type tour name here"
-                    InputProps={{
-                      style: {
-                        borderRadius: 10,
-                      },
-                    }}
-                  />
+                  {loading ? (
+                    <Skeleton width={500} />
+                  ) : (
+                    <TextField
+                      fullWidth
+                      size="small"
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                        },
+                      }}
+                      {...register(`tourDescriptions.${index}.name`, {
+                        validate: (value) => {
+                          return (
+                            value.trim() !== "" || "Tour name is not empty!"
+                          );
+                        },
+                        required: "Tour Name is required!",
+                      })}
+                      error={!!errors.tourDescriptions?.[index]?.name}
+                      helperText={
+                        errors.tourDescriptions?.[index]?.name?.message
+                      }
+                      placeholder="Type tour name here"
+                    />
+                  )}
                 </Grid>
 
                 {/* Tour Decription */}
                 <Grid item sm={12} lg={3}>
-                  <Typography fontWeight="medium">
-                    Decription{" "}
-                    <small style={{ color: theme.palette.text.active }}>
-                      *
-                    </small>
-                  </Typography>
-                  <Typography>
-                    <small>Write a short decription</small>
-                  </Typography>
+                  {loading ? (
+                    <Skeleton width={100} />
+                  ) : (
+                    <>
+                      <Typography fontWeight="medium">
+                        Decription{" "}
+                        <small style={{ color: theme.palette.text.active }}>
+                          *
+                        </small>
+                      </Typography>
+                      <Typography>
+                        <small>Write a short decription</small>
+                      </Typography>
+                    </>
+                  )}
                 </Grid>
                 <Grid item sm={12} lg={9}>
-                  <TextField
-                    fullWidth
-                    name="description"
-                    value={selectLanguage.description}
-                    onChange={(event) => handleChangeLanguage(index, event)}
-                    error={!!errors.description}
-                    helperText={errors.description?.message}
-                    placeholder="Type description here"
-                    InputProps={{
-                      style: {
-                        borderRadius: 10,
-                      },
-                    }}
-                    multiline={true}
-                    rows={7}
-                  />
+                  {loading ? (
+                    <Skeleton width={500} />
+                  ) : (
+                    <TextField
+                      fullWidth
+                      rows={7}
+                      multiline
+                      size="small"
+                      InputProps={{
+                        style: {
+                          borderRadius: 10,
+                        },
+                      }}
+                      {...register(`tourDescriptions.${index}.description`, {
+                        validate: (value) => {
+                          return (
+                            value.trim() !== "" || "Description is not empty!"
+                          );
+                        },
+                        required: "Description is required!",
+                      })}
+                      error={!!errors.tourDescriptions?.[index]?.description}
+                      helperText={
+                        errors.tourDescriptions?.[index]?.description?.message
+                      }
+                      placeholder="Type description here"
+                    />
+                  )}
                 </Grid>
               </Grid>
               <Divider />
             </Box>
-            <Button
-              color="error"
-              onClick={removeToSelectLanguagesList}
-              sx={{ marginLeft: 2 }}
-            >
-              <Trash3 width={20} />
-            </Button>
+            {fields.length === 1 ? null : (
+              <Button
+                color="error"
+                onClick={() => remove(index)}
+                sx={{ marginLeft: 2 }}
+              >
+                <Trash3 width={20} />
+              </Button>
+            )}
           </Box>
-        ))}
+        );
+      })}
     </Box>
   );
 };
