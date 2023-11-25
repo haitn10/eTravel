@@ -62,3 +62,37 @@ export const getTopPlace = () => {
     );
   };
 };
+
+export const getTotalDataAdmin = () => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().homepage,
+      dispatch,
+      setState,
+      "portal/charts/statictical/admin"
+    );
+  };
+};
+
+export const getNationalRank = () => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().homepage,
+      dispatch,
+      setState,
+      "portal/charts/national"
+    );
+  };
+};
+
+export const getUserData = (values) => {
+  return async (dispatch, getState) => {
+    return fetch(
+      getState().homepage,
+      dispatch,
+      setState,
+      "portal/charts/user",
+      values
+    );
+  };
+};

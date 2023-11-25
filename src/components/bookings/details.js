@@ -58,7 +58,8 @@ const BookingDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId]);
 
-  console.log(values);
+  
+
   return (
     <Box
       minHeight="94vh"
@@ -85,106 +86,124 @@ const BookingDetails = () => {
             {loading ? (
               <Skeleton width={100} />
             ) : (
-              <Box>
-                <Typography
-                  textTransform="uppercase"
-                  letterSpacing={1.25}
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
-                >
-                  Information Customer
-                </Typography>
-              </Box>
+              <Typography
+                textTransform="uppercase"
+                letterSpacing={1.25}
+                color={theme.palette.text.third}
+                fontWeight="medium"
+              >
+                Information Customer
+              </Typography>
             )}
-            {loading ? (
-              <Skeleton width="100%" />
-            ) : (
-              <>
-                <Box>
-                  <Box display="flex" marginY={1} gap={1}>
-                    <Typography fontWeight="medium">Customer Name:</Typography>
-                    <Typography noWrap>
-                      {values.customerInfor.customerName}
-                    </Typography>
-                  </Box>
-                  <Box display="flex" marginY={1} gap={1}>
-                    <Typography fontWeight="medium">Gender:</Typography>
-                    <Typography noWrap>
-                      {values.customerInfor.gender}
-                    </Typography>
-                  </Box>
-                  <Box display="flex" marginY={1} gap={1}>
-                    <Typography fontWeight="medium">Nationality:</Typography>
-                    <Typography noWrap>
-                      {values.customerInfor.nationality}
-                    </Typography>
-                  </Box>
 
-                  <Box display="flex" marginY={1} gap={1}>
-                    <Typography fontWeight="medium">Phone Number:</Typography>
-                    <Typography noWrap>{values.customerInfor.phone}</Typography>
-                  </Box>
-
-                  <Box display="flex" marginY={1} gap={1}>
-                    <Typography fontWeight="medium">Email Address:</Typography>
-                    <Typography noWrap>{values.customerInfor.email}</Typography>
-                  </Box>
-
-                  <Box display="flex" marginY={1} gap={1}>
-                    <Typography fontWeight="medium">Address:</Typography>
-                    <Typography noWrap>
-                      {values.customerInfor.address}
-                    </Typography>
-                  </Box>
+            <Box>
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Customer Name:
+                  </Typography>
+                  <Typography noWrap>
+                    {values?.customerInfor?.customerName}
+                  </Typography>
                 </Box>
-                <Box>
-                  <Accordion
-                    sx={{
-                      boxShadow: "none",
-                      bgcolor: alpha(theme.palette.background.third, 0.1),
-                    }}
-                  >
-                    <AccordionSummary expandIcon={<ExpandMore width={24} />}>
-                      <Typography fontWeight="medium">Price Details</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      {values.placeDetail.map((place) => (
-                        <Box
-                          key={place.name}
-                          borderBottom={1}
-                          borderColor={theme.palette.background.third}
-                          marginTop={2}
-                        >
-                          <Typography fontWeight="medium">
-                            {place.name}
-                          </Typography>
-                          <Grid
-                            container
-                            color={theme.palette.text.third}
-                            padding={1}
-                          >
-                            <Grid item xs={4} textAlign="left">
-                              <Typography noWrap>Price</Typography>
-                              <Typography noWrap>$ {place.price}</Typography>
-                            </Grid>
-                            <Grid item xs={4} textAlign="center">
-                              <Typography noWrap>Duration</Typography>
-                              <Typography noWrap>{place.hour}</Typography>
-                            </Grid>
-                            <Grid item xs={4} textAlign="right">
-                              <Typography noWrap>Category</Typography>
-                              <Typography noWrap>
-                                {place.categoryName}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                      ))}
-                    </AccordionDetails>
-                  </Accordion>
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Gender:
+                  </Typography>
+                  <Typography noWrap>{values?.customerInfor?.gender}</Typography>
                 </Box>
-              </>
-            )}
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Nationality:
+                  </Typography>
+                  <Typography noWrap>
+                    {values?.customerInfor?.nationality}
+                  </Typography>
+                </Box>
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Phone Number:
+                  </Typography>
+                  <Typography noWrap>{values?.customerInfor?.phone}</Typography>
+                </Box>
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Email Address:
+                  </Typography>
+                  <Typography noWrap>{values?.customerInfor?.email}</Typography>
+                </Box>
+              )}
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Box display="flex" marginY={1} gap={1}>
+                  <Typography fontWeight="medium" width={150}>
+                    Address:
+                  </Typography>
+                  <Typography noWrap>{values?.customerInfor?.address}</Typography>
+                </Box>
+              )}
+            </Box>
+            <Box>
+              <Accordion
+                sx={{
+                  boxShadow: "none",
+                  bgcolor: alpha(theme.palette.background.third, 0.1),
+                }}
+              >
+                <AccordionSummary expandIcon={<ExpandMore width={24} />}>
+                  <Typography fontWeight="medium">Price Details</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {values?.placeDetail?.map((place) => (
+                    <Box
+                      key={place.name}
+                      borderBottom={1}
+                      borderColor={theme.palette.background.third}
+                      marginTop={2}
+                    >
+                      <Typography fontWeight="medium">{place.name}</Typography>
+                      <Grid
+                        container
+                        color={theme.palette.text.third}
+                        padding={1}
+                      >
+                        <Grid item xs={4} textAlign="left">
+                          <Typography noWrap>Price</Typography>
+                          <Typography noWrap>$ {place.price}</Typography>
+                        </Grid>
+                        <Grid item xs={4} textAlign="center">
+                          <Typography noWrap>Duration</Typography>
+                          <Typography noWrap>{place.hour}</Typography>
+                        </Grid>
+                        <Grid item xs={4} textAlign="right">
+                          <Typography noWrap>Category</Typography>
+                          <Typography noWrap>{place.categoryName}</Typography>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            </Box>
           </Grid>
           <Grid item md={12} lg={5}>
             {loading ? (
@@ -216,7 +235,7 @@ const BookingDetails = () => {
                         letterSpacing={0.5}
                         color={theme.palette.text.onStatus}
                       >
-                        {values.statusType}
+                        {values?.statusType}
                       </Typography>
                     </Typography>
                   </Box>
@@ -229,7 +248,7 @@ const BookingDetails = () => {
                       textTransform="capitalize"
                       color={theme.palette.text.third}
                     >
-                      {values.id}
+                      {values?.id}
                     </Typography>
                   </Box>
                   <Box marginBottom={1}>
@@ -240,7 +259,7 @@ const BookingDetails = () => {
                       textTransform="capitalize"
                       color={theme.palette.text.third}
                     >
-                      {dayjs(values.createTime).format("LL")}
+                      {dayjs(values?.createTime).format("LL")}
                     </Typography>
                   </Box>
 
@@ -252,7 +271,7 @@ const BookingDetails = () => {
                       textTransform="capitalize"
                       color={theme.palette.text.third}
                     >
-                      {values.durationExpected}
+                      {values?.durationExpected}
                     </Typography>
                   </Box>
                   <Box marginBottom={1}>
@@ -263,7 +282,7 @@ const BookingDetails = () => {
                       textTransform="capitalize"
                       color={theme.palette.text.third}
                     >
-                      {values.placeDetail.length}
+                      {values?.placeDetail?.length}
                     </Typography>
                   </Box>
                   <Box marginBottom={1}>
@@ -274,7 +293,7 @@ const BookingDetails = () => {
                       textTransform="capitalize"
                       color={theme.palette.text.third}
                     >
-                      {values.total.toLocaleString("en-US", {
+                      {values?.total?.toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
                       })}
@@ -313,7 +332,7 @@ const BookingDetails = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {values.historyTransactions.map((trans) => (
+                      {values?.historyTransactions?.map((trans) => (
                         <TableRow
                           key={trans.id}
                           sx={{

@@ -11,6 +11,9 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 
+import CardTotal from "././others/CardTotal";
+import PlaceRank from "./others/PlaceRank";
+import NationalRank from "./others/NationalRank";
 import PieLanguage from "./others/PieLanguage";
 import ChartRevenue from "./others/ChartRevenue";
 import CustomersOrder from "./others/CustomersOrder";
@@ -18,16 +21,17 @@ import { StyledBadge } from "../common/styled/StyledBadge";
 
 import {
   getLanguagesData,
+  getNationalRank,
   getOrdersData,
   getReveneData,
   getTopPlace,
   getTotalData,
+  getTotalDataAdmin,
+  getUserData,
 } from "./action";
 
 import { Calendar } from "@styled-icons/ionicons-outline";
-
-import CardTotalTO from "./others/CardTotalTO";
-import PlaceRank from "./others/PlaceRank";
+import ChartUserAnalysis from "./others/ChartUserAnalysis";
 
 const HomePage = () => {
   const theme = useTheme();
@@ -35,42 +39,82 @@ const HomePage = () => {
   const profile = useSelector((state) => state.auth.profile);
   const [loading, setLoading] = useState(true);
 
-  const [option, setOption] = useState(3);
+  const [option, setOption] = useState(
+    profile.roleId === 2 || profile.roleName === "TourOperator" ? 7 : 3
+  );
   const [total, setTotal] = useState([]);
   const [revenue, setRevenue] = useState([]);
   const [language, setLanguage] = useState([]);
   const [order, setOrder] = useState([]);
   const [topPlace, setTopPlace] = useState([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        const totalData = await dispatch(getTotalData());
-        setTotal(totalData.chart);
-        const languageData = await dispatch(getLanguagesData());
-        setLanguage(languageData.statictical);
-        const orderData = await dispatch(getOrdersData());
-        setOrder(orderData.staticticalOrder);
-        const topData = await dispatch(getTopPlace());
-        setTopPlace(topData.charts);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-      }
-    }
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [totalAd, setTotalAd] = useState([]);
+  const [user, setUser] = useState([]);
+  const [nationalAd, setNationalAd] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      try {
-        const { data } = await dispatch(getReveneData({ options: option }));
-        setRevenue(data.charts);
-      } catch (error) {}
+      if (profile.roleId === 2 || profile.roleName === "TourOperator") {
+        if (
+          total.length === 0 &&
+          language.length === 0 &&
+          order.length === 0 &&
+          topPlace.length === 0
+        ) {
+          setLoading(true);
+          try {
+            const totalData = await dispatch(getTotalData());
+            setTotal(totalData.chart);
+            const languageData = await dispatch(getLanguagesData());
+            setLanguage(languageData.statictical);
+            const orderData = await dispatch(getOrdersData());
+            setOrder(orderData.staticticalOrder);
+            const topData = await dispatch(getTopPlace());
+            setTopPlace(topData.charts);
+            setLoading(false);
+          } catch (error) {
+            setLoading(false);
+          }
+        }
+
+        try {
+          const revenueData = await dispatch(
+            getReveneData({ options: option })
+          );
+          setRevenue(revenueData.charts);
+        } catch (error) {}
+      } else {
+        if (
+          totalAd.length === 0 &&
+          nationalAd.length === 0 &&
+          order.length === 0 &&
+          topPlace.length === 0
+        ) {
+          setLoading(true);
+          try {
+            const totalDataAdmin = await dispatch(getTotalDataAdmin());
+            setTotalAd(totalDataAdmin.chart);
+            const nationalData = await dispatch(getNationalRank());
+            setNationalAd(nationalData);
+            const orderData = await dispatch(getOrdersData());
+            setOrder(orderData.staticticalOrder);
+            const topData = await dispatch(getTopPlace());
+            setTopPlace(topData.charts);
+            setLoading(false);
+          } catch (error) {
+            setLoading(false);
+          }
+        }
+
+        try {
+          const userData = await dispatch(getUserData({ options: option }));
+          setUser(userData.charts);
+        } catch (error) {}
+      }
     }
+
     fetchData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [option]);
 
@@ -85,7 +129,7 @@ const HomePage = () => {
       {/* Header HomePage */}
       <Box marginX={2}>
         <Grid container spacing={2.5}>
-          <Grid item sm={12} lg={9}>
+          <Grid item sm={12} lg={9} xl={9.5}>
             <Box minHeight={100}>
               <Box
                 display="flex"
@@ -130,9 +174,19 @@ const HomePage = () => {
               </Typography>
             </Box>
 
-            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
-              <CardTotalTO loading={loading} data={total} />
-            ) : null}
+            <CardTotal
+              loading={loading}
+              admin={
+                profile.roleId === 2 || profile.roleName === "TourOperator"
+                  ? false
+                  : true
+              }
+              data={
+                profile.roleId === 2 || profile.roleName === "TourOperator"
+                  ? total
+                  : totalAd
+              }
+            />
           </Grid>
 
           <Grid
@@ -140,6 +194,7 @@ const HomePage = () => {
             sx={{ display: { sm: "none", lg: "flex" } }}
             justifyContent="center"
             lg={3}
+            xl={2.5}
           >
             {loading ? (
               <Skeleton variant="rounded" width={222} height={222}>
@@ -151,6 +206,7 @@ const HomePage = () => {
                 justifyContent="center"
                 alignItems="center"
                 flexDirection="column"
+                width="100%"
                 minWidth={222}
                 minHeight={222}
                 bgcolor={alpha(theme.palette.background.hovered, 0.1)}
@@ -209,12 +265,25 @@ const HomePage = () => {
                 option={option}
                 setOption={setOption}
               />
-            ) : null}
+            ) : (
+              <ChartUserAnalysis
+                loading={loading}
+                data={user}
+                option={option}
+                setOption={setOption}
+              />
+            )}
           </Grid>
-          <Grid item sm={12} lg={4} maxHeight="100%">
+          <Grid item sm={12} lg={4}>
             {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
               <PlaceRank loading={loading} data={topPlace} />
-            ) : null}
+            ) : (
+              <NationalRank
+                loading={loading}
+                data={nationalAd.statictical}
+                total={nationalAd.total}
+              />
+            )}
           </Grid>
           <Grid item sm={12} lg={6}>
             {profile.roleId === 2 || profile.roleName === "TourOperator" ? (

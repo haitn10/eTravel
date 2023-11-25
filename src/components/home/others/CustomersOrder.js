@@ -6,6 +6,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  IconButton,
   Skeleton,
   Typography,
   useTheme,
@@ -14,10 +15,11 @@ import React from "react";
 import TableSkeletion from "../../common/skeletion/TableSkeletion";
 import { TimeFive } from "@styled-icons/boxicons-regular/TimeFive";
 import { MoreHoriz } from "@styled-icons/material-outlined";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CustomersOrder = ({ loading, data }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const getColor = (status) => {
     let color = theme.palette.text.primary;
@@ -34,6 +36,10 @@ const CustomersOrder = ({ loading, data }) => {
     }
 
     return color;
+  };
+
+  const onNavigate = (id) => {
+    navigate("/bookings/details", { state: { bookingId: id } });
   };
   return (
     <Box
@@ -59,15 +65,15 @@ const CustomersOrder = ({ loading, data }) => {
         {loading ? (
           <Skeleton width={50} />
         ) : (
-          <Link to={"/transactions"} style={{ textDecoration: "none" }}>
-            <Typography
-              fontWeight="semiBold"
-              fontSize={12}
-              color={theme.palette.text.active}
-            >
-              Show More
-            </Typography>
-          </Link>
+          <Typography
+            fontWeight="semiBold"
+            fontSize={12}
+            sx={{ cursor: "pointer" }}
+            color={theme.palette.text.active}
+            onClick={() => navigate("/bookings")}
+          >
+            Show More
+          </Typography>
         )}
       </Box>
 
@@ -117,10 +123,7 @@ const CustomersOrder = ({ loading, data }) => {
                           borderRadius={10}
                           bgcolor={getColor(item.status)}
                         />
-                        <Typography fontSize={14}>
-                          {/* {item.status} */}
-                          In Progress
-                        </Typography>
+                        <Typography fontSize={14}>{item.statusType}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell align="left">
@@ -148,7 +151,9 @@ const CustomersOrder = ({ loading, data }) => {
                       </Box>
                     </TableCell>
                     <TableCell align="right">
-                      <MoreHoriz width={24} />
+                      <IconButton onClick={() => onNavigate(item.id)}>
+                        <MoreHoriz width={24} />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 );

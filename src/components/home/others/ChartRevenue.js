@@ -66,28 +66,28 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
         yAxis: [
           {
             type: "value",
-            name: "Precipitation",
+            name: "Revenue",
             min: 0,
             max: 250,
             interval: 50,
             axisLabel: {
-              formatter: "{value} ml",
+              formatter: "{value} $",
             },
           },
           {
             type: "value",
-            name: "Temperature",
+            name: "Booking",
             min: 0,
             max: 25,
             interval: 5,
             axisLabel: {
-              formatter: "{value} °C",
+              formatter: "{value}",
             },
           },
         ],
         series: [
           {
-            name: "Evaporation",
+            name: "Revenue",
             type: "bar",
             tooltip: {
               valueFormatter: function (value) {
@@ -99,26 +99,14 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
               3.3,
             ],
           },
+
           {
-            name: "Precipitation",
-            type: "bar",
-            tooltip: {
-              valueFormatter: function (value) {
-                return value + " ml";
-              },
-            },
-            data: [
-              2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0,
-              2.3,
-            ],
-          },
-          {
-            name: "Temperature",
+            name: "Booking",
             type: "line",
             yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
-                return value + " °C";
+                return value + "";
               },
             },
             data: [
@@ -167,18 +155,18 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
               onChange={(e, value) => setOption(value)}
             >
               <Tab
-                value={3}
-                label="3d"
-                sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
-              />
-              <Tab
                 value={7}
                 label="7d"
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
-                value={30}
+                value={1}
                 label="1m"
+                sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
+              />
+              <Tab
+                value={3}
+                label="3m"
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
             </Tabs>
