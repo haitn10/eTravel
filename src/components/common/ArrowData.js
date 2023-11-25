@@ -14,7 +14,7 @@ const ArrowData = ({ loading, totalNum, direction, numDirection }) => {
         <Skeleton width={50} />
       ) : (
         <Typography variant="h5" fontWeight="semiBold">
-          {totalNum}
+          {totalNum.toLocaleString(undefined, { maximumFractionDigits: 2 })}
         </Typography>
       )}
 
@@ -26,13 +26,17 @@ const ArrowData = ({ loading, totalNum, direction, numDirection }) => {
           flexDirection="row"
           alignItems="center"
           bgcolor={alpha(
-            direction ? theme.palette.text.onStatus : theme.palette.text.active,
+            numDirection > 0
+              ? theme.palette.text.onStatus
+              : theme.palette.text.third,
             0.1
           )}
           paddingX={1}
           borderRadius={10}
           color={
-            direction ? theme.palette.text.onStatus : theme.palette.text.active
+            numDirection > 0
+              ? theme.palette.text.onStatus
+              : theme.palette.text.third
           }
         >
           <Typography
@@ -46,7 +50,7 @@ const ArrowData = ({ loading, totalNum, direction, numDirection }) => {
                 : theme.palette.text.active
             }
           >
-            {(direction ? "+" : "-") + numDirection}
+            {(numDirection > 0 ? "+" : "") + numDirection}
           </Typography>
         </Box>
       )}

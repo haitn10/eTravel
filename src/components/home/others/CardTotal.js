@@ -4,22 +4,40 @@ import React from "react";
 import ArrowData from "../../common/ArrowData";
 
 import { Location } from "@styled-icons/ionicons-outline";
-import { Directions } from "@styled-icons/boxicons-regular";
+import {
+  Directions,
+  User,
+  CategoryAlt,
+  DollarCircle,
+} from "@styled-icons/boxicons-regular";
 import { FileEarmarkText, ClipboardCheck } from "@styled-icons/bootstrap";
+import { Language } from "@styled-icons/ionicons-solid";
 
-const CardTotalTO = ({ loading, data }) => {
+const CardTotalTO = ({ loading, admin, data }) => {
   const theme = useTheme();
 
   const getIcon = (id) => {
     let icon = "";
-    if (id === 1) {
-      icon = <Location width={22} />;
-    } else if (id === 2) {
-      icon = <Directions width={22} />;
-    } else if (id === 3) {
-      icon = <FileEarmarkText width={22} />;
-    } else if (id === 4) {
-      icon = <ClipboardCheck width={22} />;
+    if (admin) {
+      if (id === 1) {
+        icon = <User width={22} />;
+      } else if (id === 2) {
+        icon = <CategoryAlt width={22} />;
+      } else if (id === 3) {
+        icon = <Language width={22} />;
+      } else if (id === 4) {
+        icon = <DollarCircle width={22} />;
+      }
+    } else {
+      if (id === 1) {
+        icon = <Location width={22} />;
+      } else if (id === 2) {
+        icon = <Directions width={22} />;
+      } else if (id === 3) {
+        icon = <FileEarmarkText width={22} />;
+      } else if (id === 4) {
+        icon = <ClipboardCheck width={22} />;
+      }
     }
 
     return icon;
@@ -60,7 +78,6 @@ const CardTotalTO = ({ loading, data }) => {
           <ArrowData
             loading={loading}
             totalNum={item.total}
-            direction={true}
             numDirection={item.numberIncreased}
           />
         </Box>

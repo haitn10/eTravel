@@ -1,7 +1,7 @@
 import {
+  Avatar,
   Box,
   Table,
-  TableHead,
   TableBody,
   TableCell,
   TableContainer,
@@ -12,23 +12,33 @@ import {
 } from "@mui/material";
 import React from "react";
 import TableSkeletion from "../../common/skeletion/TableSkeletion";
+import { LinearProgressWithLabel } from "../../common/styled/LinearProgressWithLabel";
 
-const PlaceRank = ({ loading, data }) => {
+const NationalRank = ({ loading, data, total }) => {
   const theme = useTheme();
   return (
     <Box
       bgcolor={theme.palette.background.secondary}
       borderRadius={2.5}
       padding={2}
+      height="100%"
     >
       <Box paddingX={1}>
         {loading ? (
           <Skeleton width={100} />
         ) : (
-          <Typography fontWeight="semiBold" fontSize={18}>
-            Top 10 Ranking Places
-          </Typography>
+          <Typography fontWeight="medium">User Nationality Ranking</Typography>
         )}
+
+        <Box padding={1} marginLeft={2}>
+          {loading ? (
+            <Skeleton width={100} />
+          ) : (
+            <Typography fontWeight="semiBold" variant="h4">
+              {total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            </Typography>
+          )}
+        </Box>
       </Box>
 
       <TableContainer>
@@ -38,29 +48,6 @@ const PlaceRank = ({ loading, data }) => {
             ".MuiTableCell-root": { padding: 1.25 },
           }}
         >
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">
-                {loading ? (
-                  <Skeleton width={100} />
-                ) : (
-                  <Typography fontSize={13} fontWeight="medium">
-                    Place Name
-                  </Typography>
-                )}
-              </TableCell>
-
-              <TableCell align="right">
-                {loading ? (
-                  <Skeleton width={100} />
-                ) : (
-                  <Typography fontSize={13} fontWeight="medium">
-                    Total Bookings
-                  </Typography>
-                )}
-              </TableCell>
-            </TableRow>
-          </TableHead>
           <TableBody>
             {loading ? (
               <TableSkeletion rowsNum={4} columnsNum={3} />
@@ -74,10 +61,21 @@ const PlaceRank = ({ loading, data }) => {
                     }}
                   >
                     <TableCell align="left">
-                      <Typography fontSize={14}>{item.placeName}</Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography fontSize={14}>{item.totalBooking}</Typography>
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Box>
+                          <Avatar
+                            src={item.icon}
+                            variant="circular"
+                            sx={{ width: 30, height: 30 }}
+                          />
+                        </Box>
+                        <Box width="100%">
+                          <Typography fontSize={14}>
+                            {item.nationalName}
+                          </Typography>
+                          <LinearProgressWithLabel value={item.ratio} />
+                        </Box>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 );
@@ -90,4 +88,4 @@ const PlaceRank = ({ loading, data }) => {
   );
 };
 
-export default PlaceRank;
+export default NationalRank;
