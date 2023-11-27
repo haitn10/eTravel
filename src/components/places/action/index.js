@@ -167,3 +167,14 @@ export const importPlaceByFile = async (dataList) => {
     return Promise.reject(e);
   }
 };
+
+export const getPlaceComments = async (placeId) => {
+  try {
+    const { data } = await API.get(`portal/feedbacks/${placeId}`, {
+      params: { isPlace: true },
+    });
+    return Promise.resolve(data.feedbacks);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};

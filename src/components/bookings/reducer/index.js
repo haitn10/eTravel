@@ -1,6 +1,6 @@
 import { SET_BOOKINGS_STATE } from "../action";
 
-const tours = (
+const bookings = (
   state = { isFetching: false, items: [], details: [] },
   action
 ) => {
@@ -16,4 +16,4 @@ const tours = (
   }
 };
 
-export default tours;
+export default bookings;

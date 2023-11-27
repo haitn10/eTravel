@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, useTheme } from "@mui/material";
+import { Box, Grid, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -130,32 +130,34 @@ const ManagePlaces = () => {
       />
 
       {/* Data Table */}
-      <Box paddingX={2} marginTop={3}>
-        <DataGrid
-          autoHeight
-          disableColumnMenu
-          disableRowSelectionOnClick
-          columns={places.concat(action)}
-          rows={pageState.data}
-          rowCount={pageState.totalCount}
-          loading={pageState.isLoading}
-          paginationModel={pageModelState}
-          pageSizeOptions={[5, 10, 20]}
-          paginationMode="server"
-          onPaginationModelChange={setPageModelState}
-          onRowClick={(params) => onNavigate(params)}
-          sx={{
-            border: 0,
-            minHeight: "75vh",
-            "& .MuiDataGrid-row:hover": {
-              cursor: "pointer",
-            },
-            "& .MuiDataGrid-cell:focus": {
-              outline: "none",
-            },
-          }}
-        />
-      </Box>
+      <Grid container paddingX={2} marginTop={3} width="99%">
+        <Grid item xs={12}>
+          <DataGrid
+            autoHeight
+            disableColumnMenu
+            disableRowSelectionOnClick
+            columns={places.concat(action)}
+            rows={pageState.data}
+            rowCount={pageState.totalCount}
+            loading={pageState.isLoading}
+            paginationModel={pageModelState}
+            pageSizeOptions={[5, 10, 20]}
+            paginationMode="server"
+            onPaginationModelChange={setPageModelState}
+            onRowClick={(params) => onNavigate(params)}
+            sx={{
+              border: 0,
+              minHeight: "75vh",
+              "& .MuiDataGrid-row:hover": {
+                cursor: "pointer",
+              },
+              "& .MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+            }}
+          />
+        </Grid>
+      </Grid>
     </Box>
   );
 };

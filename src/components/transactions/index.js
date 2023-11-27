@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, useTheme } from "@mui/material";
+import { Box, Grid, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
-import { getTours } from "./action";
+import { getTransactions } from "./action";
 import transactions from "../../constants/tables/transactions";
 
 const ManageTransactions = () => {
@@ -38,7 +38,7 @@ const ManageTransactions = () => {
           isLoading: true,
         }));
         const data = await dispatch(
-          getTours({
+          getTransactions({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
           })
@@ -67,7 +67,9 @@ const ManageTransactions = () => {
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/transactions/details", { data: params.row.id });
+    navigate("/transactions/details", {
+      state: { transactionId: params.row.id },
+    });
   };
 
   return (
@@ -96,32 +98,34 @@ const ManageTransactions = () => {
       />
 
       {/* Data Table */}
-      <Box paddingX={2} flexGrow={1} marginTop={3}>
-        <DataGrid
-          autoHeight
-          disableColumnMenu
-          disableRowSelectionOnClick
-          columns={transactions}
-          rows={pageState.data}
-          rowCount={pageState.totalCount}
-          loading={pageState.isLoading}
-          paginationModel={pageModelState}
-          pageSizeOptions={[5, 10, 20]}
-          paginationMode="server"
-          onPaginationModelChange={setPageModelState}
-          onRowClick={(params) => onNavigate(params)}
-          sx={{
-            border: 0,
-            minHeight: "72vh",
-            "& .MuiDataGrid-row:hover": {
-              cursor: "pointer",
-            },
-            "& .MuiDataGrid-cell:focus": {
-              outline: "none",
-            },
-          }}
-        />
-      </Box>
+      <Grid container paddingX={2} marginTop={3} width="99%">
+        <Grid item xs={12}>
+          <DataGrid
+            autoHeight
+            disableColumnMenu
+            disableRowSelectionOnClick
+            columns={transactions}
+            rows={pageState.data}
+            rowCount={pageState.totalCount}
+            loading={pageState.isLoading}
+            paginationModel={pageModelState}
+            pageSizeOptions={[5, 10, 20]}
+            paginationMode="server"
+            onPaginationModelChange={setPageModelState}
+            onRowClick={(params) => onNavigate(params)}
+            sx={{
+              border: 0,
+              minHeight: "72vh",
+              "& .MuiDataGrid-row:hover": {
+                cursor: "pointer",
+              },
+              "& .MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+            }}
+          />
+        </Grid>
+      </Grid>
     </Box>
   );
 };

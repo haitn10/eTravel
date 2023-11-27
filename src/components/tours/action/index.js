@@ -45,3 +45,12 @@ export const updateTour = async (tourId, values) => {
     return Promise.reject(e);
   }
 };
+
+export const getTourComments = async (tourId) => {
+  try {
+    const { data } = await API.get(`portal/feedbacks/${tourId}`);
+    return Promise.resolve(data.feedbacks);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};

@@ -2,32 +2,30 @@ import { Box, Tabs, Tab, Typography, Skeleton, useTheme } from "@mui/material";
 import React, { useEffect } from "react";
 import * as echarts from "echarts/core";
 import { BarChart, LineChart } from "echarts/charts";
-import {
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  DatasetComponent,
-  TransformComponent,
-} from "echarts/components";
-import { LabelLayout, UniversalTransition } from "echarts/features";
+import { TooltipComponent, GridComponent } from "echarts/components";
+import { UniversalTransition } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 
-const ChartRevene = ({ loading, data, option, setOption }) => {
+const ChartRevene = ({ loading, data, total, option, setOption }) => {
   const theme = useTheme();
 
   useEffect(() => {
+    let arrTime = [],
+      arrRevenue = [],
+      arrBooking = [];
+    data?.forEach((item) => {
+      arrTime.push(item.date);
+      arrRevenue.push(item.totalPrice);
+      arrBooking.push(item.totalBooking);
+    });
     if (!loading) {
       echarts.use([
-        BarChart,
-        LineChart,
-        TitleComponent,
         TooltipComponent,
         GridComponent,
-        DatasetComponent,
-        TransformComponent,
-        LabelLayout,
-        UniversalTransition,
+        BarChart,
+        LineChart,
         CanvasRenderer,
+        UniversalTransition,
       ]);
       const chartDom = document.getElementById("chart");
       const myChart = echarts.init(chartDom);
@@ -52,12 +50,12 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
         },
         legend: {
           bottom: 0,
-          data: ["Evaporation", "Precipitation", "Temperature"],
+          data: ["Revenue", "Booking"],
         },
         xAxis: [
           {
             type: "category",
-            data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            data: arrTime,
             axisPointer: {
               type: "shadow",
             },
@@ -91,13 +89,10 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
             type: "bar",
             tooltip: {
               valueFormatter: function (value) {
-                return value + " ml";
+                return value + " $";
               },
             },
-            data: [
-              2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4,
-              3.3,
-            ],
+            data: arrRevenue,
           },
 
           {
@@ -109,9 +104,7 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
                 return value + "";
               },
             },
-            data: [
-              2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2,
-            ],
+            data: arrBooking,
           },
         ],
       };
@@ -122,7 +115,7 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
         myChart.resize();
       });
     }
-  }, [loading]);
+  }, [loading, data]);
   return (
     <Box
       bgcolor={theme.palette.background.secondary}
@@ -179,7 +172,7 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
         ) : (
           <Typography fontWeight="medium" variant="h5">
             ${" "}
-            {Number(123123)
+            {Number(total)
               .toFixed(2)
               .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
           </Typography>
@@ -194,7 +187,7 @@ const ChartRevene = ({ loading, data, option, setOption }) => {
             width="100%"
             maxWidth={1000}
             height="100%"
-            minHeight={400}
+            minHeight={450}
           ></Box>
         )}
       </Box>

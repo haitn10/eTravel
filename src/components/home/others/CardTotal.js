@@ -78,6 +78,7 @@ const CardTotalTO = ({ loading, admin, data }) => {
           <ArrowData
             loading={loading}
             totalNum={item.total}
+            price={item.name === "Revenue" ? true : false}
             numDirection={item.numberIncreased}
           />
         </Box>

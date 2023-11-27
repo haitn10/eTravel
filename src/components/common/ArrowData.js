@@ -1,7 +1,14 @@
-import { Box, Typography, alpha, useTheme, Skeleton } from "@mui/material";
+import {
+  Box,
+  Tooltip,
+  Typography,
+  alpha,
+  useTheme,
+  Skeleton,
+} from "@mui/material";
 import React from "react";
 
-const ArrowData = ({ loading, totalNum, direction, numDirection }) => {
+const ArrowData = ({ loading, totalNum, price, numDirection }) => {
   const theme = useTheme();
   return (
     <Box
@@ -13,9 +20,15 @@ const ArrowData = ({ loading, totalNum, direction, numDirection }) => {
       {loading ? (
         <Skeleton width={50} />
       ) : (
-        <Typography variant="h5" fontWeight="semiBold">
-          {totalNum.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-        </Typography>
+        <Tooltip title={totalNum}>
+          <Typography variant="h5" fontWeight="semiBold" noWrap>
+            {price
+              ? `$ ${Number(totalNum)
+                  .toFixed(1)
+                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}`
+              : totalNum}
+          </Typography>
+        </Tooltip>
       )}
 
       {loading ? (
@@ -25,19 +38,13 @@ const ArrowData = ({ loading, totalNum, direction, numDirection }) => {
           display="flex"
           flexDirection="row"
           alignItems="center"
-          bgcolor={alpha(
+          bgcolor={
             numDirection > 0
-              ? theme.palette.text.onStatus
-              : theme.palette.text.third,
-            0.1
-          )}
+              ? alpha(theme.palette.text.onStatus, 0.2)
+              : alpha(theme.palette.text.third, 0.1)
+          }
           paddingX={1}
           borderRadius={10}
-          color={
-            numDirection > 0
-              ? theme.palette.text.onStatus
-              : theme.palette.text.third
-          }
         >
           <Typography
             sx={{
@@ -45,7 +52,7 @@ const ArrowData = ({ loading, totalNum, direction, numDirection }) => {
               fontSize: ".75em",
             }}
             color={
-              direction
+              numDirection
                 ? theme.palette.text.onStatus
                 : theme.palette.text.active
             }

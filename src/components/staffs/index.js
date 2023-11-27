@@ -194,32 +194,34 @@ const ManageStaffs = () => {
       />
 
       {/* Data Table */}
-      <Box paddingX={2} flexGrow={1} marginTop={3}>
-        <DataGrid
-          autoHeight
-          disableColumnMenu
-          disableRowSelectionOnClick
-          columns={staffs.concat(action)}
-          rows={pageState.data}
-          rowCount={pageState.totalCount}
-          loading={pageState.isLoading}
-          paginationModel={pageModelState}
-          pageSizeOptions={[5, 10, 20]}
-          paginationMode="server"
-          onPaginationModelChange={setPageModelState}
-          onRowClick={(params) => onNavigate(params)}
-          sx={{
-            border: 0,
-            minHeight: "75vh",
-            "& .MuiDataGrid-row:hover": {
-              cursor: "pointer",
-            },
-            "& .MuiDataGrid-cell:focus": {
-              outline: "none",
-            },
-          }}
-        />
-      </Box>
+      <Grid container paddingX={2} marginTop={3} width="99%">
+        <Grid item xs={12}>
+          <DataGrid
+            autoHeight
+            disableColumnMenu
+            disableRowSelectionOnClick
+            columns={staffs.concat(action)}
+            rows={pageState.data}
+            rowCount={pageState.totalCount}
+            loading={pageState.isLoading}
+            paginationModel={pageModelState}
+            pageSizeOptions={[5, 10, 20]}
+            paginationMode="server"
+            onPaginationModelChange={setPageModelState}
+            onRowClick={(params) => onNavigate(params)}
+            sx={{
+              border: 0,
+              minHeight: "75vh",
+              "& .MuiDataGrid-row:hover": {
+                cursor: "pointer",
+              },
+              "& .MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+            }}
+          />
+        </Grid>
+      </Grid>
 
       {/* Modal New Staff */}
       <Dialog

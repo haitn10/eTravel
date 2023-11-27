@@ -3,7 +3,7 @@ import {
   LocationAdd,
   CollectionsAdd,
 } from "@styled-icons/fluentui-system-regular";
-import { ListUl, FileEarmarkText } from "@styled-icons/bootstrap";
+import { ListUl, FileEarmarkText, ChatLeftText } from "@styled-icons/bootstrap";
 import { ExchangeDollar } from "@styled-icons/remix-line";
 import { Settings2Outline } from "@styled-icons/evaicons-outline";
 import { Location } from "@styled-icons/ionicons-outline";
@@ -73,6 +73,13 @@ const tabsItem = [
   },
   {
     id: 6,
+    title: "Feedbacks",
+    icon: <ChatLeftText width={22} />,
+    url: "/feedbacks",
+    options: [],
+  },
+  {
+    id: 7,
     title: "Settings",
     icon: <Settings2Outline width={24} />,
     url: "/settings",

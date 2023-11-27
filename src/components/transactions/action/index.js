@@ -9,7 +9,7 @@ const setState = (state) => ({
   state,
 });
 
-export const getTours = (payload) => {
+export const getTransactions = (payload) => {
   return async (dispatch, getState) => {
     return fetch(
       getState().tours,
@@ -19,4 +19,13 @@ export const getTours = (payload) => {
       payload
     );
   };
+};
+
+export const getTransactionDetails = async (transId) => {
+  try {
+    const { data } = await API.get(`portal/transactions/${transId}`);
+    return Promise.resolve(data.transaction);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };

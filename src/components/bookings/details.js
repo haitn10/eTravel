@@ -58,7 +58,7 @@ const BookingDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId]);
 
-  
+  console.log(values);
 
   return (
     <Box
@@ -86,82 +86,88 @@ const BookingDetails = () => {
             {loading ? (
               <Skeleton width={100} />
             ) : (
-              <Typography
-                textTransform="uppercase"
-                letterSpacing={1.25}
-                color={theme.palette.text.third}
-                fontWeight="medium"
-              >
-                Information Customer
-              </Typography>
+              <Box marginBottom={3}>
+                <Typography
+                  textTransform="uppercase"
+                  letterSpacing={1.25}
+                  color={theme.palette.text.third}
+                  fontWeight="medium"
+                >
+                  Information Customer
+                </Typography>
+              </Box>
             )}
-
-            <Box>
-              {loading ? (
-                <Skeleton width="100%" />
-              ) : (
-                <Box display="flex" marginY={1} gap={1}>
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" marginY={1} gap={1}>
+                <Box>
                   <Typography fontWeight="medium" width={150}>
                     Customer Name:
                   </Typography>
-                  <Typography noWrap>
-                    {values?.customerInfor?.customerName}
-                  </Typography>
                 </Box>
-              )}
-              {loading ? (
-                <Skeleton width="100%" />
-              ) : (
-                <Box display="flex" marginY={1} gap={1}>
+                <Typography noWrap>
+                  {values?.customerInfor?.customerName}
+                </Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" marginY={1} gap={1}>
+                <Box>
                   <Typography fontWeight="medium" width={150}>
                     Gender:
                   </Typography>
-                  <Typography noWrap>{values?.customerInfor?.gender}</Typography>
                 </Box>
-              )}
-              {loading ? (
-                <Skeleton width="100%" />
-              ) : (
-                <Box display="flex" marginY={1} gap={1}>
-                  <Typography fontWeight="medium" width={150}>
-                    Nationality:
-                  </Typography>
-                  <Typography noWrap>
-                    {values?.customerInfor?.nationality}
-                  </Typography>
-                </Box>
-              )}
-              {loading ? (
-                <Skeleton width="100%" />
-              ) : (
-                <Box display="flex" marginY={1} gap={1}>
-                  <Typography fontWeight="medium" width={150}>
-                    Phone Number:
-                  </Typography>
-                  <Typography noWrap>{values?.customerInfor?.phone}</Typography>
-                </Box>
-              )}
-              {loading ? (
-                <Skeleton width="100%" />
-              ) : (
-                <Box display="flex" marginY={1} gap={1}>
-                  <Typography fontWeight="medium" width={150}>
-                    Email Address:
-                  </Typography>
-                  <Typography noWrap>{values?.customerInfor?.email}</Typography>
-                </Box>
-              )}
-              {loading ? (
-                <Skeleton width="100%" />
-              ) : (
-                <Box display="flex" marginY={1} gap={1}>
-                  <Typography fontWeight="medium" width={150}>
-                    Address:
-                  </Typography>
-                  <Typography noWrap>{values?.customerInfor?.address}</Typography>
-                </Box>
-              )}
-            </Box>
+                <Typography noWrap>{values?.customerInfor?.gender}</Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" marginY={1} gap={1}>
+                <Typography fontWeight="medium" width={150}>
+                  Nationality:
+                </Typography>
+                <Typography noWrap>
+                  {values?.customerInfor?.nationality}
+                </Typography>
+              </Box>
+            )}
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" marginY={1} gap={1}>
+                <Typography fontWeight="medium" width={150}>
+                  Phone Number:
+                </Typography>
+                <Typography noWrap>{values?.customerInfor?.phone}</Typography>
+              </Box>
+            )}
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" marginY={1} gap={1}>
+                <Typography fontWeight="medium" width={150}>
+                  Email Address:
+                </Typography>
+                <Typography noWrap>{values?.customerInfor?.email}</Typography>
+              </Box>
+            )}
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" marginY={1} gap={1}>
+                <Typography fontWeight="medium" width={150}>
+                  Address:
+                </Typography>
+                <Typography noWrap>{values?.customerInfor?.address}</Typography>
+              </Box>
+            )}
+
             <Box>
               <Accordion
                 sx={{
@@ -210,95 +216,95 @@ const BookingDetails = () => {
               <Skeleton width="100%" />
             ) : (
               <Box
-                bgcolor={alpha(theme.palette.background.third, 0.15)}
+                bgcolor={alpha(theme.palette.background.third, 0.2)}
                 padding={2}
                 paddingX={5}
                 borderRadius={2.5}
               >
-                <Box>
-                  <Box marginBottom={3}>
-                    <Typography
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      textTransform="uppercase"
-                      letterSpacing={1.5}
-                      fontSize={22}
-                      color={theme.palette.text.third}
-                      fontWeight="medium"
-                    >
-                      Booking Bill
-                      <Typography
-                        textTransform="capitalize"
-                        fontWeight="bold"
-                        gap={2}
-                        letterSpacing={0.5}
-                        color={theme.palette.text.onStatus}
-                      >
-                        {values?.statusType}
-                      </Typography>
-                    </Typography>
-                  </Box>
+                <Box
+                  marginBottom={3}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Typography
+                    textTransform="uppercase"
+                    letterSpacing={1.5}
+                    fontSize={22}
+                    color={theme.palette.text.third}
+                    fontWeight="medium"
+                  >
+                    Booking Bill
+                  </Typography>
+                  <Typography
+                    textTransform="capitalize"
+                    fontWeight="bold"
+                    gap={2}
+                    letterSpacing={0.5}
+                    color={theme.palette.text.onStatus}
+                  >
+                    {values.statusType}
+                  </Typography>
+                </Box>
 
-                  <Box marginBottom={1}>
-                    <Typography textTransform="capitalize" fontWeight="medium">
-                      Booking Number
-                    </Typography>
-                    <Typography
-                      textTransform="capitalize"
-                      color={theme.palette.text.third}
-                    >
-                      {values?.id}
-                    </Typography>
-                  </Box>
-                  <Box marginBottom={1}>
-                    <Typography textTransform="capitalize" fontWeight="medium">
-                      Booking Date
-                    </Typography>
-                    <Typography
-                      textTransform="capitalize"
-                      color={theme.palette.text.third}
-                    >
-                      {dayjs(values?.createTime).format("LL")}
-                    </Typography>
-                  </Box>
+                <Box marginBottom={1}>
+                  <Typography textTransform="capitalize" fontWeight="medium">
+                    Booking Number
+                  </Typography>
+                  <Typography
+                    textTransform="capitalize"
+                    color={theme.palette.text.third}
+                  >
+                    {values.id}
+                  </Typography>
+                </Box>
+                <Box marginBottom={1}>
+                  <Typography textTransform="capitalize" fontWeight="medium">
+                    Booking Date
+                  </Typography>
+                  <Typography
+                    textTransform="capitalize"
+                    color={theme.palette.text.third}
+                  >
+                    {dayjs(values.createTime).format("LL")}
+                  </Typography>
+                </Box>
 
-                  <Box marginBottom={1}>
-                    <Typography textTransform="capitalize" fontWeight="medium">
-                      duration Expected
-                    </Typography>
-                    <Typography
-                      textTransform="capitalize"
-                      color={theme.palette.text.third}
-                    >
-                      {values?.durationExpected}
-                    </Typography>
-                  </Box>
-                  <Box marginBottom={1}>
-                    <Typography textTransform="capitalize" fontWeight="medium">
-                      Number of Places
-                    </Typography>
-                    <Typography
-                      textTransform="capitalize"
-                      color={theme.palette.text.third}
-                    >
-                      {values?.placeDetail?.length}
-                    </Typography>
-                  </Box>
-                  <Box marginBottom={1}>
-                    <Typography textTransform="capitalize" fontWeight="medium">
-                      Total Prices
-                    </Typography>
-                    <Typography
-                      textTransform="capitalize"
-                      color={theme.palette.text.third}
-                    >
-                      {values?.total?.toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      })}
-                    </Typography>
-                  </Box>
+                <Box marginBottom={1}>
+                  <Typography textTransform="capitalize" fontWeight="medium">
+                    duration Expected
+                  </Typography>
+                  <Typography
+                    textTransform="capitalize"
+                    color={theme.palette.text.third}
+                  >
+                    {values.durationExpected}
+                  </Typography>
+                </Box>
+                <Box marginBottom={1}>
+                  <Typography textTransform="capitalize" fontWeight="medium">
+                    Number of Places
+                  </Typography>
+                  <Typography
+                    textTransform="capitalize"
+                    color={theme.palette.text.third}
+                  >
+                    {values.placeDetail.length}
+                  </Typography>
+                </Box>
+                <Box marginBottom={1}>
+                  <Typography textTransform="capitalize" fontWeight="medium">
+                    Total Prices
+                  </Typography>
+                  <Typography
+                    textTransform="capitalize"
+                    color={theme.palette.text.third}
+                  >
+                    {values.total.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </Typography>
                 </Box>
               </Box>
             )}
@@ -320,41 +326,47 @@ const BookingDetails = () => {
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <TableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Transaction ID</TableCell>
-                        <TableCell>Payment Method</TableCell>
-                        <TableCell>Payment Time</TableCell>
-                        <TableCell>Amount</TableCell>
-                        <TableCell align="right">Status</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {values?.historyTransactions?.map((trans) => (
-                        <TableRow
-                          key={trans.id}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                        >
-                          <TableCell component="th" scope="row">
-                            {trans.id}
-                          </TableCell>
-                          <TableCell>{trans.paymentMethod}</TableCell>
-                          <TableCell>
-                            {dayjs(trans.createTime).format("LL")}
-                          </TableCell>
-                          <TableCell>{trans.amount}</TableCell>
-                          <TableCell align="right">
-                            {trans.statusType}
-                          </TableCell>
+                {values.historyTransactions.length !== 0 ? (
+                  <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Transaction ID</TableCell>
+                          <TableCell>Payment Method</TableCell>
+                          <TableCell>Payment Time</TableCell>
+                          <TableCell>Amount</TableCell>
+                          <TableCell align="right">Status</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                      </TableHead>
+                      <TableBody>
+                        {values.historyTransactions.map((trans) => (
+                          <TableRow
+                            key={trans.id}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell component="th" scope="row">
+                              {trans.id}
+                            </TableCell>
+                            <TableCell>{trans.paymentMethod}</TableCell>
+                            <TableCell>
+                              {dayjs(trans.createTime).format("LL")}
+                            </TableCell>
+                            <TableCell>{trans.amount}</TableCell>
+                            <TableCell align="right">
+                              {trans.statusType}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                ) : (
+                  <Box display="flex" justifyContent="center">
+                    <Typography>(No data)</Typography>
+                  </Box>
+                )}
               </AccordionDetails>
             </Accordion>
           )}

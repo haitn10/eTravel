@@ -10,8 +10,9 @@ import categories from "../components/categories/reducer";
 import languages from "../components/languages/reducer";
 import tours from "../components/tours/reducer";
 import places from "../components/places/reducer";
-import transactions from "../components/places/reducer";
-import bookings from "../components/places/reducer";
+import transactions from "../components/transactions/reducer";
+import bookings from "../components/bookings/reducer";
+import feedbacks from "../components/feedbacks/reducer";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -27,6 +28,7 @@ const store = createStore(
     places,
     transactions,
     bookings,
+    feedbacks,
   }),
   composeEnhancers(applyMiddleware(thunk), reduxReset())
 );

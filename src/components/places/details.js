@@ -11,18 +11,18 @@ import {
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
-
-import { getPlaceDetails, updatePlace } from "./action";
+import { useDispatch } from "react-redux";
+import dayjs from "dayjs";
 
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
 import GeneralInfo from "./others/details/GeneralInfo";
 import MultiLanguages from "./others/details/MultiLanguages";
-
+import Feedback from "./others/details/Feedback";
 import BeaconSub from "./others/details/BeaconSub";
+
 import { getLanguages } from "../languages/action";
-import { useDispatch } from "react-redux";
-import dayjs from "dayjs";
+import { getPlaceDetails, updatePlace } from "./action";
 
 const PlaceDetails = () => {
   const theme = useTheme();
@@ -342,27 +342,11 @@ const PlaceDetails = () => {
           </TabPanel>
 
           <TabPanel value="4">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Box
-                sx={{
-                  marginTop: 5,
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center",
-                  marginRight: 3,
-                }}
-              >
-                <Button
-                  type="submit"
-                  color="error"
-                  disabled={process}
-                  variant="contained"
-                  sx={{ borderRadius: 2.5 }}
-                >
-                  Save Changes
-                </Button>
-              </Box>
-            </form>
+            <Feedback
+              id={placeId}
+              notification={notification}
+              setNotification={setNotification}
+            />
           </TabPanel>
         </TabContext>
       </Box>
