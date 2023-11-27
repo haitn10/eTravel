@@ -6,13 +6,15 @@ import { useNavigate } from "react-router-dom";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
-import { getBookings } from "./action";
-import bookings from "../../constants/tables/bookings";
+import { getFeedbacks } from "./action";
+import feedbacks from "../../constants/tables/feedbacks";
+import Action from "../common/Action";
 
-const ManageBookings = () => {
+const ManageFeedbacks = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -38,16 +40,18 @@ const ManageBookings = () => {
           isLoading: true,
         }));
         const data = await dispatch(
-          getBookings({
+          getFeedbacks({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "userName",
+            Search: search,
           })
         );
         setPageState((old) => ({
           ...old,
           isLoading: false,
-          data: data.bookings.data,
-          totalCount: data.bookings.totalCount,
+          data: data.feedbacks.data,
+          totalCount: data.feedbacks.totalCount,
         }));
       } catch (error) {
         setNotification({
@@ -60,15 +64,47 @@ const ManageBookings = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/bookings/details", { state: { bookingId: params.row.id } });
+    navigate("/feedbacks/details", { state: { feedbackId: params.row.id } });
   };
+
+  const action = [
+    {
+      field: "action",
+      headerName: "",
+      width: 50,
+      align: "center",
+      headerAlign: "center",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <Action
+            titleAc={"Are you sure you want to show?"}
+            titleDe={"Are you sure you want to hide?"}
+            messageAc={
+              "Your action will display this user's comments for the tour or place."
+            }
+            messageDe={
+              "Your action will hide this user's comments about the tour or place."
+            }
+            feedback={true}
+            id={params.row.id}
+            api="portal/places/feedback"
+            status={params.row.status}
+            getData={getData}
+            notification={notification}
+            setNotification={setNotification}
+          />
+        );
+      },
+    },
+  ];
 
   return (
     <Box
@@ -87,9 +123,11 @@ const ManageBookings = () => {
         status={notification.status}
       />
       <Header
-        title={"Manage Bookings"}
-        subTitle={"Manage all them existing bookings."}
+        title={"Manage Feedbacks"}
+        subTitle={"Manage all them existing feedbacks."}
         showSearch={true}
+        search={search}
+        setSearch={setSearch}
       />
 
       {/* Data Table */}
@@ -99,7 +137,7 @@ const ManageBookings = () => {
             autoHeight
             disableColumnMenu
             disableRowSelectionOnClick
-            columns={bookings}
+            columns={feedbacks.concat(action)}
             rows={pageState.data}
             rowCount={pageState.totalCount}
             loading={pageState.isLoading}
@@ -125,4 +163,4 @@ const ManageBookings = () => {
   );
 };
 
-export default ManageBookings;
+export default ManageFeedbacks;

@@ -39,6 +39,7 @@ const MultiLanguages = ({
     control,
     name: "placeDescriptions",
   });
+  const MAXIMUM_FILE_SIZE = 70 * 1024 * 1024;
 
   useEffect(() => {
     const formData = getValues();
@@ -294,9 +295,11 @@ const MultiLanguages = ({
                             rules={{
                               required: "Voice file is required!",
                               validate: (e) => {
+                                console.log(e);
                                 hasDuplicateVoiceFile(e.name);
                                 return (
-                                  isDuplicateName ||
+                                  (e.size < MAXIMUM_FILE_SIZE &&
+                                    isDuplicateName) ||
                                   "This file name already exists in the system!"
                                 );
                               },

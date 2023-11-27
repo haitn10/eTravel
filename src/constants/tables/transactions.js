@@ -64,9 +64,9 @@ const transactions = [
       if (params.row.status === 0) {
         color = theme.palette.text.active;
       } else if (params.row.status === 1) {
-        color = theme.palette.text.onStatus;
-      } else if (params.row.status === 2) {
         color = theme.palette.text.checked;
+      } else if (params.row.status === 2) {
+        color = theme.palette.text.onStatus;
       }
 
       return (

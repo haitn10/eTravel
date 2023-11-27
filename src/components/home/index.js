@@ -81,7 +81,7 @@ const HomePage = () => {
           const revenueData = await dispatch(
             getReveneData({ options: option })
           );
-          setRevenue(revenueData.charts);
+          setRevenue(revenueData);
         } catch (error) {}
       } else {
         if (
@@ -261,8 +261,9 @@ const HomePage = () => {
             {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
               <ChartRevenue
                 loading={loading}
-                data={revenue}
+                data={revenue.charts}
                 option={option}
+                total={revenue.totalRevenue}
                 setOption={setOption}
               />
             ) : (

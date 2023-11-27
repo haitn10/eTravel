@@ -19,6 +19,7 @@ const Action = ({
   titleDe,
   messageAc,
   messageDe,
+  feedback,
   id,
   api,
   status,
@@ -79,7 +80,13 @@ const Action = ({
         }}
       >
         <MenuItem onClick={handleConfirm}>
-          {status ? "Deactivate" : "Activate"}
+          {feedback
+            ? status
+              ? "Hide"
+              : "Show"
+            : status
+            ? "Deactivate"
+            : "Activate"}
         </MenuItem>
       </Menu>
       <Dialog

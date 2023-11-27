@@ -21,6 +21,7 @@ import GeneralInfo from "./others/details/GeneralInfo";
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
 import SubmitBtn from "../common/SubmitBtn";
+import Feedback from "./others/details/Feedback";
 
 const TourDetails = () => {
   const theme = useTheme();
@@ -214,6 +215,7 @@ const TourDetails = () => {
                 <Tab label="General Informations" value="1" />
                 <Tab label="Descriptions List" value="2" />
                 <Tab label="Places List" value="3" />
+                <Tab label="Feedback" value="4" />
               </TabList>
             </Box>
           ) : (
@@ -298,6 +300,13 @@ const TourDetails = () => {
                 <Skeleton width={100} />
               )}
             </Box>
+          </TabPanel>
+          <TabPanel value="4">
+            <Feedback
+              id={tourId}
+              notification={notification}
+              setNotification={setNotification}
+            />
           </TabPanel>
         </TabContext>
       </Box>

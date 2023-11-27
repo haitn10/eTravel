@@ -1,11 +1,11 @@
-import { SET_TRANSACTIONS_STATE } from "../action";
+import { SET_FEEDBACKS_STATE } from "../action";
 
-const transactions = (
+const feedbacks = (
   state = { isFetching: false, items: [], details: [] },
   action
 ) => {
   switch (action.type) {
-    case SET_TRANSACTIONS_STATE:
+    case SET_FEEDBACKS_STATE:
       return {
         ...state,
         ...action.state,
@@ -16,4 +16,4 @@ const transactions = (
   }
 };
 
-export default transactions;
+export default feedbacks;

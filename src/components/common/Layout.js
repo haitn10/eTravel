@@ -17,7 +17,6 @@ const Layout = () => {
           background: theme.palette.background.secondary,
           transition: "all 200ms ease-in-out",
         }}
-        position="relative"
         marginLeft={isCollapsed ? "80px" : "250px"}
       >
         <Outlet />

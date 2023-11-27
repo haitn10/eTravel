@@ -41,7 +41,7 @@ const BeaconLanguage = ({
   return (
     <>
       {fields.map((item, i) => (
-        <Grid container key={i}>
+        <Grid container key={i} spacing={1} marginBottom={1}>
           <Grid
             item
             sm={12}

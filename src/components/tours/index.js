@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, useTheme } from "@mui/material";
+import { Box, Grid, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -87,8 +87,12 @@ const ManageTours = () => {
           <Action
             titleAc={"Are you sure you want to activate?"}
             titleDe={"Are you sure you want to deactivate?"}
-            messageAc={"This action of yours will make this tour active again and users can operate directly with this tour."}
-            messageDe={"Your action will cause this tour to no longer be used in the system."}
+            messageAc={
+              "This action of yours will make this tour active again and users can operate directly with this tour."
+            }
+            messageDe={
+              "Your action will cause this tour to no longer be used in the system."
+            }
             id={params.row.id}
             api="portal/tours/changestatus"
             status={params.row.status}
@@ -108,14 +112,13 @@ const ManageTours = () => {
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
-
       <ErrorModal
         open={notification.errorState}
         setOpen={setNotification}
         message={notification.errorMessage}
         status={notification.status}
       />
-      
+
       <Header
         title={"Manage Tournaments"}
         subTitle={"Manage all them existing tours or update status."}
@@ -126,32 +129,34 @@ const ManageTours = () => {
       />
 
       {/* Data Table */}
-      <Box paddingX={2} flexGrow={1} marginTop={3}>
-        <DataGrid
-          autoHeight
-          disableColumnMenu
-          disableRowSelectionOnClick
-          columns={tours.concat(action)}
-          rows={pageState.data}
-          rowCount={pageState.totalCount}
-          loading={pageState.isLoading}
-          paginationModel={pageModelState}
-          pageSizeOptions={[5, 10, 20]}
-          paginationMode="server"
-          onPaginationModelChange={setPageModelState}
-          onRowClick={(params) => onNavigate(params)}
-          sx={{
-            border: 0,
-            minHeight: "75vh",
-            "& .MuiDataGrid-row:hover": {
-              cursor: "pointer",
-            },
-            "& .MuiDataGrid-cell:focus": {
-              outline: "none",
-            },
-          }}
-        />
-      </Box>
+      <Grid container paddingX={2} marginTop={3} width="99%">
+        <Grid item xs={12}>
+          <DataGrid
+            autoHeight
+            disableColumnMenu
+            disableRowSelectionOnClick
+            columns={tours.concat(action)}
+            rows={pageState.data}
+            rowCount={pageState.totalCount}
+            loading={pageState.isLoading}
+            paginationModel={pageModelState}
+            pageSizeOptions={[5, 10, 20]}
+            paginationMode="server"
+            onPaginationModelChange={setPageModelState}
+            onRowClick={(params) => onNavigate(params)}
+            sx={{
+              border: 0,
+              minHeight: "75vh",
+              "& .MuiDataGrid-row:hover": {
+                cursor: "pointer",
+              },
+              "& .MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+            }}
+          />
+        </Grid>
+      </Grid>
     </Box>
   );
 };

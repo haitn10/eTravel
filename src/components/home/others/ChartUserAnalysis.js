@@ -4,11 +4,20 @@ import * as echarts from "echarts/core";
 import { BarChart } from "echarts/charts";
 import { TooltipComponent, GridComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
+import dayjs from "dayjs";
 
 const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
   const theme = useTheme();
 
   useEffect(() => {
+    let arrTime = [],
+      arrTotal = [];
+
+    data?.forEach((item) => {
+      arrTime.push(dayjs(item.date).format("MMMM"));
+      arrTotal.push(item.totalUser);
+    });
+
     if (!loading) {
       echarts.use([TooltipComponent, GridComponent, BarChart, CanvasRenderer]);
       const chartDom = document.getElementById("chart");
@@ -21,6 +30,7 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
             type: "shadow",
           },
         },
+
         grid: {
           left: "3%",
           right: "4%",
@@ -30,7 +40,7 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
         xAxis: [
           {
             type: "category",
-            data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            data: arrTime,
             axisTick: {
               alignWithLabel: true,
             },
@@ -39,14 +49,17 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
         yAxis: [
           {
             type: "value",
+            min: 0,
+            max: 10,
+            interval: 2,
           },
         ],
         series: [
           {
-            name: "Direct",
+            name: "New user in month:",
             type: "bar",
             barWidth: "60%",
-            data: [10, 52, 200, 334, 390, 330, 220],
+            data: arrTotal,
           },
         ],
       };
@@ -57,7 +70,7 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
         myChart.resize();
       });
     }
-  }, [loading]);
+  }, [loading, data]);
   return (
     <Box
       bgcolor={theme.palette.background.secondary}
