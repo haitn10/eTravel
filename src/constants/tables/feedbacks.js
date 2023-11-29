@@ -6,19 +6,22 @@ import dayjs from "dayjs";
 const feedbacks = [
   {
     field: "id",
-    headerName: "FeedbackID",
-    headerAlign: "center",
+    headerName: "No.",
     align: "center",
+    sortable: false,
+    width: 30,
   },
   {
     field: "userName",
     headerName: "Customer Name",
+    sortable: false,
     flex: 0.5,
   },
 
   {
     field: "category",
     headerName: "Category",
+    sortable: false,
     renderCell: (params) => {
       return (
         <Typography variant="span" textTransform="capitalize">
@@ -32,6 +35,7 @@ const feedbacks = [
     headerName: "Rating",
     headerAlign: "center",
     align: "center",
+    sortable: false,
     renderCell: (params) => {
       return (
         <Tooltip title={`${params.row.rate} stars`}>
@@ -57,12 +61,15 @@ const feedbacks = [
     field: "content",
     headerName: "Comment",
     flex: 1.5,
+    sortable: false,
   },
   {
     field: "createTime",
     headerName: "Create Time",
     headerAlign: "right",
     align: "right",
+    width: 130,
+    sortable: false,
     renderCell: (params) => {
       return dayjs(params.row.createTime).format("ll");
     },
@@ -72,7 +79,8 @@ const feedbacks = [
     headerName: "Status",
     headerAlign: "center",
     align: "center",
-    width: 100,
+    sortable: false,
+    width: 90,
     renderCell: (params) => {
       let color = "";
       if (params.row.status === 0) {

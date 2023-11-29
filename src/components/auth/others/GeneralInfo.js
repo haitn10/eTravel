@@ -13,27 +13,50 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-import React from "react";
-import { useDispatch } from "react-redux";
-import { updateProfile } from "../action";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 
+import { updateProfile } from "../action";
+import { getStaffDetails } from "../../staffs/action";
+import { getLanguageCode } from "../../languages/action";
+
 const GeneralInfo = ({
-  values,
-  setValues,
   loading,
+  setLoading,
   update,
   setUpdate,
   notification,
   setNotification,
-  languageCode,
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const profile = useSelector((state) => state.auth.profile);
 
-  const form = useForm();
-  const { handleSubmit, register, formState } = form;
-  const { errors } = formState;
+  const [values, setValues] = useState({});
+  const [languageCode, setLanguageCode] = useState([]);
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        setValues(await getStaffDetails(profile.id));
+        const res = await getLanguageCode();
+        setLanguageCode(res);
+        setLoading(false);
+      } catch (e) {
+        setLoading(false);
+      }
+    }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [languageCode.length, profile.id]);
 
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -51,20 +74,23 @@ const GeneralInfo = ({
       firstName: values.firstName,
       lastName: values.lastName,
       phone: values.phone,
-      nationality: values.nationality,
+      nationalCode: values.nationalCode,
       address: values.address,
       gender: values.gender,
       image: values.image,
     };
+
     try {
-      await dispatch(updateProfile(data));
-      setUpdate(false);
-      setNotification({
-        ...notification,
-        errorState: true,
-        errorMessage: "Update profile successfully!",
-        status: "success",
-      });
+      const response = await dispatch(updateProfile(data));
+      if (response) {
+        setUpdate(false);
+        setNotification({
+          ...notification,
+          errorState: true,
+          errorMessage: "Update profile successfully!",
+          status: "success",
+        });
+      }
     } catch (e) {
       setUpdate(false);
       setNotification({
@@ -152,7 +178,7 @@ const GeneralInfo = ({
                       ),
                     },
                   }}
-                  value={values.email.slice(0, values.email.indexOf("@"))}
+                  value={values.email?.slice(0, values.email?.indexOf("@"))}
                   disabled
                 />
               </>
@@ -216,7 +242,6 @@ const GeneralInfo = ({
                     },
                   }}
                   {...register("firstName", {
-                    onChange: handleChange,
                     validate: (value, formValues) => value.trim() !== "",
                     required: "First Name is required!",
                   })}
@@ -255,7 +280,6 @@ const GeneralInfo = ({
                     },
                   }}
                   {...register("lastName", {
-                    onChange: handleChange,
                     validate: (value, formValues) => value.trim() !== "",
                     required: "Last Name is required!",
                   })}
@@ -283,8 +307,8 @@ const GeneralInfo = ({
                 <FormControl fullWidth size="small" noValidate>
                   <Select
                     sx={{ borderRadius: 2.5 }}
-                    name="nationality"
-                    defaultValue=""
+                    name="nationalCode"
+                    value={values.nationalCode}
                     disabled={update}
                     onChange={handleChange}
                   >
@@ -293,7 +317,7 @@ const GeneralInfo = ({
                         <img
                           src={item.icon}
                           alt={item.nationalName}
-                          style={{ width: 20, marginRight: 10 }}
+                          style={{ width: 20, height: 12, marginRight: 10 }}
                         />
                         {item.nationalName}
                       </MenuItem>
@@ -402,11 +426,7 @@ const GeneralInfo = ({
             sx={{ borderRadius: 2.5 }}
             onClick={handleSubmit(onSubmit)}
           >
-            {update ? (
-              <CircularProgress color="error" size={25} />
-            ) : (
-              <Typography fontWeight="medium">Save Change</Typography>
-            )}
+            Save Change
           </Button>
         )}
       </Box>
