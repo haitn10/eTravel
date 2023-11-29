@@ -75,12 +75,13 @@ export const updateProfile = (profile) => {
         formData.append("file", profile.image);
 
         const { data } = await uploadFile(formData, "Account");
-        profile.image = data.link;
+        profile.image = data.imageFiles[0].fileLink;
+      } else if (profile.image === undefined) {
+        profile.image = "";
       }
-
       const { data } = await API.put(`portal/accounts/profile`, profile);
       dispatch(setState({ isUpdating: false }));
-      return Promise.resolve(data.account);
+      return Promise.resolve(data);
     } catch (e) {
       dispatch(setState({ isUpdating: false }));
       return Promise.reject(e);

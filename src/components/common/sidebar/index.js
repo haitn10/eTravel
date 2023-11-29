@@ -96,8 +96,8 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
               <Box display="flex" justifyContent="center" alignItems="center">
                 <img
                   alt="Etravel Logo"
-                  width="150px"
-                  height="150px"
+                  width="100px"
+                  height="100px"
                   src={logo}
                 />
               </Box>
