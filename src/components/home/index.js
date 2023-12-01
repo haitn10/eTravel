@@ -9,14 +9,12 @@ import {
   Grid,
   Skeleton,
 } from "@mui/material";
-import dayjs from "dayjs";
 
 import CardTotal from "././others/CardTotal";
 import PlaceRank from "./others/PlaceRank";
 import NationalRank from "./others/NationalRank";
 import PieLanguage from "./others/PieLanguage";
 import ChartRevenue from "./others/ChartRevenue";
-import CustomersOrder from "./others/CustomersOrder";
 import { StyledBadge } from "../common/styled/StyledBadge";
 
 import {
@@ -30,18 +28,19 @@ import {
   getUserData,
 } from "./action";
 
-import { Calendar } from "@styled-icons/ionicons-outline";
 import ChartUserAnalysis from "./others/ChartUserAnalysis";
+import { DateRangePicker } from "rsuite";
+import dayjs from "dayjs";
 
 const HomePage = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.auth.profile);
   const [loading, setLoading] = useState(true);
+  const [time, setTime] = useState([]);
 
-  const [option, setOption] = useState(
-    profile.roleId === 2 || profile.roleName === "TourOperator" ? 7 : 3
-  );
+  const [option, setOption] = useState(7);
+  const [optionUser, setOptionUser] = useState(3);
   const [total, setTotal] = useState([]);
   const [revenue, setRevenue] = useState([]);
   const [language, setLanguage] = useState([]);
@@ -83,6 +82,10 @@ const HomePage = () => {
           );
           setRevenue(revenueData);
         } catch (error) {}
+        try {
+          const userData = await dispatch(getUserData({ options: optionUser }));
+          setUser(userData);
+        } catch (error) {}
       } else {
         if (
           totalAd.length === 0 &&
@@ -116,7 +119,9 @@ const HomePage = () => {
     fetchData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [option]);
+  }, [option, time]);
+
+  console.log(time);
 
   return (
     <Box
@@ -130,48 +135,37 @@ const HomePage = () => {
       <Box marginX={2}>
         <Grid container spacing={2.5}>
           <Grid item sm={12} lg={9} xl={9.5}>
-            <Box minHeight={100}>
+            <Box minHeight={100} marginRight={2.5}>
               <Box
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Typography variant="h4" fontWeight="semiBold">
-                  {loading ? (
-                    <Skeleton width={300} />
-                  ) : (
-                    `Hello, ${profile.firstName + " " + profile.lastName}`
-                  )}
-                </Typography>
-                <Box display="flex" alignItems="center" gap={2}>
-                  <Typography fontWeight="medium">
-                    {loading ? (
-                      <Skeleton width={200} />
-                    ) : (
-                      dayjs(Date.now()).format("LL")
-                    )}
+                {loading ? (
+                  <Skeleton width={300} />
+                ) : (
+                  <Typography variant="h5" fontWeight="semiBold">
+                    {`Hello, ${profile.firstName + " " + profile.lastName}`}
                   </Typography>
-
+                )}
+                <Box display="flex" alignItems="center" gap={2}>
                   {loading ? (
-                    <Skeleton variant="circular">
-                      <Avatar />
-                    </Skeleton>
+                    <Skeleton width={200} />
                   ) : (
-                    <Avatar
-                      sx={{ bgcolor: theme.palette.background.secondary }}
-                    >
-                      <Calendar width={22} color={theme.palette.text.active} />
-                    </Avatar>
+                    <DateRangePicker
+                      value={time}
+                      onChange={(newValue) => setTime(newValue)}
+                    />
                   )}
                 </Box>
               </Box>
-              <Typography color={theme.palette.text.third} fontWeight="medium">
-                {loading ? (
-                  <Skeleton width={200} />
-                ) : (
-                  "Try your best every day!!"
-                )}
-              </Typography>
+              {loading ? (
+                <Skeleton width={200} />
+              ) : (
+                <Typography color={theme.palette.text.third}>
+                  Try your best every day!!
+                </Typography>
+              )}
             </Box>
 
             <CardTotal
@@ -210,7 +204,7 @@ const HomePage = () => {
                 minWidth={222}
                 minHeight={222}
                 bgcolor={alpha(theme.palette.background.hovered, 0.1)}
-                borderRadius={8}
+                borderRadius={2.5}
                 gap={2}
               >
                 <StyledBadge
@@ -288,7 +282,12 @@ const HomePage = () => {
           </Grid>
           <Grid item sm={12} lg={6}>
             {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
-              <CustomersOrder loading={loading} data={order} />
+              <ChartUserAnalysis
+                loading={loading}
+                data={user.charts}
+                option={optionUser}
+                setOption={setOptionUser}
+              />
             ) : null}
           </Grid>
           <Grid item sm={12} lg={6}>

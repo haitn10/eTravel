@@ -20,7 +20,7 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
 
     if (!loading) {
       echarts.use([TooltipComponent, GridComponent, BarChart, CanvasRenderer]);
-      const chartDom = document.getElementById("chart");
+      const chartDom = document.getElementById("userChart");
       const myChart = echarts.init(chartDom);
 
       const options = {
@@ -76,7 +76,6 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
       bgcolor={theme.palette.background.secondary}
       borderRadius={2.5}
       padding={2}
-      width="100%"
       height="100%"
     >
       <Box
@@ -127,11 +126,11 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
           <Skeleton variant="rounded" width="100%" height={400} />
         ) : (
           <Box
-            id="chart"
+            id="userChart"
             width="100%"
             maxWidth={1000}
             height="100%"
-            minHeight={400}
+            minHeight={300}
           ></Box>
         )}
       </Box>

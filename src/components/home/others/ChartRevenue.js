@@ -27,7 +27,7 @@ const ChartRevene = ({ loading, data, total, option, setOption }) => {
         CanvasRenderer,
         UniversalTransition,
       ]);
-      const chartDom = document.getElementById("chart");
+      const chartDom = document.getElementById("revenueChart");
       const myChart = echarts.init(chartDom);
 
       const options = {
@@ -183,7 +183,7 @@ const ChartRevene = ({ loading, data, total, option, setOption }) => {
           <Skeleton variant="rounded" width="100%" height={400} />
         ) : (
           <Box
-            id="chart"
+            id="revenueChart"
             width="100%"
             maxWidth={1000}
             height="100%"

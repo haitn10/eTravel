@@ -72,7 +72,7 @@ const CardTotalTO = ({ loading, admin, data }) => {
             {loading ? (
               <Skeleton width={115} />
             ) : (
-              <Typography fontWeight="medium">{item.name}</Typography>
+              <Typography noWrap color={theme.palette.text.third}>{item.name}</Typography>
             )}
           </Box>
           <ArrowData

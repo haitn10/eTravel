@@ -7,6 +7,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import React from "react";
+import { TrendingUp } from "@styled-icons/boxicons-regular";
 
 const ArrowData = ({ loading, totalNum, price, numDirection }) => {
   const theme = useTheme();
@@ -14,6 +15,7 @@ const ArrowData = ({ loading, totalNum, price, numDirection }) => {
     <Box
       display="flex"
       flexDirection="row"
+      alignItems="end"
       justifyContent="space-between"
       padding={1}
     >
@@ -34,32 +36,38 @@ const ArrowData = ({ loading, totalNum, price, numDirection }) => {
       {loading ? (
         <Skeleton width={50} />
       ) : (
-        <Box
-          display="flex"
-          flexDirection="row"
-          alignItems="center"
-          bgcolor={
-            numDirection > 0
-              ? alpha(theme.palette.text.onStatus, 0.2)
-              : alpha(theme.palette.text.third, 0.1)
-          }
-          paddingX={1}
-          borderRadius={10}
-        >
-          <Typography
-            sx={{
-              fontWeight: "bold",
-              fontSize: ".75em",
-            }}
-            color={
-              numDirection
-                ? theme.palette.text.onStatus
-                : theme.palette.text.active
+        <Tooltip title={`${numDirection} new in day`}>
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            gap={0.5}
+            height={25}
+            bgcolor={
+              numDirection > 0
+                ? alpha(theme.palette.text.onStatus, 0.2)
+                : alpha(theme.palette.text.third, 0.1)
             }
+            paddingX={1}
+            borderRadius={10}
           >
-            {(numDirection > 0 ? "+" : "") + numDirection}
-          </Typography>
-        </Box>
+            {numDirection !== 0 ? (
+              <>
+                <Typography
+                  fontWeight="bold"
+                  fontSize={12}
+                  color={theme.palette.text.onStatus}
+                >
+                  {"+" + numDirection}
+                </Typography>
+
+                <TrendingUp width={18} color={theme.palette.text.onStatus} />
+              </>
+            ) : (
+              "-"
+            )}
+          </Box>
+        </Tooltip>
       )}
     </Box>
   );

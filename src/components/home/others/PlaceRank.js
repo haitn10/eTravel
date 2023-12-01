@@ -20,13 +20,14 @@ const PlaceRank = ({ loading, data }) => {
       bgcolor={theme.palette.background.secondary}
       borderRadius={2.5}
       padding={2}
+      height="100%"
     >
-      <Box paddingX={1}>
+      <Box paddingX={1} position>
         {loading ? (
           <Skeleton width={100} />
         ) : (
           <Typography fontWeight="semiBold" fontSize={18}>
-            Top 10 Ranking Places
+            Top 10 Booking Places
           </Typography>
         )}
       </Box>
@@ -35,7 +36,7 @@ const PlaceRank = ({ loading, data }) => {
         <Table
           sx={{
             ".MuiTableCell-head": { color: theme.palette.text.third },
-            ".MuiTableCell-root": { padding: 1.25 },
+            ".MuiTableCell-root": { padding: 1.35 },
           }}
         >
           <TableHead>
