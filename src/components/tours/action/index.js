@@ -11,13 +11,13 @@ const setState = (state) => ({
 
 export const getTours = (payload) => {
   return async (dispatch, getState) => {
-    return fetch(getState().tours, dispatch, setState, "portal/tours", payload);
+    return fetch(getState().tours, dispatch, setState, "portal/itineraries", payload);
   };
 };
 
 export const getTourDetails = async (tourId) => {
   try {
-    const { data } = await API.get(`portal/tours/${tourId}`);
+    const { data } = await API.get(`portal/itineraries/${tourId}`);
     return Promise.resolve(data.tour);
   } catch (e) {
     return Promise.reject(e);
@@ -26,7 +26,7 @@ export const getTourDetails = async (tourId) => {
 
 export const processTour = (tour) => {
   return async (dispatch, getState) => {
-    return process(getState().tours, dispatch, setState, "portal/tours", tour);
+    return process(getState().tours, dispatch, setState, "portal/itineraries", tour);
   };
 };
 
@@ -39,7 +39,7 @@ export const updateTour = async (tourId, values) => {
       values.image = data.imageFiles[0].fileLink;
     }
 
-    const { data } = await API.put(`portal/tours/${tourId}`, values);
+    const { data } = await API.put(`portal/itineraries/${tourId}`, values);
     return Promise.resolve(data);
   } catch (e) {
     return Promise.reject(e);

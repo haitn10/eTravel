@@ -13,7 +13,7 @@ import {
 import React from "react";
 import TableSkeletion from "../../common/skeletion/TableSkeletion";
 
-const PlaceRank = ({ loading, data }) => {
+const PlaceRank = ({ loading, loadingData, data }) => {
   const theme = useTheme();
   return (
     <Box
@@ -63,8 +63,8 @@ const PlaceRank = ({ loading, data }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {loading ? (
-              <TableSkeletion rowsNum={4} columnsNum={3} />
+            {loadingData ? (
+              <TableSkeletion rowsNum={10} columnsNum={2} />
             ) : (
               data.map((item, index) => {
                 return (

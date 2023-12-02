@@ -18,8 +18,8 @@ const tabsItem = [
   },
   {
     id: 2,
-    title: "Itinerary",
-    icon: <Directions width={24} />,
+    title: "Itineraries",
+    icon: <Directions width={20} />,
     url: "/itineraries",
     options: [
       {
@@ -74,7 +74,7 @@ const tabsItem = [
   {
     id: 6,
     title: "Feedbacks",
-    icon: <ChatLeftText width={20} />,
+    icon: <ChatLeftText width={18} />,
     url: "/feedbacks",
     options: [],
   },

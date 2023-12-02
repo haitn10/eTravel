@@ -6,7 +6,14 @@ import { TooltipComponent, GridComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import dayjs from "dayjs";
 
-const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
+const ChartUserAnalysis = ({
+  loading,
+  loadingData,
+  time,
+  data,
+  option,
+  setOption,
+}) => {
   const theme = useTheme();
 
   useEffect(() => {
@@ -70,7 +77,7 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
         myChart.resize();
       });
     }
-  }, [loading, data]);
+  }, [loading, loadingData, data]);
   return (
     <Box
       bgcolor={theme.palette.background.secondary}
@@ -104,16 +111,19 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
               <Tab
                 value={3}
                 label="3m"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={6}
                 label="6m"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={1}
                 label="1y"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
             </Tabs>
@@ -131,7 +141,7 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
             maxWidth={1000}
             height="100%"
             minHeight={300}
-          ></Box>
+          />
         )}
       </Box>
     </Box>

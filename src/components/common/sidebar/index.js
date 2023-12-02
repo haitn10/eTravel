@@ -85,6 +85,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                 <Typography
                   color={theme.palette.text.third}
                   fontWeight="medium"
+                  fontSize={14}
                 >
                   {state.profile.roleName}
                 </Typography>
@@ -96,7 +97,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
             </IconButton>
           </Box>
 
-          {state.profile.roleName === "TourOperator" &&
+          {state.profile.roleName === "Moderator" &&
             tabsItem.map((tab) => {
               const checkOpen = path.startsWith(tab.url);
               if (tab.options.length > 0) {

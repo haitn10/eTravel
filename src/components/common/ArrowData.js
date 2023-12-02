@@ -9,7 +9,7 @@ import {
 import React from "react";
 import { TrendingUp } from "@styled-icons/boxicons-regular";
 
-const ArrowData = ({ loading, totalNum, price, numDirection }) => {
+const ArrowData = ({ loading, loadingData, totalNum, price, numDirection }) => {
   const theme = useTheme();
   return (
     <Box
@@ -24,11 +24,15 @@ const ArrowData = ({ loading, totalNum, price, numDirection }) => {
       ) : (
         <Tooltip title={totalNum}>
           <Typography variant="h5" fontWeight="semiBold" noWrap>
-            {price
-              ? `$ ${Number(totalNum)
-                  .toFixed(1)
-                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}`
-              : totalNum}
+            {loadingData ? (
+              <Skeleton width={30} />
+            ) : price ? (
+              `$ ${Number(totalNum)
+                .toFixed(1)
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}`
+            ) : (
+              totalNum
+            )}
           </Typography>
         </Tooltip>
       )}
@@ -51,7 +55,9 @@ const ArrowData = ({ loading, totalNum, price, numDirection }) => {
             paddingX={1}
             borderRadius={10}
           >
-            {numDirection !== 0 ? (
+            {loadingData ? (
+              <Skeleton width={30} />
+            ) : numDirection !== 0 ? (
               <>
                 <Typography
                   fontWeight="bold"

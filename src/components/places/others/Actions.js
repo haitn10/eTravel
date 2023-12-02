@@ -76,8 +76,18 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
           </MenuItem>
         )}
 
-        
         {status === 1 ? null : (
+          <MenuItem
+            onClick={() => {
+              setValue(1);
+              setPopupConfirm(true);
+              setAnchorEl(false);
+            }}
+          >
+            <Typography variant="span">Prepare</Typography>
+          </MenuItem>
+        )}
+        {status === 2 ? null : (
           <MenuItem
             onClick={() => {
               setValue(2);
@@ -97,14 +107,16 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
       >
         <DialogTitle id="alert-dialog-title">
           {value === 0 ? "Are you sure you want to deactivate?" : null}
-          {value === 1 ? "Are you sure you want to activate?" : null}
+          {value === 1 ? "Are you sure you want to preparing?" : null}
+          {value === 2 ? "Are you sure you want to activate?" : null}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {value === 0
               ? "Your action will cause this tour to no longer be used in the system."
               : null}
-            {value === 1
+            {value === 1 ? "Are you sure you want to preparing?" : null}
+            {value === 2
               ? "Your action will make this tour active again and users can operate directly with this tour."
               : null}
           </DialogContentText>
