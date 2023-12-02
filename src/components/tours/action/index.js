@@ -36,7 +36,7 @@ export const updateTour = async (tourId, values) => {
       let formData = new FormData();
       formData.append("file", values.image);
       const { data } = await uploadFile(formData, "Tour");
-      values.image = data.link;
+      values.image = data.imageFiles[0].fileLink;
     }
 
     const { data } = await API.put(`portal/tours/${tourId}`, values);
@@ -51,6 +51,16 @@ export const getTourComments = async (tourId) => {
     const { data } = await API.get(`portal/feedbacks/${tourId}`);
     return Promise.resolve(data.feedbacks);
   } catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+export const changeTourState = async (tourId) => {
+  try {
+    const { data } = await API.put(`portal/tours/changestatus/${tourId}`);
+    return Promise.resolve(data);
+  } catch (e) {
+    console.log(e);
     return Promise.reject(e);
   }
 };

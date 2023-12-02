@@ -288,7 +288,7 @@ const PlacesList = ({
                 Total Price :
               </Typography>
               <Typography fontSize={18} fontWeight="semiBold">
-                {price} $
+                {price.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")} $
               </Typography>
             </Box>
           </Box>

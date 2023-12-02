@@ -75,7 +75,7 @@ const UploadImage = ({ values, setValues, errors, register, disabled }) => {
               color={alpha(theme.palette.text.secondary, 0.4)}
             >
               <CloudArrowUp height={24} style={{ margin: 10 }} />
-              <Typography noWrap>Import image for tour here</Typography>
+              <Typography noWrap>Import image for itinerary here</Typography>
             </Box>
           )}
 

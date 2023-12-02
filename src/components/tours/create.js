@@ -22,13 +22,13 @@ import { getPlaces } from "../places/action";
 import { processTour } from "./action";
 import { useForm } from "react-hook-form";
 
-const steps = ["Information General", "Places List", "Confirmation"];
+const steps = ["Informations", "Place List", "Confirmation"];
 
 const initialState = {
   name: "",
   image: "",
   total: 0,
-  tourDescriptions: [],
+  tourDescriptions: [{ languageCode: "en-us", name: "", description: "" }],
   tourDetails: [],
 };
 
@@ -130,6 +130,7 @@ const CreateNewTour = () => {
   };
 
   const handleBack = () => {
+    clearErrors("minimumPlace");
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
@@ -196,7 +197,7 @@ const CreateNewTour = () => {
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: "Created Tour Successfully!",
+        errorMessage: "Create itinerary successfully!",
         status: "success",
       });
       reset(initialState);
@@ -207,7 +208,7 @@ const CreateNewTour = () => {
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: e.response?.data?.message || "Created Tour Failed!",
+        errorMessage: e.response?.data?.message || "Create itinerary Failed!",
         status: "error",
       });
       setCreate(false);
@@ -236,8 +237,8 @@ const CreateNewTour = () => {
       </Backdrop>
 
       <Header
-        title={"Create New Tour"}
-        subTitle={"New Tour - New Experiences"}
+        title={"Create New Itinerary"}
+        subTitle={"New Itineraries - New Experiences"}
         loading={loading}
       />
       <Box marginTop={2} padding={1} marginX={2}>

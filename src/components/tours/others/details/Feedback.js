@@ -9,6 +9,7 @@ import {
   DialogActions,
   Typography,
   Rating,
+  Skeleton,
   useTheme,
 } from "@mui/material";
 import {
@@ -31,7 +32,7 @@ import { changeState } from "../../../users/action";
 
 import { EyeOutline, EyeOffOutline } from "@styled-icons/evaicons-outline";
 
-const Feedback = ({ id, notification, setNotification }) => {
+const Feedback = ({ id, rating, notification, setNotification }) => {
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
   const [popupConfirm, setPopupConfirm] = useState(false);
@@ -61,7 +62,6 @@ const Feedback = ({ id, notification, setNotification }) => {
   }, [getData]);
 
   const onConfirm = async (fbId) => {
-    console.log(fbId);
     try {
       const response = await changeState("portal/places/feedback", fbId);
       if (response) {
@@ -86,13 +86,62 @@ const Feedback = ({ id, notification, setNotification }) => {
 
   return (
     <Box>
-      {/* <Box
-        bgcolor={theme.palette.background.secondary}
-        padding={2}
-        borderRadius={2.5}
-      >
-        <Typography>Total Comments</Typography>
-      </Box> */}
+      <Box display="flex" gap={2}>
+        {loading ? (
+          <Skeleton width={100} />
+        ) : (
+          <Box
+            bgcolor={theme.palette.background.secondary}
+            gap={1}
+            padding={1}
+            display="flex"
+            alignItems="center"
+            borderRadius={2.5}
+          >
+            <Typography fontSize={14} color={theme.palette.text.third}>
+              Total Comments:
+            </Typography>
+            <Typography fontSize={14} color={theme.palette.text.third}>
+              {comments?.length}
+            </Typography>
+          </Box>
+        )}
+        {loading ? (
+          <Skeleton width={100} />
+        ) : (
+          <Box
+            bgcolor={theme.palette.background.secondary}
+            gap={1}
+            padding={1}
+            display="flex"
+            alignItems="center"
+            borderRadius={2.5}
+          >
+            <Typography fontSize={14} color={theme.palette.text.third}>Rating:</Typography>
+            <Rating
+              readOnly
+              size="small"
+              value={rating || 0}
+              precision={0.5}
+              sx={{
+                ".MuiRating-icon": {
+                  borderColor: theme.palette.text.active,
+                },
+                "& .MuiRating-iconFilled": {
+                  color: theme.palette.text.active,
+                },
+              }}
+            />
+            <Typography
+              marginLeft={1}
+              fontSize={12}
+              color={theme.palette.text.third}
+            >
+              ({labels[rating || 0]})
+            </Typography>
+          </Box>
+        )}
+      </Box>
       <Dialog
         open={popupConfirm}
         onClose={() => setPopupConfirm(false)}
@@ -130,107 +179,111 @@ const Feedback = ({ id, notification, setNotification }) => {
       </Dialog>
 
       <Box marginTop={2}>
-        <Timeline
-          sx={{
-            [`& .${timelineOppositeContentClasses.root}`]: {
-              flex: 0.2,
-            },
-          }}
-        >
-          {comments.map((comment, index) => (
-            <TimelineItem key={index}>
-              <TimelineOppositeContent color="textSecondary">
-                {comment.updateTime ? (
-                  <Box>
-                    <Box>{dayjs(comment.updateTime).format("ll")}</Box>
-                    <Box>{dayjs(comment.updateTime).format("h:mm A")}</Box>
-                  </Box>
-                ) : (
-                  <Box>
-                    <Box>{dayjs(comment.createTime).format("ll")}</Box>
-                    <Box>{dayjs(comment.createTime).format("h:mm A")}</Box>
-                  </Box>
-                )}
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot />
-                {index === comments.length - 1 ? null : <TimelineConnector />}
-              </TimelineSeparator>
-              <TimelineContent>
-                <Box
-                  bgcolor={theme.palette.background.secondary}
-                  borderRadius={2.5}
-                  paddingX={2}
-                  paddingTop={1}
-                  paddingBottom={2}
-                >
-                  <Box display="flex" justifyContent="space-between">
-                    <Box display="flex" gap={1} alignItems="center">
-                      <Typography fontWeight="medium">
-                        {comment.account.firstName +
-                          " " +
-                          comment.account.lastName}
-                      </Typography>
-                      <Rating
-                        readOnly
-                        size="small"
-                        value={comment.rate || 0}
-                        precision={0.5}
-                        sx={{
-                          ".MuiRating-icon": {
-                            borderColor: theme.palette.text.active,
-                          },
-                          "& .MuiRating-iconFilled": {
-                            color: theme.palette.text.active,
-                          },
-                        }}
-                      />
-                      <Typography marginLeft={1} fontSize={14}>
-                        ({labels[comment.rate || 0]})
-                      </Typography>
+        {loading ? (
+          <Skeleton />
+        ) : (
+          <Timeline
+            sx={{
+              [`& .${timelineOppositeContentClasses.root}`]: {
+                flex: 0.2,
+              },
+            }}
+          >
+            {comments.map((comment, index) => (
+              <TimelineItem key={index}>
+                <TimelineOppositeContent color="textSecondary">
+                  {comment.updateTime ? (
+                    <Box>
+                      <Box>{dayjs(comment.updateTime).format("ll")}</Box>
+                      <Box>{dayjs(comment.updateTime).format("h:mm A")}</Box>
                     </Box>
-                    <Box display="flex" gap={2}>
-                      {comment.status ? (
-                        <Button
-                          color="error"
-                          onClick={() => {
-                            setValue(comment);
-                            setPopupConfirm(true);
-                          }}
-                        >
-                          <Box display="flex" gap={0.5}>
-                            <EyeOffOutline width={20} />
-                            <Typography fontSize={14} fontWeight="medium">
-                              Hide
-                            </Typography>
-                          </Box>
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={() => {
-                            setValue(comment);
-                            setPopupConfirm(true);
-                          }}
-                        >
-                          <Box display="flex" gap={0.5}>
-                            <EyeOutline width={20} />
-                            <Typography fontSize={14} fontWeight="medium">
-                              Show
-                            </Typography>
-                          </Box>
-                        </Button>
-                      )}
+                  ) : (
+                    <Box>
+                      <Box>{dayjs(comment.createTime).format("ll")}</Box>
+                      <Box>{dayjs(comment.createTime).format("h:mm A")}</Box>
                     </Box>
-                  </Box>
+                  )}
+                </TimelineOppositeContent>
+                <TimelineSeparator>
+                  <TimelineDot />
+                  {index === comments.length - 1 ? null : <TimelineConnector />}
+                </TimelineSeparator>
+                <TimelineContent>
+                  <Box
+                    bgcolor={theme.palette.background.secondary}
+                    borderRadius={2.5}
+                    paddingX={2}
+                    paddingTop={1}
+                    paddingBottom={2}
+                  >
+                    <Box display="flex" justifyContent="space-between">
+                      <Box display="flex" gap={1} alignItems="center">
+                        <Typography fontWeight="medium">
+                          {comment.account.firstName +
+                            " " +
+                            comment.account.lastName}
+                        </Typography>
+                        <Rating
+                          readOnly
+                          size="small"
+                          value={comment.rate || 0}
+                          precision={0.5}
+                          sx={{
+                            ".MuiRating-icon": {
+                              borderColor: theme.palette.text.active,
+                            },
+                            "& .MuiRating-iconFilled": {
+                              color: theme.palette.text.active,
+                            },
+                          }}
+                        />
+                        <Typography marginLeft={1} fontSize={14}>
+                          ({labels[comment.rate || 0]})
+                        </Typography>
+                      </Box>
+                      <Box display="flex" gap={2}>
+                        {comment.status ? (
+                          <Button
+                            color="error"
+                            onClick={() => {
+                              setValue(comment);
+                              setPopupConfirm(true);
+                            }}
+                          >
+                            <Box display="flex" gap={0.5}>
+                              <EyeOffOutline width={20} />
+                              <Typography fontSize={14} fontWeight="medium">
+                                Hide
+                              </Typography>
+                            </Box>
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => {
+                              setValue(comment);
+                              setPopupConfirm(true);
+                            }}
+                          >
+                            <Box display="flex" gap={0.5}>
+                              <EyeOutline width={20} />
+                              <Typography fontSize={14} fontWeight="medium">
+                                Show
+                              </Typography>
+                            </Box>
+                          </Button>
+                        )}
+                      </Box>
+                    </Box>
 
-                  <Box padding={1}>
-                    <Typography>{comment.content}</Typography>
+                    <Box padding={1}>
+                      <Typography>{comment.content}</Typography>
+                    </Box>
                   </Box>
-                </Box>
-              </TimelineContent>
-            </TimelineItem>
-          ))}
-        </Timeline>
+                </TimelineContent>
+              </TimelineItem>
+            ))}
+          </Timeline>
+        )}
       </Box>
     </Box>
   );

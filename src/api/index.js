@@ -160,7 +160,7 @@ export const process = async (state, dispatch, setState, path, item) => {
       let formData = new FormData();
       formData.append("file", item.image);
       const { data } = await uploadFile(formData, "Tour");
-      item.image = data.link;
+      item.image = data.imageFiles[0].fileLink;
     }
 
     //Upload language file
