@@ -76,10 +76,16 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
             padding={1}
           >
             {!isCollapsed && (
-              <Box ml={2}>
+              <Box marginLeft={2}>
+                <img alt="Etravel Logo" width="30px" height="30px" src={logo} />
+              </Box>
+            )}
+            {!isCollapsed && (
+              <Box>
                 <Typography
                   color={theme.palette.text.third}
                   fontWeight="medium"
+                  fontSize={14}
                 >
                   {state.profile.roleName}
                 </Typography>
@@ -91,20 +97,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
             </IconButton>
           </Box>
 
-          {!isCollapsed && (
-            <Box mb="25px">
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <img
-                  alt="Etravel Logo"
-                  width="100px"
-                  height="100px"
-                  src={logo}
-                />
-              </Box>
-            </Box>
-          )}
-
-          {state.profile.roleName === "TourOperator" &&
+          {state.profile.roleName === "Moderator" &&
             tabsItem.map((tab) => {
               const checkOpen = path.startsWith(tab.url);
               if (tab.options.length > 0) {
@@ -116,6 +109,7 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                       <Typography
                         fontWeight={false ? "bold" : "medium"}
                         color="inherit"
+                        fontSize={14}
                       >
                         {tab.title}
                       </Typography>
@@ -128,7 +122,6 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                         title={option.subTitle}
                         icon={option.subIcon}
                         linkUrl={option.subUrl}
-                        subMenu={true}
                         selected={selected === option.subUrl.toLowerCase()}
                         setSelected={setSelected}
                       />
@@ -142,7 +135,6 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                     title={tab.title}
                     icon={tab.icon}
                     linkUrl={tab.url}
-                    subMenu={false}
                     selected={selected === tab.url.toLowerCase()}
                     setSelected={setSelected}
                   />
@@ -157,14 +149,13 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
                 title={tab.title}
                 icon={tab.icon}
                 linkUrl={tab.url}
-                subMenu={false}
                 selected={selected.includes(tab.url.toLowerCase())}
                 setSelected={setSelected}
               />
             ))}
         </Menu>
       </Sidebar>
-      <Box marginBottom={3}>
+      <Box marginBottom={1}>
         <Sidebar
           collapsed={isCollapsed}
           backgroundColor={theme.palette.background.primary}
@@ -186,13 +177,17 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
             }}
           >
             <MenuItem
-              icon={<ErrorOutline width={24} />}
+              icon={<ErrorOutline width={20} />}
               onClick={() => setOpen(true)}
             >
-              <Typography fontWeight="medium">Help & Information</Typography>
+              <Typography fontWeight="medium" fontSize={14}>
+                Help & Information
+              </Typography>
             </MenuItem>
-            <MenuItem icon={<SignOut height={24} />} onClick={() => onLogout()}>
-              <Typography fontWeight="medium">Log out</Typography>
+            <MenuItem icon={<SignOut height={20} />} onClick={() => onLogout()}>
+              <Typography fontWeight="medium" fontSize={14}>
+                Log out
+              </Typography>
             </MenuItem>
           </Menu>
         </Sidebar>

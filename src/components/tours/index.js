@@ -78,7 +78,7 @@ const ManageTours = () => {
   const action = [
     {
       field: "action",
-      headerName: "Actions",
+      headerName: "Action",
       width: 100,
       align: "center",
       headerAlign: "center",

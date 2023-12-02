@@ -64,7 +64,7 @@ const AppRouter = () => {
     );
   }
 
-  if (state.profile.roleName === "TourOperator") {
+  if (state.profile.roleName === "Moderator") {
     return (
       <div className="app">
         <BrowserRouter>

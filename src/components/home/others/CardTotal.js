@@ -13,7 +13,7 @@ import {
 import { FileEarmarkText, ClipboardCheck } from "@styled-icons/bootstrap";
 import { Language } from "@styled-icons/ionicons-solid";
 
-const CardTotalTO = ({ loading, admin, data }) => {
+const CardTotalTO = ({ loading, loadingData, admin, data }) => {
   const theme = useTheme();
 
   const getIcon = (id) => {
@@ -72,11 +72,14 @@ const CardTotalTO = ({ loading, admin, data }) => {
             {loading ? (
               <Skeleton width={115} />
             ) : (
-              <Typography fontWeight="medium">{item.name}</Typography>
+              <Typography noWrap color={theme.palette.text.third}>
+                {item.name}
+              </Typography>
             )}
           </Box>
           <ArrowData
             loading={loading}
+            loadingData={loadingData}
             totalNum={item.total}
             price={item.name === "Revenue" ? true : false}
             numDirection={item.numberIncreased}

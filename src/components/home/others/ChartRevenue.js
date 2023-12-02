@@ -2,11 +2,23 @@ import { Box, Tabs, Tab, Typography, Skeleton, useTheme } from "@mui/material";
 import React, { useEffect } from "react";
 import * as echarts from "echarts/core";
 import { BarChart, LineChart } from "echarts/charts";
-import { TooltipComponent, GridComponent } from "echarts/components";
+import {
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+} from "echarts/components";
 import { UniversalTransition } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 
-const ChartRevene = ({ loading, data, total, option, setOption }) => {
+const ChartRevene = ({
+  loading,
+  loadingData,
+  time,
+  data,
+  total,
+  option,
+  setOption,
+}) => {
   const theme = useTheme();
 
   useEffect(() => {
@@ -21,13 +33,14 @@ const ChartRevene = ({ loading, data, total, option, setOption }) => {
     if (!loading) {
       echarts.use([
         TooltipComponent,
+        LegendComponent,
         GridComponent,
         BarChart,
         LineChart,
         CanvasRenderer,
         UniversalTransition,
       ]);
-      const chartDom = document.getElementById("chart");
+      const chartDom = document.getElementById("revenueChart");
       const myChart = echarts.init(chartDom);
 
       const options = {
@@ -38,14 +51,6 @@ const ChartRevene = ({ loading, data, total, option, setOption }) => {
             crossStyle: {
               color: "#999",
             },
-          },
-        },
-        toolbox: {
-          feature: {
-            dataView: { show: true, readOnly: false },
-            magicType: { show: true, type: ["line", "bar"] },
-            restore: { show: true },
-            saveAsImage: { show: true },
           },
         },
         legend: {
@@ -115,7 +120,7 @@ const ChartRevene = ({ loading, data, total, option, setOption }) => {
         myChart.resize();
       });
     }
-  }, [loading, data]);
+  }, [loading, loadingData, data]);
   return (
     <Box
       bgcolor={theme.palette.background.secondary}
@@ -150,16 +155,19 @@ const ChartRevene = ({ loading, data, total, option, setOption }) => {
               <Tab
                 value={7}
                 label="7d"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={1}
                 label="1m"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={3}
                 label="3m"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
             </Tabs>
@@ -171,10 +179,13 @@ const ChartRevene = ({ loading, data, total, option, setOption }) => {
           <Skeleton variant="rounded" width={200} height={40} />
         ) : (
           <Typography fontWeight="medium" variant="h5">
-            ${" "}
-            {Number(total)
-              .toFixed(2)
-              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
+            {loadingData ? (
+              <Skeleton variant="rounded" width={200} height={30} />
+            ) : (
+              `$ ${Number(total)
+                .toFixed(2)
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}`
+            )}
           </Typography>
         )}
       </Box>
@@ -183,12 +194,12 @@ const ChartRevene = ({ loading, data, total, option, setOption }) => {
           <Skeleton variant="rounded" width="100%" height={400} />
         ) : (
           <Box
-            id="chart"
+            id="revenueChart"
             width="100%"
             maxWidth={1000}
             height="100%"
             minHeight={450}
-          ></Box>
+          />
         )}
       </Box>
     </Box>

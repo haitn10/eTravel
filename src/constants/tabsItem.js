@@ -12,14 +12,14 @@ const tabsItem = [
   {
     id: 1,
     title: "Dashboard",
-    icon: <Home width={24} />,
+    icon: <Home width={20} />,
     url: "/dashboard",
     options: [],
   },
   {
     id: 2,
-    title: "Itinerary",
-    icon: <Directions width={24} />,
+    title: "Itineraries",
+    icon: <Directions width={20} />,
     url: "/itineraries",
     options: [
       {
@@ -37,7 +37,7 @@ const tabsItem = [
   {
     id: 3,
     title: "Places",
-    icon: <Location width={24} />,
+    icon: <Location width={20} />,
     url: "/places",
     options: [
       {
@@ -60,28 +60,28 @@ const tabsItem = [
   {
     id: 4,
     title: "Bookings",
-    icon: <FileEarmarkText height={24} />,
+    icon: <FileEarmarkText height={20} />,
     url: "/bookings",
     options: [],
   },
   {
     id: 5,
     title: "Transactions",
-    icon: <ExchangeDollar height={24} />,
+    icon: <ExchangeDollar height={20} />,
     url: "/transactions",
     options: [],
   },
   {
     id: 6,
     title: "Feedbacks",
-    icon: <ChatLeftText width={22} />,
+    icon: <ChatLeftText width={18} />,
     url: "/feedbacks",
     options: [],
   },
   {
     id: 7,
     title: "Settings",
-    icon: <Settings2Outline width={24} />,
+    icon: <Settings2Outline width={20} />,
     url: "/settings",
     options: [],
   },

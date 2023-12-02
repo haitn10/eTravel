@@ -3,7 +3,7 @@ import { Typography, alpha, useTheme } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import { MenuItem } from "react-pro-sidebar";
 
-const Item = ({ title, icon, linkUrl, subMenu, selected, setSelected }) => {
+const Item = ({ title, icon, linkUrl, selected, setSelected }) => {
   const theme = useTheme();
   const location = useLocation();
   let path = location.pathname.slice();
@@ -23,7 +23,7 @@ const Item = ({ title, icon, linkUrl, subMenu, selected, setSelected }) => {
       <Typography
         fontWeight={selected ? "bold" : "medium"}
         color="inherit"
-        fontSize={subMenu ? "0.85rem" : "1rem"}
+        fontSize={14}
       >
         {title}
       </Typography>

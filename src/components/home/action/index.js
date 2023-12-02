@@ -7,24 +7,26 @@ const setState = (state) => ({
   state,
 });
 
-export const getTotalData = () => {
+export const getTotalData = (values) => {
   return async (dispatch, getState) => {
     return fetch(
       getState().homepage,
       dispatch,
       setState,
-      "portal/charts/statictical"
+      "portal/charts/statictical",
+      values
     );
   };
 };
 
-export const getOrdersData = () => {
+export const getOrdersData = (values) => {
   return async (dispatch, getState) => {
     return fetch(
       getState().homepage,
       dispatch,
       setState,
-      "portal/charts/order"
+      "portal/charts/order",
+      values
     );
   };
 };
@@ -52,35 +54,38 @@ export const getReveneData = (values) => {
   };
 };
 
-export const getTopPlace = () => {
+export const getTopPlace = (values) => {
   return async (dispatch, getState) => {
     return fetch(
       getState().homepage,
       dispatch,
       setState,
-      "portal/charts/top/place"
+      "portal/charts/top/place",
+      values
     );
   };
 };
 
-export const getTotalDataAdmin = () => {
+export const getTotalDataAdmin = (values) => {
   return async (dispatch, getState) => {
     return fetch(
       getState().homepage,
       dispatch,
       setState,
-      "portal/charts/statictical/admin"
+      "portal/charts/statictical/admin",
+      values
     );
   };
 };
 
-export const getNationalRank = () => {
+export const getNationalRank = (values) => {
   return async (dispatch, getState) => {
     return fetch(
       getState().homepage,
       dispatch,
       setState,
-      "portal/charts/national"
+      "portal/charts/national",
+      values
     );
   };
 };

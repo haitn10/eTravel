@@ -6,7 +6,14 @@ import { TooltipComponent, GridComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import dayjs from "dayjs";
 
-const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
+const ChartUserAnalysis = ({
+  loading,
+  loadingData,
+  time,
+  data,
+  option,
+  setOption,
+}) => {
   const theme = useTheme();
 
   useEffect(() => {
@@ -20,7 +27,7 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
 
     if (!loading) {
       echarts.use([TooltipComponent, GridComponent, BarChart, CanvasRenderer]);
-      const chartDom = document.getElementById("chart");
+      const chartDom = document.getElementById("userChart");
       const myChart = echarts.init(chartDom);
 
       const options = {
@@ -70,13 +77,12 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
         myChart.resize();
       });
     }
-  }, [loading, data]);
+  }, [loading, loadingData, data]);
   return (
     <Box
       bgcolor={theme.palette.background.secondary}
       borderRadius={2.5}
       padding={2}
-      width="100%"
       height="100%"
     >
       <Box
@@ -105,16 +111,19 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
               <Tab
                 value={3}
                 label="3m"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={6}
                 label="6m"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={1}
                 label="1y"
+                disabled={time !== null && time.length !== 0}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
             </Tabs>
@@ -127,12 +136,12 @@ const ChartUserAnalysis = ({ loading, data, option, setOption }) => {
           <Skeleton variant="rounded" width="100%" height={400} />
         ) : (
           <Box
-            id="chart"
+            id="userChart"
             width="100%"
             maxWidth={1000}
             height="100%"
-            minHeight={400}
-          ></Box>
+            minHeight={300}
+          />
         )}
       </Box>
     </Box>
