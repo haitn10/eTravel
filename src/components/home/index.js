@@ -20,7 +20,7 @@ import { StyledBadge } from "../common/styled/StyledBadge";
 import {
   getLanguagesData,
   getNationalRank,
-  getOrdersData,
+  // getOrdersData,
   getReveneData,
   getTopPlace,
   getTotalData,
@@ -37,6 +37,8 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.auth.profile);
   const [loading, setLoading] = useState(true);
+  const [loadingData, setLoadingData] = useState(true);
+  const [getDataByDate, setGetDataByDate] = useState(false);
   const [time, setTime] = useState([]);
 
   const [option, setOption] = useState(7);
@@ -44,7 +46,6 @@ const HomePage = () => {
   const [total, setTotal] = useState([]);
   const [revenue, setRevenue] = useState([]);
   const [language, setLanguage] = useState([]);
-  const [order, setOrder] = useState([]);
   const [topPlace, setTopPlace] = useState([]);
 
   const [totalAd, setTotalAd] = useState([]);
@@ -52,57 +53,68 @@ const HomePage = () => {
   const [nationalAd, setNationalAd] = useState([]);
 
   useEffect(() => {
+    let startTime = "",
+      endTime = "";
+    if (time !== null && time.length !== 0) {
+      startTime = dayjs(time[0]).format("L");
+      endTime = dayjs(time[1]).format("L");
+    }
+
     async function fetchData() {
-      if (profile.roleId === 2 || profile.roleName === "TourOperator") {
-        if (
-          total.length === 0 &&
-          language.length === 0 &&
-          order.length === 0 &&
-          topPlace.length === 0
-        ) {
-          setLoading(true);
-          try {
-            const totalData = await dispatch(getTotalData());
-            setTotal(totalData.chart);
-            const languageData = await dispatch(getLanguagesData());
-            setLanguage(languageData.statictical);
-            const orderData = await dispatch(getOrdersData());
-            setOrder(orderData.staticticalOrder);
-            const topData = await dispatch(getTopPlace());
-            setTopPlace(topData.charts);
-            setLoading(false);
-          } catch (error) {
-            setLoading(false);
-          }
+      if (profile.roleId === 2 || profile.roleName === "Moderator") {
+        if (getDataByDate) {
+          setLoadingData(true);
+        }
+
+        try {
+          const totalData = await dispatch(
+            getTotalData({ startTime: startTime, endTime: endTime })
+          );
+          setTotal(totalData.chart);
+          const languageData = await dispatch(getLanguagesData());
+          setLanguage(languageData.statictical);
+          // const orderData = await dispatch(getOrdersData());
+          // setOrder(orderData.staticticalOrder);
+          const topData = await dispatch(
+            getTopPlace({ startTime: startTime, endTime: endTime })
+          );
+          setTopPlace(topData.charts);
+          setLoadingData(false);
+          setLoading(false);
+        } catch (error) {
+          setLoadingData(false);
+          setLoading(false);
         }
 
         try {
           const revenueData = await dispatch(
-            getReveneData({ options: option })
+            getReveneData({
+              options: option,
+              startTime: startTime,
+              endTime: endTime,
+            })
           );
           setRevenue(revenueData);
         } catch (error) {}
+
         try {
-          const userData = await dispatch(getUserData({ options: optionUser }));
+          const userData = await dispatch(
+            getUserData({
+              options: optionUser,
+              startTime: startTime,
+              endTime: endTime,
+            })
+          );
           setUser(userData);
         } catch (error) {}
       } else {
-        if (
-          totalAd.length === 0 &&
-          nationalAd.length === 0 &&
-          order.length === 0 &&
-          topPlace.length === 0
-        ) {
+        if (totalAd.length === 0 && nationalAd.length === 0) {
           setLoading(true);
           try {
             const totalDataAdmin = await dispatch(getTotalDataAdmin());
             setTotalAd(totalDataAdmin.chart);
             const nationalData = await dispatch(getNationalRank());
             setNationalAd(nationalData);
-            const orderData = await dispatch(getOrdersData());
-            setOrder(orderData.staticticalOrder);
-            const topData = await dispatch(getTopPlace());
-            setTopPlace(topData.charts);
             setLoading(false);
           } catch (error) {
             setLoading(false);
@@ -120,8 +132,6 @@ const HomePage = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [option, time]);
-
-  console.log(time);
 
   return (
     <Box
@@ -154,7 +164,11 @@ const HomePage = () => {
                   ) : (
                     <DateRangePicker
                       value={time}
-                      onChange={(newValue) => setTime(newValue)}
+                      onClean={() => setGetDataByDate(false)}
+                      onChange={(newValue) => {
+                        setGetDataByDate(true);
+                        setTime(newValue);
+                      }}
                     />
                   )}
                 </Box>
@@ -170,13 +184,14 @@ const HomePage = () => {
 
             <CardTotal
               loading={loading}
+              loadingData={loadingData}
               admin={
-                profile.roleId === 2 || profile.roleName === "TourOperator"
+                profile.roleId === 2 || profile.roleName === "Moderator"
                   ? false
                   : true
               }
               data={
-                profile.roleId === 2 || profile.roleName === "TourOperator"
+                profile.roleId === 2 || profile.roleName === "Moderator"
                   ? total
                   : totalAd
               }
@@ -252,9 +267,11 @@ const HomePage = () => {
       <Box marginX={2}>
         <Grid container paddingTop={3} spacing={2.5}>
           <Grid item sm={12} lg={8}>
-            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
+            {profile.roleId === 2 || profile.roleName === "Moderator" ? (
               <ChartRevenue
                 loading={loading}
+                loadingData={loadingData}
+                time={time}
                 data={revenue.charts}
                 option={option}
                 total={revenue.totalRevenue}
@@ -263,6 +280,7 @@ const HomePage = () => {
             ) : (
               <ChartUserAnalysis
                 loading={loading}
+                loadingData={loadingData}
                 data={user}
                 option={option}
                 setOption={setOption}
@@ -270,30 +288,41 @@ const HomePage = () => {
             )}
           </Grid>
           <Grid item sm={12} lg={4}>
-            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
-              <PlaceRank loading={loading} data={topPlace} />
+            {profile.roleId === 2 || profile.roleName === "Moderator" ? (
+              <PlaceRank
+                loading={loading}
+                loadingData={loadingData}
+                data={topPlace}
+              />
             ) : (
               <NationalRank
                 loading={loading}
+                loadingData={loadingData}
                 data={nationalAd.statictical}
                 total={nationalAd.total}
               />
             )}
           </Grid>
           <Grid item sm={12} lg={6}>
-            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
+            {(profile.roleId === 2 || profile.roleName === "Moderator") && (
+              <PieLanguage
+                loading={loading}
+                loadingData={loadingData}
+                data={language}
+              />
+            )}
+          </Grid>
+          <Grid item sm={12} lg={6}>
+            {(profile.roleId === 2 || profile.roleName === "Moderator") && (
               <ChartUserAnalysis
                 loading={loading}
+                loadingData={loadingData}
+                time={time}
                 data={user.charts}
                 option={optionUser}
                 setOption={setOptionUser}
               />
-            ) : null}
-          </Grid>
-          <Grid item sm={12} lg={6}>
-            {profile.roleId === 2 || profile.roleName === "TourOperator" ? (
-              <PieLanguage loading={loading} data={language} />
-            ) : null}
+            )}
           </Grid>
         </Grid>
       </Box>

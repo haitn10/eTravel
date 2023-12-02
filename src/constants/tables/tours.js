@@ -68,8 +68,6 @@ const tours = [
       if (params.row.status === 0) {
         color = theme.palette.text.active;
       } else if (params.row.status === 1) {
-        color = theme.palette.text.pending;
-      } else if (params.row.status === 2) {
         color = theme.palette.text.onStatus;
       }
 
@@ -90,8 +88,7 @@ const tours = [
             color={color}
             textTransform="capitalize"
           >
-            {/* {params.row.statusType} */}
-            Pending
+            {params.row.statusType}
           </Typography>
         </Box>
       );

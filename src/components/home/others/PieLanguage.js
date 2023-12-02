@@ -11,7 +11,7 @@ import {
 import { LabelLayout } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 
-const PieLanguage = ({ loading, data }) => {
+const PieLanguage = ({ loading, loadingData, data }) => {
   const theme = useTheme();
 
   var arr = [];
@@ -67,7 +67,7 @@ const PieLanguage = ({ loading, data }) => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading]);
+  }, [loading, loadingData]);
   return (
     <Box
       bgcolor={theme.palette.background.secondary}
