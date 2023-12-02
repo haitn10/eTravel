@@ -7,14 +7,15 @@ import { useNavigate } from "react-router-dom";
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
 import tours from "../../constants/tables/tours";
-import Action from "../common/Action";
 import { getTours } from "./action";
+import Actions from "./others/Actions";
 
 const ManageTours = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [searchBy, setSearchBy] = useState("name");
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -43,7 +44,7 @@ const ManageTours = () => {
           getTours({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
-            SearchBy: "name",
+            SearchBy: searchBy,
             Search: search,
           })
         );
@@ -64,37 +65,28 @@ const ManageTours = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, pageModelState.page, pageModelState.pageSize]);
+  }, [search, searchBy, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
   }, [getData]);
 
   const onNavigate = (params) => {
-    navigate("/tours/details", { state: { tourId: params.row.id } });
+    navigate("/itineraries/details", { state: { tourId: params.row.id } });
   };
 
   const action = [
     {
       field: "action",
       headerName: "Actions",
-      width: 120,
+      width: 100,
       align: "center",
       headerAlign: "center",
       sortable: false,
       renderCell: (params) => {
         return (
-          <Action
-            titleAc={"Are you sure you want to activate?"}
-            titleDe={"Are you sure you want to deactivate?"}
-            messageAc={
-              "This action of yours will make this tour active again and users can operate directly with this tour."
-            }
-            messageDe={
-              "Your action will cause this tour to no longer be used in the system."
-            }
+          <Actions
             id={params.row.id}
-            api="portal/tours/changestatus"
             status={params.row.status}
             getData={getData}
             notification={notification}
@@ -120,12 +112,13 @@ const ManageTours = () => {
       />
 
       <Header
-        title={"Manage Tournaments"}
-        subTitle={"Manage all them existing tours or update status."}
-        showBack={false}
+        title={"Manage Itineraries"}
+        subTitle={"Manage all existing itineraries in the system."}
         showSearch={true}
+        showFilter={true}
         search={search}
         setSearch={setSearch}
+        setSearchBy={setSearchBy}
       />
 
       {/* Data Table */}

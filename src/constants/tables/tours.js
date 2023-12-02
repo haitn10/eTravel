@@ -1,30 +1,24 @@
 import { Box, Typography, alpha } from "@mui/material";
-import moment from "moment";
+import dayjs from "dayjs";
 import { theme } from "../../styles/theme";
 
 const tours = [
   {
     field: "id",
-    headerName: "TourID",
-    headerAlign: "center",
-    width: 100,
-    align: "center",
+    headerName: "No.",
+    sortable: false,
+    width: 50,
   },
   {
     field: "name",
-    headerName: "Tour Name",
-    width: 300,
-  },
-  {
-    field: "totalPlace",
-    headerName: "Total Places",
-    headerAlign: "center",
-    align: "center",
-    flex: 1,
+    headerName: "Itinerary Name",
+    sortable: false,
+    flex: 2,
   },
   {
     field: "total",
-    headerName: "Total Prices",
+    headerName: "Price",
+    sortable: false,
     headerAlign: "center",
     align: "center",
     flex: 1,
@@ -35,67 +29,72 @@ const tours = [
       );
     },
   },
-
+  {
+    field: "totalPlace",
+    headerName: "Num of Places",
+    sortable: false,
+    headerAlign: "center",
+    align: "center",
+    flex: 1,
+  },
+  {
+    field: "totalFeedback",
+    headerName: "Num of Feedbacks",
+    sortable: false,
+    headerAlign: "center",
+    align: "center",
+    flex: 1,
+  },
   {
     field: "createTime",
     headerName: "Create Time",
+    sortable: false,
     headerAlign: "right",
     align: "right",
-    width: 200,
+    flex: 1,
     renderCell: (params) => {
-      return moment(params.row.createTime).format("DD MMMM, YYYY");
+      return dayjs(params.row.createTime).format("ll");
     },
   },
   {
     field: "status",
     headerName: "Status",
+    sortable: false,
     headerAlign: "center",
     align: "center",
-    width: 120,
+    width: 100,
     renderCell: (params) => {
-      if (params.row.status === 1) {
-        return (
-          <Box
-            border={1}
-            borderRadius={20}
-            width={80}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            borderColor={alpha(theme.palette.text.onStatus, 0.1)}
-            bgcolor={alpha(theme.palette.text.onStatus, 0.1)}
-          >
-            <Typography
-              variant="span"
-              fontWeight="medium"
-              color={theme.palette.text.onStatus}
-            >
-              Active
-            </Typography>
-          </Box>
-        );
-      } else {
-        return (
-          <Box
-            border={1}
-            borderRadius={20}
-            width={80}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            borderColor={alpha(theme.palette.text.active, 0.1)}
-            bgcolor={alpha(theme.palette.text.active, 0.1)}
-          >
-            <Typography
-              variant="span"
-              fontWeight="medium"
-              color={theme.palette.text.active}
-            >
-              Inactive
-            </Typography>
-          </Box>
-        );
+      let color = theme.palette.text.active;
+      if (params.row.status === 0) {
+        color = theme.palette.text.active;
+      } else if (params.row.status === 1) {
+        color = theme.palette.text.pending;
+      } else if (params.row.status === 2) {
+        color = theme.palette.text.onStatus;
       }
+
+      return (
+        <Box
+          border={1}
+          borderRadius={20}
+          paddingX={1}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          borderColor={alpha(color, 0.1)}
+          bgcolor={alpha(color, 0.1)}
+        >
+          <Typography
+            variant="span"
+            fontWeight="medium"
+            color={color}
+            textTransform="capitalize"
+          >
+            {/* {params.row.statusType} */}
+            Pending
+          </Typography>
+        </Box>
+      );
     },
   },
 ];

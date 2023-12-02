@@ -8,11 +8,12 @@ import {
   useTheme,
 } from "@mui/material";
 import React from "react";
+
+import { history } from "../AppRouter";
 import SearchInput from "./toolsupports/SearchInput";
 import FilterData from "./toolsupports/FilterData";
-import { ArrowLeft } from "@styled-icons/bootstrap";
-import { history } from "../AppRouter";
 
+import { ArrowLeft } from "@styled-icons/bootstrap";
 import { Add } from "@styled-icons/ionicons-solid";
 
 const Header = ({
@@ -26,6 +27,7 @@ const Header = ({
   setOpen,
   search,
   setSearch,
+  setSearchBy,
 }) => {
   const theme = useTheme();
   return (
@@ -84,7 +86,7 @@ const Header = ({
         ) : null}
         {showFilter ? (
           !loading ? (
-            <FilterData />
+            <FilterData setSearchBy={setSearchBy} setSearch={setSearch} />
           ) : (
             <Skeleton width={200} />
           )
