@@ -18,19 +18,19 @@ const tabsItem = [
   },
   {
     id: 2,
-    title: "Tours",
+    title: "Itinerary",
     icon: <Directions width={24} />,
-    url: "/tours",
+    url: "/itineraries",
     options: [
       {
-        subTitle: "List Tours",
+        subTitle: "Itinerary List",
         subIcon: <ListUl width={20} />,
-        subUrl: "/tours",
+        subUrl: "/itineraries",
       },
       {
-        subTitle: "Create Tour",
+        subTitle: "Create Itinerary",
         subIcon: <CollectionsAdd width={20} />,
-        subUrl: "/tours/create",
+        subUrl: "/itineraries/create",
       },
     ],
   },

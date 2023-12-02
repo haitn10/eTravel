@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { ExpandMore } from "styled-icons/material";
 
 import { getAllLanguages } from "../../languages/action";
+import DescriptionItem from "../../common/DescriptionItem";
 
 const PreviewData = ({ data, descriptionList }) => {
   const theme = useTheme();
@@ -36,11 +37,13 @@ const PreviewData = ({ data, descriptionList }) => {
     return languagesList.filter((language) => language.languageCode === data);
   };
   return (
-    <Box width="100%" paddingX={3} marginTop={3}>
-      <Grid container spacing={2}>
+    <Box width="100%" paddingX={3} marginTop={3} marginBottom={5}>
+      <Grid container spacing={3}>
         <Grid item xs={12} md={7}>
           <Box>
             <Typography
+              fontSize={14}
+              letterSpacing={0.5}
               textTransform="uppercase"
               fontWeight="medium"
               color={theme.palette.text.third}
@@ -51,15 +54,15 @@ const PreviewData = ({ data, descriptionList }) => {
 
           <Box marginLeft={2} marginTop={2}>
             <Box display="flex" alignItems="center" marginBottom={1}>
-              <Typography fontSize={16} width={150}>
-                Tour Name:{" "}
+              <Typography width={150} color={theme.palette.text.third}>
+                Itinerary Name:{" "}
               </Typography>
               <Typography marginLeft={1} fontWeight="medium">
                 {data?.name}
               </Typography>
             </Box>
             <Box display="flex" alignItems="center" marginBottom={1}>
-              <Typography fontSize={16} width={150}>
+              <Typography width={150} color={theme.palette.text.third}>
                 Number of Places:{" "}
               </Typography>
               <Typography marginLeft={1} fontWeight="medium">
@@ -67,8 +70,8 @@ const PreviewData = ({ data, descriptionList }) => {
               </Typography>
             </Box>
             <Box display="flex" alignItems="center" marginBottom={1}>
-              <Typography fontSize={16} width={150}>
-                Total Price:{" "}
+              <Typography width={150} color={theme.palette.text.third}>
+                Price:{" "}
               </Typography>
               <Typography marginLeft={1} fontWeight="medium">
                 ${" "}
@@ -78,8 +81,8 @@ const PreviewData = ({ data, descriptionList }) => {
               </Typography>
             </Box>
             <Box marginBottom={1}>
-              <Typography fontSize={16} width={150} marginBottom={1}>
-                Symbolic Picture:{" "}
+              <Typography marginBottom={1} color={theme.palette.text.third}>
+                Illustration Image:{" "}
               </Typography>
               <Box display="flex" justifyContent="center">
                 {data?.image ? (
@@ -95,71 +98,17 @@ const PreviewData = ({ data, descriptionList }) => {
                   />
                 ) : (
                   <Typography marginLeft={1} fontWeight="medium">
-                    (No Picture)
+                    (No Image)
                   </Typography>
                 )}
               </Box>
             </Box>
           </Box>
-        </Grid>
-        <Grid item xs={12} md={5}>
-          <Box>
-            <Typography
-              textTransform="uppercase"
-              fontWeight="medium"
-              color={theme.palette.text.third}
-            >
-              Price Details
-            </Typography>
-          </Box>
 
           <Box marginTop={2}>
-            {data.tourDetails?.map((place) => (
-              <Box
-                key={place.id}
-                border={1}
-                bgcolor={theme.palette.background.secondary}
-                paddingX={2}
-                paddingY={1}
-                borderRadius={2}
-                borderColor={alpha(theme.palette.text.third, 0.2)}
-                marginTop={2}
-              >
-                <Typography fontWeight="semiBold">{place.name}</Typography>
-                <Grid container color={theme.palette.text.third} padding={1}>
-                  <Grid item xs={4} textAlign="left">
-                    <Typography noWrap>Price</Typography>
-                    <Typography noWrap>
-                      ${" "}
-                      {place.price
-                        .toFixed(2)
-                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4} textAlign="center">
-                    <Typography noWrap>Duration</Typography>
-                    <Typography noWrap>
-                      {place.duration
-                        .toFixed(1)
-                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}{" "}
-                      hours
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4} textAlign="right">
-                    <Typography noWrap>Category</Typography>
-                    <Typography noWrap textTransform="capitalize">
-                      {place.category}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-            ))}
-          </Box>
-        </Grid>
-
-        <Grid item xs={12} md={7}>
-          <Box>
             <Typography
+              fontSize={14}
+              letterSpacing={0.5}
               textTransform="uppercase"
               fontWeight="medium"
               color={theme.palette.text.third}
@@ -168,24 +117,30 @@ const PreviewData = ({ data, descriptionList }) => {
             </Typography>
           </Box>
 
-          <Box marginTop={1}>
+          <Box marginTop={2}>
             {descriptionList?.map((item, index) => (
-              <Accordion key={index}>
+              <Accordion
+                key={index}
+                sx={{
+                  boxShadow: " rgba(0, 0, 0, 0.04) 0px 3px 5px;",
+                  "&:before": {
+                    display: "none",
+                  },
+                }}
+              >
                 <AccordionSummary
                   expandIcon={<ExpandMore width={24} />}
                   sx={{
                     ".MuiAccordionSummary-content": {
                       alignItems: "center",
                     },
-                    bgcolor: theme.palette.background.primary,
                   }}
                 >
                   <img
                     src={preview(item.languageCode)[0]?.icon}
                     alt={preview(item.languageCode)[0]?.name}
                     style={{
-                      width: 25,
-                      height: 17,
+                      width: 20,
                       border: "1px solid #ccc",
                       marginRight: 10,
                     }}
@@ -193,23 +148,100 @@ const PreviewData = ({ data, descriptionList }) => {
                   <Typography>{preview(item.languageCode)[0]?.name}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Box display="flex" gap={2}>
-                    <Typography fontWeight="medium" width={100}>
-                      Tour Name:{" "}
-                    </Typography>
-                    <Typography fontStyle="italic">{item.name}</Typography>
+                  <Box display="flex" gap={2} marginBottom={2}>
+                    <Box minWidth={100}>
+                      <Typography
+                        width={100}
+                        fontSize={14}
+                        color={theme.palette.text.third}
+                      >
+                        Itinerary Name:
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography>{item.name}</Typography>
+                    </Box>
                   </Box>
 
                   <Box display="flex" gap={2}>
-                    <Typography fontWeight="medium" width={140}>
-                      Tour Description:{" "}
-                    </Typography>
-                    <Typography>
-                      {item.description ? item.description : "No script"}
-                    </Typography>
+                    <Box minWidth={100}>
+                      <Typography
+                        width={100}
+                        fontSize={14}
+                        color={theme.palette.text.third}
+                      >
+                        Description:
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <DescriptionItem {...item} />
+                    </Box>
                   </Box>
                 </AccordionDetails>
               </Accordion>
+            ))}
+          </Box>
+        </Grid>
+
+        <Grid item xs={12} md={5}>
+          <Box>
+            <Typography
+              fontSize={14}
+              letterSpacing={0.5}
+              textTransform="uppercase"
+              fontWeight="medium"
+              color={theme.palette.text.third}
+            >
+              Place list
+            </Typography>
+          </Box>
+
+          <Box marginTop={2}>
+            {data.tourDetails?.map((place) => (
+              <Box
+                key={place.id}
+                border={1}
+                bgcolor={alpha(theme.palette.background.secondary, 0.5)}
+                paddingX={2}
+                paddingY={1}
+                borderRadius={2}
+                borderColor={alpha(theme.palette.text.third, 0.2)}
+                marginTop={2}
+              >
+                <Typography fontWeight="medium">{place.name}</Typography>
+                <Grid container color={theme.palette.text.third} padding={1}>
+                  <Grid item xs={4} textAlign="left">
+                    <Typography fontSize={14} noWrap>
+                      Price
+                    </Typography>
+                    <Typography fontSize={14} noWrap>
+                      ${" "}
+                      {place.price
+                        .toFixed(2)
+                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4} textAlign="center">
+                    <Typography fontSize={14} noWrap>
+                      Duration
+                    </Typography>
+                    <Typography fontSize={14} noWrap>
+                      {place.duration
+                        .toFixed(1)
+                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}{" "}
+                      hours
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4} textAlign="right">
+                    <Typography fontSize={14} noWrap>
+                      Category
+                    </Typography>
+                    <Typography fontSize={14} noWrap textTransform="capitalize">
+                      {place.category}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Box>
             ))}
           </Box>
         </Grid>

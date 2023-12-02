@@ -1,234 +1,319 @@
 import {
+  Avatar,
   Box,
   Grid,
   Rating,
   Skeleton,
-  TextField,
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
   Typography,
+  Paper,
   useTheme,
 } from "@mui/material";
 import React from "react";
 import { labels } from "../../../../constants/rating";
 import dayjs from "dayjs";
-import UploadImage from "../../../common/UploadImage";
 
-const GeneralInfo = ({
-  values,
-  setValues,
-  loading,
-  update,
-  register,
-  errors,
-}) => {
+const GeneralInfo = ({ values, loading }) => {
   const theme = useTheme();
   return (
-    <Grid container spacing={5}>
-      <Grid item xs={12} lg={6}>
-        {!loading ? (
-          <Box marginBottom={2}>
-            <Typography fontWeight="medium" marginBottom={1}>
-              Place Name{" "}
-              <small style={{ color: theme.palette.text.active }}>*</small>
+    <Box>
+      <Grid container columnSpacing={5}>
+        {/* Image */}
+        <Grid item xs={12} lg={5}>
+          {loading ? (
+            <Skeleton width={150} />
+          ) : (
+            <Typography
+              fontSize={14}
+              letterSpacing={0.5}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+            >
+              Illustration Image
             </Typography>
-            <TextField
-              fullWidth
-              size="small"
-              disabled={update}
-              InputProps={{
-                style: {
-                  borderRadius: 10,
-                },
-              }}
-              value={values.name}
-              {...register("name", {
-                required: "Place Name is required!",
-                onChange: (e) => setValues({ ...values, name: e.target.value }),
-              })}
-              error={!!errors.name}
-              helperText={errors.name?.message}
-              placeholder={`Type tour name here`}
-            />
+          )}
+          <Box padding={1}>
+            {loading ? (
+              <Skeleton variant="rounded" width="100%" height={200}>
+                <Avatar />
+              </Skeleton>
+            ) : values?.image ? (
+              <img
+                src={values?.image}
+                style={{ width: "100%", borderRadius: 2.5 }}
+                alt=""
+              />
+            ) : (
+              <Box display="flex" justifyContent="center">
+                <Typography fontSize={14} color={theme.palette.text.third}>
+                  (No image)
+                </Typography>
+              </Box>
+            )}
           </Box>
-        ) : (
-          <Skeleton width="100%" />
-        )}
+        </Grid>
 
-        {!loading ? (
-          <Box display="flex" alignItems="center" marginBottom={2}>
-            <Typography fontWeight="medium" width={160}>
-              Price:
+        {/* Informations */}
+        <Grid item xs={12} lg={7}>
+          {loading ? (
+            <Skeleton width={150} />
+          ) : (
+            <Typography
+              fontSize={14}
+              letterSpacing={0.5}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+            >
+              General Information
             </Typography>
-            <Typography fontWeight="medium">
-              $
-              {values.total
-                .toFixed(2)
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
-            </Typography>
-          </Box>
-        ) : (
-          <Skeleton width="100%" />
-        )}
-
-        {!loading ? (
-          <Box display="flex" alignItems="center" marginBottom={2}>
-            <Typography fontWeight="medium" width={160}>
-              Number of Places:
-            </Typography>
-            <Typography fontWeight="medium">
-              {values.tourDetails.length}
-            </Typography>
-          </Box>
-        ) : (
-          <Skeleton width="100%" />
-        )}
-
-        {!loading ? (
-          <Box display="flex" alignItems="center" marginBottom={2}>
-            <Typography fontWeight="medium" width={160}>
-              Number of Decription:
-            </Typography>
-            <Typography fontWeight="medium">
-              {values.tourDescriptions.length}
-            </Typography>
-          </Box>
-        ) : (
-          <Skeleton width="100%" />
-        )}
-
-        {!loading ? (
-          <Box marginBottom={2}>
-            <Box marginBottom={1}>
-              <Typography
-                fontSize={14}
-                letterSpacing={0.5}
-                fontWeight="medium"
-                textTransform="uppercase"
-                color={theme.palette.text.third}
-              >
-                Other Information
-              </Typography>
-            </Box>
-
-            <Grid container marginX={1} spacing={1}>
-              <Grid item xs={12} display="flex" alignItems="center">
-                <>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="medium"
-                    color={theme.palette.text.third}
-                  >
-                    Status:
-                  </Typography>
-
-                  <Typography
-                    fontSize={14}
-                    fontWeight="bold"
-                    marginLeft={1}
-                    borderRadius={2.5}
-                    color={
-                      values.status
-                        ? theme.palette.text.onStatus
-                        : theme.palette.text.active
-                    }
-                  >
-                    {values.status ? "Active" : "Inactive"}
-                  </Typography>
-                </>
-              </Grid>
-
-              <Grid item xs={12} display="flex" alignItems="center">
-                <>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="medium"
-                    color={theme.palette.text.third}
-                  >
-                    Rating:
-                  </Typography>
-                  <Box display="flex" alignItems="center" marginLeft={1}>
-                    <Rating
-                      readOnly
-                      size="small"
-                      value={values.rate || 0}
-                      precision={0.5}
-                      sx={{
-                        ".MuiRating-icon": {
-                          borderColor: theme.palette.text.active,
-                        },
-                        "& .MuiRating-iconFilled": {
-                          color: theme.palette.text.active,
-                        },
-                      }}
-                    />
-                    <Typography marginLeft={1} fontSize={14}>
-                      ({labels[values.rate || 0]})
-                    </Typography>
-                  </Box>
-                </>
-              </Grid>
-
-              <Grid item xs={12} display="flex" alignItems="center">
-                <>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="medium"
-                    color={theme.palette.text.third}
-                  >
-                    Create Time:
-                  </Typography>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="semiBold"
-                    marginLeft={1}
-                  >
-                    {dayjs(values?.createTime).format("MMMM DD, YYYY")}
-                  </Typography>
-                </>
-              </Grid>
-              <Grid item xs={12} display="flex" alignItems="center">
+          )}
+          <Box padding={2}>
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
                 <Typography
                   fontSize={14}
                   fontWeight="medium"
+                  width={200}
                   color={theme.palette.text.third}
                 >
-                  Update Time:
+                  Itinerary Name{" "}
+                  <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
-                <Typography fontSize={14} fontWeight="semiBold" marginLeft={1}>
-                  {values.updateTime
+                <Typography>{values?.name}</Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  width={200}
+                  color={theme.palette.text.third}
+                >
+                  Price{" "}
+                  <small style={{ color: theme.palette.text.active }}>*</small>
+                </Typography>
+                <Typography>
+                  $
+                  {values?.total
+                    .toFixed(2)
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
+                </Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  width={200}
+                  color={theme.palette.text.third}
+                >
+                  Number of Places
+                </Typography>
+                <Typography>{values?.tourDetails?.length}</Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  width={200}
+                  color={theme.palette.text.third}
+                >
+                  Number of Descriptions
+                </Typography>
+                <Typography>{values?.tourDescriptions?.length}</Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  width={200}
+                  color={theme.palette.text.third}
+                >
+                  Number of Feedbacks
+                </Typography>
+                <Typography>{values?.tourDetails?.length}</Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  width={200}
+                  color={theme.palette.text.third}
+                >
+                  Rating
+                </Typography>
+                <Rating
+                  readOnly
+                  size="small"
+                  value={values?.rate || 0}
+                  precision={0.5}
+                  sx={{
+                    ".MuiRating-icon": {
+                      borderColor: theme.palette.text.active,
+                    },
+                    "& .MuiRating-iconFilled": {
+                      color: theme.palette.text.active,
+                    },
+                  }}
+                />
+                <Typography marginLeft={1} fontSize={14}>
+                  ({labels[values?.rate || 0]})
+                </Typography>
+              </Box>
+            )}
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  width={200}
+                  color={theme.palette.text.third}
+                >
+                  Status
+                </Typography>
+                <Typography
+                  color={
+                    values?.status
+                      ? theme.palette.text.onStatus
+                      : theme.palette.text.active
+                  }
+                >
+                  {values?.statusType}statusType
+                </Typography>
+              </Box>
+            )}
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  width={200}
+                  color={theme.palette.text.third}
+                >
+                  Create Time
+                </Typography>
+                <Typography>
+                  {dayjs(values?.createTime).format("MMMM DD, YYYY")}
+                </Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Skeleton width="100%" />
+            ) : (
+              <Box display="flex" alignItems="center" marginBottom={1.5}>
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  width={200}
+                  color={theme.palette.text.third}
+                >
+                  Update Time
+                </Typography>
+                <Typography>
+                  {values?.updateTime
                     ? dayjs(values?.updateTime).format("MMMM DD, YYYY")
                     : "--/--/--"}
                 </Typography>
-              </Grid>
-            </Grid>
+              </Box>
+            )}
           </Box>
-        ) : (
-          <Skeleton width="100%" />
-        )}
-      </Grid>
+        </Grid>
 
-      {/* Rating */}
-      <Grid item xs={12} lg={6}>
-        {!loading ? (
-          <Typography fontWeight="medium" marginBottom={1}>
-            Image <small style={{ color: theme.palette.text.active }}>*</small>
-          </Typography>
-        ) : (
-          <Skeleton width="100%" />
-        )}
-
-        {!loading ? (
-          <UploadImage
-            values={values}
-            setValues={setValues}
-            errors={errors}
-            register={register}
-            disabled={update}
-          />
-        ) : (
-          <Skeleton width="100%" />
-        )}
+        {/* Place */}
+        <Grid item xs={12}>
+          {loading ? (
+            <Skeleton width={150} />
+          ) : (
+            <Typography
+              fontSize={14}
+              letterSpacing={0.5}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+            >
+              Place List
+            </Typography>
+          )}
+          <Box padding={1}>
+            {loading ? (
+              <Skeleton width="100%" variant="rounded" height={400} />
+            ) : (
+              <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
+                <Table sx={{ minWidth: 550 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell width={40}>PlaceId</TableCell>
+                      <TableCell>Place Name</TableCell>
+                      <TableCell>Price</TableCell>
+                      <TableCell align="right">Rating</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {values.tourDetails?.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{row.id}</TableCell>
+                        <TableCell component="th" scope="row">
+                          {row.name}
+                        </TableCell>
+                        <TableCell>
+                          $
+                          {row.price
+                            .toFixed(2)
+                            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
+                        </TableCell>
+                        <TableCell align="right">{row.carbs}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </Box>
+        </Grid>
       </Grid>
-    </Grid>
+    </Box>
   );
 };
 

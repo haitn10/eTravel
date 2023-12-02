@@ -1,27 +1,33 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
+  Button,
   Backdrop,
   CircularProgress,
   Skeleton,
   Tab,
+  Typography,
   useTheme,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { useForm } from "react-hook-form";
 
-import { getTourDetails, updateTour } from "./action";
-import { getPlaces } from "../places/action";
+import { getTourDetails } from "./action";
 
-import PlacesList from "./others/PlacesList";
 import SubsLanguage from "./others/details/SubsLanguage";
 import GeneralInfo from "./others/details/GeneralInfo";
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
-import SubmitBtn from "../common/SubmitBtn";
 import Feedback from "./others/details/Feedback";
+import DialogUpdate from "./others/details/DialogUpdate";
+
+import { Update } from "@styled-icons/material-rounded";
+import { Add } from "@styled-icons/ionicons-solid";
+import DialogUpdateLangs from "./others/details/DialogUpdateLangs";
+import { useDispatch } from "react-redux";
+import { getAllLanguages } from "../languages/action";
+import { useFieldArray, useForm } from "react-hook-form";
+import DialogNewLangs from "./others/details/DialogNewLangs";
 
 const TourDetails = () => {
   const theme = useTheme();
@@ -31,10 +37,15 @@ const TourDetails = () => {
 
   const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [showPopupLang, setShowPopupLang] = useState(false);
+  const [showPopupNewLang, setShowPopupNewLang] = useState(false);
+
   const [values, setValues] = useState({});
+  const [data, setData] = useState({});
   const [number, setNumber] = useState("1");
-  const [search, setSearch] = useState("");
-  const [searchBy, setSearchBy] = useState("name");
+  const [languagesList, setLanguagesList] = useState([]);
 
   const [notification, setNotification] = useState({
     errorState: false,
@@ -42,47 +53,36 @@ const TourDetails = () => {
     status: "error",
   });
 
-  const [pageState, setPageState] = useState({
-    isLoading: false,
-    data: [],
-    totalCount: 0,
-  });
-
-  const [pageModelState, setPageModelState] = useState({
-    page: 0,
-    pageSize: 10,
-  });
-
   const {
-    handleSubmit,
-    setError,
-    clearErrors,
-    register,
     getValues,
+    register,
     reset,
+    handleSubmit,
     control,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: "",
-      image: "",
-      tourDescriptions: [{ languageCode: "en-us", name: "", description: "" }],
-    },
+  } = useForm();
+
+  const { fields, remove } = useFieldArray({
+    control,
+    name: "tourDescriptions",
   });
+
   useEffect(() => {
     async function getInfoDetails() {
       setLoading(true);
       try {
         const data = await getTourDetails(tourId);
-        reset(data);
         setValues(data);
+        reset(data);
+        const response = await dispatch(getAllLanguages());
+        setLanguagesList(response.languages);
         setLoading(false);
       } catch (error) {
         setLoading(false);
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: "Can't get data details for tour!",
+          errorMessage: "Can't get data!",
           status: "error",
         });
       }
@@ -92,81 +92,20 @@ const TourDetails = () => {
   }, [tourId]);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setPageState((old) => ({
-          ...old,
-          isLoading: true,
-        }));
-        const data = await dispatch(
-          getPlaces({
-            PageNumber: pageModelState.page,
-            PageSize: pageModelState.pageSize,
-            SearchBy: searchBy,
-            Search: search,
-          })
-        );
-        setPageState((old) => ({
-          ...old,
-          isLoading: false,
-          data: data.places.data,
-          totalCount: data.places.totalCount,
-        }));
-      } catch (error) {
-        setNotification({
-          ...notification,
-          errorState: true,
-          errorMessage: "There was a problem loading data!",
-          status: "error",
-        });
-      }
-    }
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, searchBy, pageModelState.page, pageModelState.pageSize]);
+    reset(values);
+    setData(values);
+  }, [reset, values, showPopupLang, showPopup]);
 
   const handleChange = (event, newValue) => {
     setNumber(newValue);
   };
 
-  const onSubmit = async () => {
-    let data = {
-      name: values.name,
-      image: values.image,
-      total: values.total,
-      tourDetails: [],
-      tourDescriptions: getValues("tourDescriptions"),
-    };
-    for (const place of values.tourDetails) {
-      data.tourDetails.push({ id: place.id, price: place.price });
-    }
-
-    try {
-      setUpdate(true);
-      const res = await updateTour(tourId, data);
-      if (res) {
-        setNotification({
-          ...notification,
-          errorState: true,
-          errorMessage: "Updated tour successfully!",
-          status: "success",
-        });
-      }
-      await setUpdate(false);
-    } catch (e) {
-      console.log(e);
-      // const message = e.response.data
-      //   ? e.response.data.errors
-      //   : "Something went wrong!";
-      setUpdate(false);
-      setNotification({
-        ...notification,
-        errorState: true,
-        errorMessage: "Something went wrong with processing!",
-        status: "error",
-      });
-    }
-  };
+  const filterLanguage = languagesList.filter(
+    (desc) =>
+      !values.tourDescriptions.some(
+        (lang) => lang.languageCode === desc.languageCode
+      )
+  );
 
   return (
     <Box
@@ -184,128 +123,151 @@ const TourDetails = () => {
       />
 
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{
+          color: "#fff",
+          zIndex: (theme) =>
+            Math.max.apply(Math, Object.values(theme.zIndex)) + 1,
+        }}
         open={update}
       >
         <CircularProgress color="error" />
       </Backdrop>
 
+      <DialogUpdate
+        dialog={showPopup}
+        setDialog={setShowPopup}
+        setValues={setValues}
+        data={data}
+        setData={setData}
+        getValues={setValues}
+        update={update}
+        setUpdate={setUpdate}
+        notification={notification}
+        setNotification={setNotification}
+      />
+
+      <DialogUpdateLangs
+        dialog={showPopupLang}
+        setDialog={setShowPopupLang}
+        setValues={setValues}
+        fields={fields}
+        remove={remove}
+        register={register}
+        errors={errors}
+        getValues={getValues}
+        handleSubmit={handleSubmit}
+        languages={languagesList}
+        update={update}
+        setUpdate={setUpdate}
+        notification={notification}
+        setNotification={setNotification}
+      />
+
+      <DialogNewLangs
+        dialog={showPopupNewLang}
+        setDialog={setShowPopupNewLang}
+        setValues={setValues}
+        getValuesTotal={getValues}
+        languages={filterLanguage}
+        update={update}
+        setUpdate={setUpdate}
+        notification={notification}
+        setNotification={setNotification}
+      />
+
       <Header
-        title={"Tour Details"}
-        subTitle={"Manage all information of tour and update tour."}
+        title={"Itinerary Details"}
+        subTitle={"Manage all information of itinerary and update itinerary."}
         loading={loading}
         showBack={true}
       />
 
-      <Box marginX={6} padding={3}>
+      <Box marginX={6} paddingX={3}>
         <TabContext value={number}>
-          {!loading ? (
+          {loading ? (
+            <Skeleton width="100%" height={75} />
+          ) : (
             <Box
               sx={{
+                marginTop: 1,
                 borderBottom: 1,
-                borderTop: 1,
-                marginBottom: 2,
                 borderColor: "divider",
               }}
             >
-              <TabList
-                onChange={handleChange}
-                aria-label="lab API tabs example"
-              >
-                <Tab label="General Informations" value="1" />
-                <Tab label="Descriptions List" value="2" />
-                <Tab label="Places List" value="3" />
-                <Tab label="Feedback" value="4" />
+              <TabList onChange={handleChange}>
+                <Tab label="General" value="1" />
+                <Tab label="Descriptions" value="2" />
+                <Tab label="Feedbacks" value="3" />
               </TabList>
             </Box>
-          ) : (
-            <Skeleton width="100%" height={75} />
           )}
           <TabPanel value="1">
-            <GeneralInfo
-              values={values}
-              setValues={setValues}
-              loading={loading}
-              update={update}
-              register={register}
-              errors={errors}
-            />
-            <Box
-              sx={{
-                marginTop: 5,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+            <Box display="flex" justifyContent="end">
               {!loading ? (
-                <SubmitBtn update={update} onSubmit={handleSubmit(onSubmit)} />
+                <Button
+                  variant="outlined"
+                  color="error"
+                  sx={{
+                    borderRadius: 2.5,
+                    height: 40,
+                  }}
+                  startIcon={<Update height={24} />}
+                  onClick={() => setShowPopup(true)}
+                >
+                  <Typography fontWeight="medium">Update</Typography>
+                </Button>
               ) : (
                 <Skeleton width={100} />
               )}
             </Box>
+            <GeneralInfo values={values} loading={loading} />
           </TabPanel>
-          <TabPanel value="2" style={{ padding: 0 }}>
-            <SubsLanguage
-              loading={loading}
-              control={control}
-              register={register}
-              errors={errors}
-              getValues={getValues}
-              notification={notification}
-              setNotification={setNotification}
-            />
-            <Box
-              sx={{
-                marginTop: 5,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {!loading ? (
-                <SubmitBtn update={update} onSubmit={handleSubmit(onSubmit)} />
-              ) : (
+          <TabPanel value="2">
+            <Box display="flex" justifyContent="end" gap={2}>
+              {loading ? (
                 <Skeleton width={100} />
+              ) : (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  sx={{
+                    borderRadius: 2.5,
+                    height: 40,
+                  }}
+                  startIcon={<Update height={24} />}
+                  onClick={() => setShowPopupLang(true)}
+                >
+                  <Typography fontWeight="medium">Update</Typography>
+                </Button>
               )}
+              {loading ? (
+                <Skeleton width={100} />
+              ) : values?.tourDescriptions?.length < languagesList?.length ? (
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 2.5,
+                    height: 40,
+                  }}
+                  startIcon={<Add height={24} />}
+                  onClick={() => setShowPopupNewLang(true)}
+                >
+                  <Typography fontWeight="medium">New</Typography>
+                </Button>
+              ) : null}
             </Box>
+            <SubsLanguage
+              values={values}
+              loading={loading}
+              languages={languagesList}
+            />
           </TabPanel>
           <TabPanel value="3">
-            <PlacesList
-              values={values}
-              setValues={setValues}
-              setSearch={setSearch}
-              setSearchBy={setSearchBy}
-              errors={errors}
-              setError={setError}
-              clearErrors={clearErrors}
-              pageState={pageState}
-              setPageState={setPageState}
-              pageModelState={pageModelState}
-              setPageModelState={setPageModelState}
-              notification={notification}
-              setNotification={setNotification}
-            />
-            <Box
-              sx={{
-                marginTop: 5,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {!loading ? (
-                <SubmitBtn update={update} onSubmit={handleSubmit(onSubmit)} />
-              ) : (
-                <Skeleton width={100} />
-              )}
-            </Box>
-          </TabPanel>
-          <TabPanel value="4">
             <Feedback
               id={tourId}
               notification={notification}
               setNotification={setNotification}
+              rating={values?.rate}
             />
           </TabPanel>
         </TabContext>

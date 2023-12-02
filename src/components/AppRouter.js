@@ -73,9 +73,9 @@ const AppRouter = () => {
             <Route element={<Layout />}>
               <Route path="/*" element={<Navigate to="/dashboard" />} exact />
               <Route path="/dashboard" element={<HomePage />} />
-              <Route path="/tours" element={<ManageTours />} />
-              <Route path="/tours/details" element={<TourDetails />} />
-              <Route path="/tours/create" element={<CreateNewTour />} />
+              <Route path="/itineraries" element={<ManageTours />} />
+              <Route path="/itineraries/details" element={<TourDetails />} />
+              <Route path="/itineraries/create" element={<CreateNewTour />} />
               <Route path="/places/" element={<ManagePlaces />} />
               <Route path="/places/details" element={<PlaceDetails />} />
               <Route path="/places/add" element={<AddPlace />} />
