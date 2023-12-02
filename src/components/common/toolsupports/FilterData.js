@@ -12,7 +12,7 @@ import {
 import { FilterAlt } from "@styled-icons/boxicons-regular";
 import { StyledMenu } from "../styled/StyledMenu";
 
-const FilterData = () => {
+const FilterData = ({ setSearchBy, setSearch }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -26,10 +26,7 @@ const FilterData = () => {
   const [statusChecked, setStatusChecked] = useState("All");
   const [paymentMethodChecked, setPaymentMethodChecked] = useState("All");
 
-  const handleChangeStatus = (event) => {
-    setStatusChecked(event.target.value);
-  };
-  const handleChangeMetohd = (event) => {
+  const handleChangeMethod = (event) => {
     setPaymentMethodChecked(event.target.value);
   };
 
@@ -66,9 +63,7 @@ const FilterData = () => {
           paddingX={1}
         >
           <Box>
-            <Typography fontSize={20} fontWeight="semiBold">
-              Filter
-            </Typography>
+            <Typography variant="h6">Filter</Typography>
           </Box>
 
           {statusChecked !== "All" || paymentMethodChecked !== "All" ? (
@@ -80,6 +75,8 @@ const FilterData = () => {
                 padding: 0,
               }}
               onClick={() => {
+                setSearchBy("name");
+                setSearch();
                 setStatusChecked("All");
                 setPaymentMethodChecked("All");
               }}
@@ -89,7 +86,7 @@ const FilterData = () => {
           ) : null}
         </Box>
 
-        <Divider sx={{ marginBottom: 0.5 }} />
+        {/* <Divider sx={{ marginBottom: 0.5 }} />
 
         <Box sx={{ display: "flex", flexDirection: "column", ml: 0.5 }}>
           <Box padding={0.5}>
@@ -102,7 +99,7 @@ const FilterData = () => {
                 <Checkbox
                   checked={paymentMethodChecked === "All"}
                   value="All"
-                  onChange={handleChangeMetohd}
+                  onChange={handleChangeMethod}
                 />
               }
             />
@@ -115,7 +112,7 @@ const FilterData = () => {
                 <Checkbox
                   checked={paymentMethodChecked === "MasterCard"}
                   value="MasterCard"
-                  onChange={handleChangeMetohd}
+                  onChange={handleChangeMethod}
                 />
               }
             />
@@ -127,12 +124,12 @@ const FilterData = () => {
                 <Checkbox
                   checked={paymentMethodChecked === "Paypal"}
                   value="Paypal"
-                  onChange={handleChangeMetohd}
+                  onChange={handleChangeMethod}
                 />
               }
             />
           </MenuItem>
-        </Box>
+        </Box> */}
 
         <Divider sx={{ marginY: 0.5 }} />
 
@@ -147,7 +144,45 @@ const FilterData = () => {
                 <Checkbox
                   checked={statusChecked === "All"}
                   value="All"
-                  onChange={handleChangeStatus}
+                  onChange={(event) => {
+                    setSearchBy("name");
+                    setSearch();
+                    setStatusChecked(event.target.value);
+                  }}
+                />
+              }
+            />
+          </MenuItem>
+
+          <MenuItem dense sx={{ borderRadius: 1 }}>
+            <FormControlLabel
+              label="Inactive"
+              control={
+                <Checkbox
+                  checked={statusChecked === "Inactive"}
+                  value="Inactive"
+                  onChange={(event) => {
+                    setSearchBy("status");
+                    setSearch(0);
+                    setStatusChecked(event.target.value);
+                  }}
+                />
+              }
+            />
+          </MenuItem>
+
+          <MenuItem dense sx={{ borderRadius: 1 }}>
+            <FormControlLabel
+              label="Pending"
+              control={
+                <Checkbox
+                  checked={statusChecked === "Pending"}
+                  value="Pending"
+                  onChange={(event) => {
+                    setSearchBy("status");
+                    setSearch(1);
+                    setStatusChecked(event.target.value);
+                  }}
                 />
               }
             />
@@ -160,19 +195,11 @@ const FilterData = () => {
                 <Checkbox
                   checked={statusChecked === "Active"}
                   value="Active"
-                  onChange={handleChangeStatus}
-                />
-              }
-            />
-          </MenuItem>
-          <MenuItem dense sx={{ borderRadius: 1 }}>
-            <FormControlLabel
-              label="Inactive"
-              control={
-                <Checkbox
-                  checked={statusChecked === "Inactive"}
-                  value="Inactive"
-                  onChange={handleChangeStatus}
+                  onChange={(event) => {
+                    setSearchBy("status");
+                    setSearch(2);
+                    setStatusChecked(event.target.value);
+                  }}
                 />
               }
             />

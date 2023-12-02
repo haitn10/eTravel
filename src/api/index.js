@@ -8,8 +8,8 @@ export const GOONG_API_KEY = "lufMpKjvYBPBQqq13Zwl0vTLnPUHtkksPTV1YcEs";
 export const GOONG_URL = "https://rsapi.goong.io/Place/AutoComplete";
 
 // URL
-// export const BASE_URL = "http://localhost:8000";
-export const BASE_URL = "https://etravelapi.azurewebsites.net";
+export const BASE_URL = "http://localhost:8000";
+// export const BASE_URL = "https://etravelapi.azurewebsites.net";
 // export const CONVERSION_URL = `https://etravelconversion.azurewebsites.net/${}/valid`;
 
 export const API = axios.create({
@@ -160,7 +160,7 @@ export const process = async (state, dispatch, setState, path, item) => {
       let formData = new FormData();
       formData.append("file", item.image);
       const { data } = await uploadFile(formData, "Tour");
-      item.image = data.link;
+      item.image = data.imageFiles[0].fileLink;
     }
 
     //Upload language file
