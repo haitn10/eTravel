@@ -41,7 +41,7 @@ const tabsItem = [
     url: "/places",
     options: [
       {
-        subTitle: "List Places",
+        subTitle: "Place List",
         subIcon: <ListUl width={20} />,
         subUrl: "/places",
       },
