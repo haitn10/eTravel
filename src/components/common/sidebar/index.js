@@ -23,7 +23,7 @@ import { ErrorOutline } from "@styled-icons/material";
 import { SignOut } from "@styled-icons/octicons";
 
 import Item from "./Item";
-import logo from "../../../assets/etravel-logo.png";
+import logo from "../../../assets/eTravelLogo.png";
 import tabsItem from "../../../constants/tabsItem";
 import tabsItemAdmin from "../../../constants/tabsItemAdmin";
 
@@ -76,8 +76,8 @@ const SidebarApp = ({ isCollapsed, setIsCollapsed }) => {
             padding={1}
           >
             {!isCollapsed && (
-              <Box marginLeft={2}>
-                <img alt="Etravel Logo" width="30px" height="30px" src={logo} />
+              <Box>
+                <img alt="Etravel Logo" width="80px" src={logo} />
               </Box>
             )}
             {!isCollapsed && (
