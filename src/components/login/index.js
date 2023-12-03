@@ -10,7 +10,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../auth/action";
 
-import logo from "../../assets/etravel-logo.png";
+import logo from "../../assets/eTravelLogo.png";
 import ErrorModal from "../common/ErrorModal";
 
 const Login = () => {
@@ -80,7 +80,7 @@ const Login = () => {
           boxShadow={"5px 5px 10px #ccc"}
           backgroundColor={theme.palette.background.primary}
         >
-          <img src={logo} width="180px" height="180px" alt="logo" />
+          <img src={logo} width="100%" alt="logo" />
 
           <TextField
             fullWidth

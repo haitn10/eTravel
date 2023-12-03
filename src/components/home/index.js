@@ -131,7 +131,7 @@ const HomePage = () => {
     fetchData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [option, time]);
+  }, [option, optionUser, time]);
 
   return (
     <Box
