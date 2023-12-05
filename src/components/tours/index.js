@@ -4,11 +4,13 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
+import { getTours } from "./action";
+
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
-import tours from "../../constants/tables/tours";
-import { getTours } from "./action";
 import Actions from "./others/Actions";
+
+import tours from "../../constants/tables/tours";
 
 const ManageTours = () => {
   const theme = useTheme();

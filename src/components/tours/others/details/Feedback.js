@@ -86,62 +86,6 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
 
   return (
     <Box>
-      <Box display="flex" gap={2}>
-        {loading ? (
-          <Skeleton width={100} />
-        ) : (
-          <Box
-            bgcolor={theme.palette.background.secondary}
-            gap={1}
-            padding={1}
-            display="flex"
-            alignItems="center"
-            borderRadius={2.5}
-          >
-            <Typography fontSize={14} color={theme.palette.text.third}>
-              Total Comments:
-            </Typography>
-            <Typography fontSize={14} color={theme.palette.text.third}>
-              {comments?.length}
-            </Typography>
-          </Box>
-        )}
-        {loading ? (
-          <Skeleton width={100} />
-        ) : (
-          <Box
-            bgcolor={theme.palette.background.secondary}
-            gap={1}
-            padding={1}
-            display="flex"
-            alignItems="center"
-            borderRadius={2.5}
-          >
-            <Typography fontSize={14} color={theme.palette.text.third}>Rating:</Typography>
-            <Rating
-              readOnly
-              size="small"
-              value={rating || 0}
-              precision={0.5}
-              sx={{
-                ".MuiRating-icon": {
-                  borderColor: theme.palette.text.active,
-                },
-                "& .MuiRating-iconFilled": {
-                  color: theme.palette.text.active,
-                },
-              }}
-            />
-            <Typography
-              marginLeft={1}
-              fontSize={12}
-              color={theme.palette.text.third}
-            >
-              ({labels[rating || 0]})
-            </Typography>
-          </Box>
-        )}
-      </Box>
       <Dialog
         open={popupConfirm}
         onClose={() => setPopupConfirm(false)}
@@ -177,6 +121,65 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      
+      <Box display="flex" gap={2}>
+        {loading ? (
+          <Skeleton width={100} />
+        ) : (
+          <Box
+            bgcolor={theme.palette.background.secondary}
+            gap={1}
+            padding={1}
+            display="flex"
+            alignItems="center"
+            borderRadius={2.5}
+          >
+            <Typography fontSize={14} color={theme.palette.text.third}>
+              Total Comments:
+            </Typography>
+            <Typography fontSize={14} color={theme.palette.text.third}>
+              {comments?.length}
+            </Typography>
+          </Box>
+        )}
+        {loading ? (
+          <Skeleton width={100} />
+        ) : (
+          <Box
+            bgcolor={theme.palette.background.secondary}
+            gap={1}
+            padding={1}
+            display="flex"
+            alignItems="center"
+            borderRadius={2.5}
+          >
+            <Typography fontSize={14} color={theme.palette.text.third}>
+              Rating:
+            </Typography>
+            <Rating
+              readOnly
+              size="small"
+              value={rating || 0}
+              precision={0.5}
+              sx={{
+                ".MuiRating-icon": {
+                  borderColor: theme.palette.text.active,
+                },
+                "& .MuiRating-iconFilled": {
+                  color: theme.palette.text.active,
+                },
+              }}
+            />
+            <Typography
+              marginLeft={1}
+              fontSize={12}
+              color={theme.palette.text.third}
+            >
+              ({labels[rating || 0]})
+            </Typography>
+          </Box>
+        )}
+      </Box>
 
       <Box marginTop={2}>
         {loading ? (

@@ -16,8 +16,6 @@ import {
 import React, { useEffect, useState } from "react";
 import { Controller, useFieldArray } from "react-hook-form";
 
-import { checkDuplicateName } from "../action";
-
 import { Add } from "@styled-icons/ionicons-outline";
 import { Trash3 } from "@styled-icons/bootstrap";
 import { CloudArrowUp } from "@styled-icons/fluentui-system-regular";
@@ -70,16 +68,6 @@ const MultiLanguages = ({
         return setIsDuplicateName(false);
       }
       languageCodes.add(data.voiceFile?.name);
-    }
-
-    if (nameFile !== undefined && nameFile !== "") {
-      nameFile = nameFile.slice(0, -4);
-      try {
-        await checkDuplicateName(nameFile);
-        return setIsDuplicateName(true);
-      } catch (err) {
-        return setIsDuplicateName(false);
-      }
     }
     return;
   };

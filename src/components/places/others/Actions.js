@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { MoreHoriz } from "@styled-icons/material";
-import { changeTourState } from "../action";
+import { changePlaceState } from "../action";
 
 const Actions = ({ id, status, getData, notification, setNotification }) => {
   const theme = useTheme();
@@ -29,7 +29,7 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
 
   const onConfirm = async () => {
     try {
-      const response = await changeTourState(id);
+      const response = await changePlaceState(id, value);
       if (response) {
         getData();
         setNotification({

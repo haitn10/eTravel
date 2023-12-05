@@ -78,14 +78,13 @@ export const getTotalDataAdmin = (values) => {
   };
 };
 
-export const getNationalRank = (values) => {
+export const getNationalRank = () => {
   return async (dispatch, getState) => {
     return fetch(
       getState().homepage,
       dispatch,
       setState,
-      "portal/charts/national",
-      values
+      "portal/charts/national"
     );
   };
 };

@@ -36,17 +36,6 @@ export const getPlaceDetails = async (placeId) => {
   }
 };
 
-export const checkDuplicateName = async (nameFile) => {
-  try {
-    const { data } = await API.get("portal/azures/filename", {
-      params: { fileName: nameFile },
-    });
-    return Promise.resolve(data);
-  } catch (e) {
-    return Promise.reject(e);
-  }
-};
-
 export const processPlace = (newPlace) => {
   return async (dispatch, getState) => {
     return process(
@@ -59,35 +48,9 @@ export const processPlace = (newPlace) => {
   };
 };
 
-export const updatePlace = async (placeId, values) => {
+export const updatePlace = async (placeId, values, files) => {
   try {
     setState({ isFetching: true });
-    //Convert voice file
-    if (values.placeDescriptions) {
-      let formData = new FormData();
-      values.placeDescriptions.forEach((description) => {
-        if (description.voiceFile instanceof File) {
-          formData.append("listMp3", description.voiceFile);
-        }
-      });
-
-      // Check if formData has data before calling convertVoiceFile
-      if (
-        formData &&
-        formData.getAll &&
-        formData.getAll("listMp3").length > 0
-      ) {
-        const { data } = await convertVoiceFile(formData);
-        data.voiceFiles.forEach((itm) => {
-          const indexFile = values.placeDescriptions.findIndex(
-            (file) => itm.fileName === file.voiceFile.name
-          );
-          if (indexFile !== -1) {
-            values.placeDescriptions[indexFile].voiceFile = itm.fileLink;
-          }
-        });
-      }
-    }
 
     //Upload image place
     if (values.placeImages) {
@@ -140,7 +103,23 @@ export const updatePlace = async (placeId, values) => {
         });
       }
     }
+
     const { data } = await API.put(`portal/places/${placeId}`, values);
+
+    //Convert voice file
+    if (files) {
+      let formData = new FormData();
+      files.forEach((description) => {
+        if (description.voiceFile instanceof File) {
+          formData.append("listMp3", description.voiceFile);
+        }
+      });
+
+      // Check if formData has data before calling convertVoiceFile
+      if (formData && formData.getAll && formData.getAll("listMp3").length > 0)
+        await convertVoiceFile(formData);
+    }
+
     setState({ isFetching: false });
     return Promise.resolve(data);
   } catch (e) {
@@ -174,6 +153,30 @@ export const getPlaceComments = async (placeId) => {
       params: { isPlace: true },
     });
     return Promise.resolve(data.feedbacks);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+export const getPlaceItem = async (itemId) => {
+  try {
+    const { data } = await API.get(`portal/places/placeitem/${itemId}`);
+    return Promise.resolve(data.placeItem);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+export const changePlaceState = async (tourId, status) => {
+  try {
+    const { data } = await API.put(
+      `portal/places/changestatus/${tourId}`,
+      null,
+      {
+        params: { status: status },
+      }
+    );
+    return Promise.resolve(data);
   } catch (e) {
     return Promise.reject(e);
   }

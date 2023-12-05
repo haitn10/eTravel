@@ -44,7 +44,7 @@ const CardTotalTO = ({ loading, loadingData, admin, data }) => {
   };
   return (
     <Box display="flex" alignItems="center" gap={1.5}>
-      {data.map((item, index) => (
+      {data?.map((item, index) => (
         <Box
           key={index}
           border={2}
