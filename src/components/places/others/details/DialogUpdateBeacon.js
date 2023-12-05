@@ -14,7 +14,7 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { LocalizationProvider, TimeField } from "@mui/x-date-pickers";
@@ -31,7 +31,7 @@ const DialogUpdateBeacon = ({
   dialog,
   setDialog,
   index,
-  getValues,
+  getValuesTotal,
   languages,
   update,
   setUpdate,
@@ -41,6 +41,7 @@ const DialogUpdateBeacon = ({
   const theme = useTheme();
 
   const {
+    getValues,
     register,
     reset,
     handleSubmit,
@@ -71,32 +72,31 @@ const DialogUpdateBeacon = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
-  console.log(!dayjs(value).isSame(dayjs("2022-04-17T00:00:00")) &&
-  dayjs(value).isAfter(dayjs(getValues("startTime"))));
-
   const previewImage = (image) => {
     if (image instanceof File && imageFileTypes.includes(image.type)) {
       return URL.createObjectURL(image);
     }
-
     return image;
   };
 
+  const getLanguage = (code) =>
+    languages.filter((desc) => desc.languageCode === code);
+
   const onUpdate = async () => {
     let dataUpdate = {
-      name: getValues("name"),
-      image: getValues("image"),
-      total: getValues("total"),
+      name: getValuesTotal("name"),
+      image: getValuesTotal("image"),
+      total: getValuesTotal("total"),
       tourDetails: [],
-      tourDescriptions: getValues("tourDescriptions"),
+      tourDescriptions: getValuesTotal("tourDescriptions"),
     };
-    for (const place of getValues("tourDetails")) {
+    for (const place of getValuesTotal("tourDetails")) {
       dataUpdate.tourDetails.push({ id: place.id, price: place.price });
     }
 
     try {
       setUpdate(true);
-      const res = await updatePlace(getValues().id, dataUpdate);
+      const res = await updatePlace(getValuesTotal().id, dataUpdate);
       if (res) {
         setNotification({
           ...notification,
@@ -286,6 +286,7 @@ const DialogUpdateBeacon = ({
               <Controller
                 control={control}
                 name="beaconMajorNumber"
+                defaultValue={getValues("beaconMajorNumber")}
                 disabled={update}
                 render={({ field, fieldState: { error } }) => (
                   <>
@@ -319,6 +320,7 @@ const DialogUpdateBeacon = ({
               <Controller
                 control={control}
                 name="beaconMinorNumber"
+                defaultValue={getValues("beaconMinorNumber")}
                 disabled={update}
                 render={({ field, fieldState: { error } }) => (
                   <>
@@ -365,8 +367,8 @@ const DialogUpdateBeacon = ({
               <Box key={item.id} marginBottom={2}>
                 <Box display="flex" alignItems="center">
                   <img
-                    src={item.languageIcon}
-                    alt=""
+                    src={getLanguage(item.languageCode)[0]?.icon}
+                    alt={getLanguage(item.languageCode)[0]?.name}
                     style={{
                       width: 20,
                       height: 12,
@@ -375,7 +377,7 @@ const DialogUpdateBeacon = ({
                     }}
                   />
                   <Typography marginLeft={1}>
-                    {item.languageName}{" "}
+                    {getLanguage(item.languageCode)[0]?.name}{" "}
                     <small style={{ color: theme.palette.text.active }}>
                       *
                     </small>
