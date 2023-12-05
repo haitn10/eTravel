@@ -11,23 +11,23 @@ import {
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useFieldArray, useForm } from "react-hook-form";
 
-import { getTourDetails } from "./action";
-
-import SubsLanguage from "./others/details/SubsLanguage";
-import GeneralInfo from "./others/details/GeneralInfo";
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
+import SubsLanguage from "./others/details/SubsLanguage";
+import GeneralInfo from "./others/details/GeneralInfo";
 import Feedback from "./others/details/Feedback";
 import DialogUpdate from "./others/details/DialogUpdate";
+import DialogUpdateLangs from "./others/details/DialogUpdateLangs";
+import DialogNewLangs from "./others/details/DialogNewLangs";
+
+import { getTourDetails } from "./action";
+import { getAllLanguages } from "../languages/action";
 
 import { Update } from "@styled-icons/material-rounded";
 import { Add } from "@styled-icons/ionicons-solid";
-import DialogUpdateLangs from "./others/details/DialogUpdateLangs";
-import { useDispatch } from "react-redux";
-import { getAllLanguages } from "../languages/action";
-import { useFieldArray, useForm } from "react-hook-form";
-import DialogNewLangs from "./others/details/DialogNewLangs";
 
 const TourDetails = () => {
   const theme = useTheme();

@@ -6,13 +6,13 @@ import {
   CircularProgress,
   Skeleton,
   Tab,
+  Typography,
   useTheme,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useLocation } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import dayjs from "dayjs";
 
 import Header from "../common/Header";
 import ErrorModal from "../common/ErrorModal";
@@ -20,9 +20,18 @@ import GeneralInfo from "./others/details/GeneralInfo";
 import MultiLanguages from "./others/details/MultiLanguages";
 import Feedback from "./others/details/Feedback";
 import BeaconSub from "./others/details/BeaconSub";
+import DialogUpdateLang from "./others/details/DialogUpdateLang";
+import DialogNewLang from "./others/details/DialogNewLang";
+import DialogNewBeacon from "./others/details/DialogNewBeacon";
 
-import { getLanguages } from "../languages/action";
-import { getPlaceDetails, updatePlace } from "./action";
+import { getPlaceDetails } from "./action";
+import { getAllLanguages } from "../languages/action";
+
+import { Update } from "@styled-icons/material-rounded";
+import { Add } from "@styled-icons/ionicons-solid";
+import DialogUpdateBeacon from "./others/details/DialogUpdateBeacon";
+import DialogUpdate from "./others/details/DialogUpdate";
+import { getCategoriesAll } from "../categories/action";
 
 const PlaceDetails = () => {
   const theme = useTheme();
@@ -30,13 +39,21 @@ const PlaceDetails = () => {
   const { state } = useLocation();
   const { placeId } = state;
 
-  const [values, setValues] = useState({});
-  const [languagesList, setLanguagesList] = useState([]);
-
+  const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [process, setProcess] = useState(false);
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [showPopupLang, setShowPopupLang] = useState(false);
+  const [showPopupBeacon, setShowPopupBeacon] = useState(false);
+  const [showPopupNewLang, setShowPopupNewLang] = useState(false);
+  const [showPopupNewBeacon, setShowPopupNewBeacon] = useState(false);
+
+  const [values, setValues] = useState({});
+  const [data, setData] = useState({});
   const [number, setNumber] = useState("1");
+  const [beaconIndex, setBeaconIndex] = useState(0);
+  const [languagesList, setLanguagesList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
 
   const [notification, setNotification] = useState({
     errorState: false,
@@ -45,14 +62,19 @@ const PlaceDetails = () => {
   });
 
   const {
-    handleSubmit,
-    register,
     getValues,
+    register,
     reset,
     resetField,
+    handleSubmit,
     control,
     formState: { errors },
   } = useForm();
+
+  const { fields, remove } = useFieldArray({
+    control,
+    name: "placeDescriptions",
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -61,6 +83,10 @@ const PlaceDetails = () => {
         const data = await getPlaceDetails(placeId);
         setValues(data);
         reset(data);
+        const response = await dispatch(getAllLanguages());
+        setLanguagesList(response.languages);
+        const catesList = await dispatch(getCategoriesAll());
+        setCategoryList(catesList.categories);
         setLoading(false);
       } catch (error) {
         setNotification({
@@ -77,115 +103,21 @@ const PlaceDetails = () => {
   }, [placeId]);
 
   useEffect(() => {
-    async function getInfo() {
-      try {
-        const langsList = await dispatch(getLanguages());
-        setLanguagesList(langsList.languages.data);
-      } catch (error) {
-        setNotification({
-          ...notification,
-          errorState: true,
-          errorMessage: "Can't loading details mutil-languages for place!",
-          status: "error",
-        });
-      }
-    }
-    getInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const mergeData = () => {
-    let arrCate = [],
-      arrDesc = [],
-      arrImgs = [],
-      arrBeac = [];
-
-    for (const cate of getValues("placeCategories")) {
-      arrCate.push({ id: cate.id });
-    }
-    for (const desc of getValues("placeDescriptions")) {
-      arrDesc.push({
-        languageCode: desc.languageCode,
-        voiceFile: desc.voiceFile,
-        name: desc.name,
-        description: desc.description,
-      });
-    }
-    for (const beacon of getValues("placeItems")) {
-      arrBeac.push({
-        name: beacon.name,
-        beaconId: beacon.beaconId,
-        image: beacon.image,
-        startTime: dayjs(beacon.startTime).isValid()
-          ? dayjs(beacon.startTime).format("HH:mm:ss")
-          : beacon.startTime,
-        endTime: dayjs(beacon.endTime).isValid()
-          ? dayjs(beacon.endTime).format("HH:mm:ss")
-          : beacon.endTime,
-        beaconMajorNumber: beacon.beaconMajorNumber,
-        beaconMinorNumber: beacon.beaconMinorNumber,
-        itemDescriptions: beacon.itemDescriptions,
-      });
-    }
-    for (const img of values.placeImages) {
-      arrImgs.push({
-        image: img.image,
-        isPrimary: img.isPrimary,
-      });
-    }
-
-    const data = {
-      address: values.address,
-      name: values.name,
-      longitude: values.longitude,
-      latitude: values.latitude,
-      googlePlaceId: values.googlePlaceId,
-      entryTicket: values.entryTicket,
-      price: values.price,
-      hour: dayjs(values.hour).isValid()
-        ? dayjs(values.hour).format("HH:mm:ss")
-        : values.hour,
-      placeCategories: arrCate,
-      placeDescriptions: arrDesc,
-      placeImages: arrImgs,
-      placeTimes: values.placeTimes,
-      placeItems: arrBeac,
-    };
-
-    return data;
-  };
+    reset(values);
+    setData(values);
+  }, [reset, values, showPopupLang, showPopup]);
 
   const handleTabs = (event, newValue) => {
     setNumber(newValue);
   };
 
-  const onSubmit = async () => {
-    try {
-      setProcess(true);
-      const values = mergeData();
+  const filterLanguage = languagesList.filter(
+    (desc) =>
+      !values?.placeDescriptions?.some(
+        (lang) => lang.languageCode === desc.languageCode
+      )
+  );
 
-      const res = await updatePlace(placeId, values);
-      if (res) {
-        reset(res.place);
-        setValues(res.place);
-        setNotification({
-          ...notification,
-          errorState: true,
-          errorMessage: "Update Place Successfully!",
-          status: "success",
-        });
-        setProcess(false);
-      }
-    } catch (e) {
-      setNotification({
-        ...notification,
-        errorState: true,
-        errorMessage: "Update failed!",
-        status: "error",
-      });
-      setProcess(false);
-    }
-  };
   return (
     <Box
       minHeight="94vh"
@@ -197,17 +129,93 @@ const PlaceDetails = () => {
       <ErrorModal
         open={notification.errorState}
         setOpen={setNotification}
-        title="Info"
         message={notification.errorMessage}
         status={notification.status}
       />
 
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={process}
+        sx={{
+          color: "#fff",
+          zIndex: (theme) =>
+            Math.max.apply(Math, Object.values(theme.zIndex)) + 1,
+        }}
+        open={update}
       >
         <CircularProgress color="error" />
       </Backdrop>
+
+      <DialogUpdate
+        dialog={showPopup}
+        setDialog={setShowPopup}
+        setValues={setValues}
+        data={data}
+        categories={categoryList}
+        setData={setData}
+        control={control}
+        register={register}
+        handleSubmit={handleSubmit}
+        errors={errors}
+        getValues={setValues}
+        update={update}
+        setUpdate={setUpdate}
+        notification={notification}
+        setNotification={setNotification}
+      />
+
+      <DialogUpdateLang
+        dialog={showPopupLang}
+        setDialog={setShowPopupLang}
+        setValues={setValues}
+        fields={fields}
+        remove={remove}
+        control={control}
+        resetField={resetField}
+        register={register}
+        errors={errors}
+        getValues={getValues}
+        handleSubmit={handleSubmit}
+        languages={languagesList}
+        update={update}
+        setUpdate={setUpdate}
+        notification={notification}
+        setNotification={setNotification}
+      />
+
+      <DialogNewLang
+        dialog={showPopupNewLang}
+        setDialog={setShowPopupNewLang}
+        setValues={setValues}
+        getValuesTotal={getValues}
+        languages={filterLanguage}
+        update={update}
+        setUpdate={setUpdate}
+        notification={notification}
+        setNotification={setNotification}
+      />
+
+      <DialogUpdateBeacon
+        dialog={showPopupBeacon}
+        setDialog={setShowPopupBeacon}
+        index={beaconIndex}
+        getValues={getValues}
+        languages={languagesList}
+        update={update}
+        setUpdate={setUpdate}
+        notification={notification}
+        setNotification={setNotification}
+      />
+
+      <DialogNewBeacon
+        dialog={showPopupNewBeacon}
+        setDialog={setShowPopupNewBeacon}
+        setValues={setValues}
+        getValuesTotal={getValues}
+        languages={filterLanguage}
+        update={update}
+        setUpdate={setUpdate}
+        notification={notification}
+        setNotification={setNotification}
+      />
 
       <Header
         title={"Place Details"}
@@ -216,129 +224,109 @@ const PlaceDetails = () => {
         showBack={true}
       />
 
-      <Box marginTop={3} marginX={7}>
+      <Box marginX={6} paddingX={3}>
         <TabContext value={number}>
-          {!loading ? (
+          {loading ? (
+            <Skeleton width="100%" height={75} />
+          ) : (
             <Box
               sx={{
+                marginTop: 1,
                 borderBottom: 1,
-                borderTop: 1,
                 borderColor: "divider",
               }}
             >
-              <TabList onChange={handleTabs} aria-label="lab API tabs example">
+              <TabList onChange={handleTabs}>
                 <Tab label="General" value="1" />
                 <Tab label="Languages" value="2" />
                 <Tab label="Beacons" value="3" />
-                <Tab label="Feedback" value="4" />
+                <Tab label="Feedbacks" value="4" />
               </TabList>
             </Box>
-          ) : (
-            <Skeleton width="100%" height={75} />
           )}
           <TabPanel value="1">
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <Box display="flex" justifyContent="end">
               {!loading ? (
-                <>
-                  <GeneralInfo
-                    process={process}
-                    values={values}
-                    setValues={setValues}
-                    control={control}
-                    register={register}
-                    getValues={getValues}
-                    errors={errors}
-                  />
-
-                  <Box
-                    sx={{
-                      marginTop: 5,
-                      display: "flex",
-                      justifyContent: "end",
-                      alignItems: "center",
-                      marginRight: 3,
-                    }}
-                  >
-                    <Button
-                      type="submit"
-                      color="error"
-                      disabled={process}
-                      variant="contained"
-                      sx={{ borderRadius: 2.5 }}
-                    >
-                      Save Changes
-                    </Button>
-                  </Box>
-                </>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  sx={{
+                    borderRadius: 2.5,
+                    height: 40,
+                  }}
+                  startIcon={<Update height={24} />}
+                  onClick={() => setShowPopup(true)}
+                >
+                  <Typography fontWeight="medium">Update</Typography>
+                </Button>
               ) : (
-                <Skeleton width="100%" height={75} />
+                <Skeleton width={100} />
               )}
-            </form>
+            </Box>
+            <GeneralInfo values={values} loading={loading} />
           </TabPanel>
 
           <TabPanel value="2">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <MultiLanguages
-                language={languagesList}
-                loading={loading}
-                control={control}
-                register={register}
-                resetField={resetField}
-                errors={errors}
-                getValues={getValues}
-              />
-              <Box
-                sx={{
-                  marginTop: 5,
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center",
-                  marginRight: 3,
-                }}
-              >
+            <Box display="flex" justifyContent="end" gap={2}>
+              {loading ? (
+                <Skeleton width={100} />
+              ) : (
                 <Button
-                  type="submit"
+                  variant="outlined"
                   color="error"
-                  disabled={process}
-                  variant="contained"
-                  sx={{ borderRadius: 2.5 }}
+                  sx={{
+                    borderRadius: 2.5,
+                    height: 40,
+                  }}
+                  startIcon={<Update height={24} />}
+                  onClick={() => setShowPopupLang(true)}
                 >
-                  Save Changes
+                  <Typography fontWeight="medium">Update</Typography>
                 </Button>
-              </Box>
-            </form>
+              )}
+              {loading ? (
+                <Skeleton width={100} />
+              ) : values?.tourDescriptions?.length < languagesList?.length ? (
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 2.5,
+                    height: 40,
+                  }}
+                  startIcon={<Add height={24} />}
+                  onClick={() => setShowPopupNewLang(true)}
+                >
+                  <Typography fontWeight="medium">New</Typography>
+                </Button>
+              ) : null}
+            </Box>
+            <MultiLanguages values={values} loading={loading} />
           </TabPanel>
 
           <TabPanel value="3">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <BeaconSub
-                language={languagesList}
-                loading={loading}
-                control={control}
-                register={register}
-                errors={errors}
-                getValues={getValues}
-              />
-              <Box
-                sx={{
-                  marginTop: 5,
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center",
-                  marginRight: 3,
-                }}
-              >
+            <Box display="flex" justifyContent="end">
+              {loading ? (
+                <Skeleton width={100} />
+              ) : (
                 <Button
-                  type="submit"
-                  color="error"
-                  disabled={process}
-                  variant="contained"
-                  sx={{ borderRadius: 2.5 }}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 2.5,
+                    height: 40,
+                  }}
+                  startIcon={<Add height={24} />}
+                  onClick={() => setShowPopupNewBeacon(true)}
                 >
-                  Save Changes
+                  <Typography fontWeight="medium">New</Typography>
                 </Button>
-              </Box>
-            </form>
+              )}
+            </Box>
+            <BeaconSub
+              values={values.placeItems}
+              loading={loading}
+              setDialog={setShowPopupBeacon}
+              setBeaconIndex={setBeaconIndex}
+            />
           </TabPanel>
 
           <TabPanel value="4">
@@ -346,6 +334,7 @@ const PlaceDetails = () => {
               id={placeId}
               notification={notification}
               setNotification={setNotification}
+              rating={values?.rate}
             />
           </TabPanel>
         </TabContext>

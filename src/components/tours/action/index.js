@@ -57,7 +57,7 @@ export const getTourComments = async (tourId) => {
 
 export const changeTourState = async (tourId) => {
   try {
-    const { data } = await API.put(`portal/tours/changestatus/${tourId}`);
+    const { data } = await API.put(`portal/itineraries/changestatus/${tourId}`);
     return Promise.resolve(data);
   } catch (e) {
     console.log(e);

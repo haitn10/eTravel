@@ -108,22 +108,32 @@ const HomePage = () => {
           setUser(userData);
         } catch (error) {}
       } else {
-        if (totalAd.length === 0 && nationalAd.length === 0) {
-          setLoading(true);
-          try {
-            const totalDataAdmin = await dispatch(getTotalDataAdmin());
-            setTotalAd(totalDataAdmin.chart);
-            const nationalData = await dispatch(getNationalRank());
-            setNationalAd(nationalData);
-            setLoading(false);
-          } catch (error) {
-            setLoading(false);
-          }
+        if (getDataByDate) {
+          setLoadingData(true);
+        }
+        try {
+          const totalDataAdmin = await dispatch(
+            getTotalDataAdmin({ startTime: startTime, endTime: endTime })
+          );
+          setTotalAd(totalDataAdmin.chart);
+          const nationalData = await dispatch(getNationalRank());
+          setNationalAd(nationalData);
+          setLoading(false);
+          setLoadingData(false);
+        } catch (error) {
+          setLoadingData(false);
+          setLoading(false);
         }
 
         try {
-          const userData = await dispatch(getUserData({ options: option }));
-          setUser(userData.charts);
+          const userData = await dispatch(
+            getUserData({
+              options: optionUser,
+              startTime: startTime,
+              endTime: endTime,
+            })
+          );
+          setUser(userData);
         } catch (error) {}
       }
     }
@@ -281,9 +291,10 @@ const HomePage = () => {
               <ChartUserAnalysis
                 loading={loading}
                 loadingData={loadingData}
-                data={user}
-                option={option}
-                setOption={setOption}
+                time={time}
+                data={user.charts}
+                option={optionUser}
+                setOption={setOptionUser}
               />
             )}
           </Grid>

@@ -12,6 +12,7 @@ import {
   TableBody,
   Typography,
   Paper,
+  alpha,
   useTheme,
 } from "@mui/material";
 import React from "react";
@@ -107,8 +108,7 @@ const GeneralInfo = ({ values, loading }) => {
                 </Typography>
                 <Typography>
                   $
-                  {values?.total
-                    .toFixed(2)
+                  {values?.total?.toFixed(2)
                     .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
                 </Typography>
               </Box>
@@ -205,15 +205,31 @@ const GeneralInfo = ({ values, loading }) => {
                 >
                   Status
                 </Typography>
-                <Typography
-                  color={
-                    values?.status
-                      ? theme.palette.text.onStatus
-                      : theme.palette.text.active
-                  }
-                >
-                  {values?.statusType}statusType
-                </Typography>
+                <Box
+                      display="flex"
+                      alignItems="center"
+                      paddingX={1}
+                      bgcolor={alpha(
+                        values.status
+                          ? theme.palette.text.onStatus
+                          : theme.palette.text.active,
+                        0.2
+                      )}
+                      borderRadius={2.5}
+                    >
+                      <Typography
+                        fontWeight="medium"
+                        fontSize={14}
+                        textTransform="capitalize"
+                        color={
+                          values.status
+                            ? theme.palette.text.onStatus
+                            : theme.palette.text.active
+                        }
+                      >
+                        {values.statusType}
+                      </Typography>
+                    </Box>
               </Box>
             )}
             {loading ? (
@@ -228,7 +244,7 @@ const GeneralInfo = ({ values, loading }) => {
                 >
                   Create Time
                 </Typography>
-                <Typography>
+                <Typography fontSize={14}>
                   {dayjs(values?.createTime).format("MMMM DD, YYYY")}
                 </Typography>
               </Box>
@@ -246,7 +262,7 @@ const GeneralInfo = ({ values, loading }) => {
                 >
                   Update Time
                 </Typography>
-                <Typography>
+                <Typography fontSize={14}>
                   {values?.updateTime
                     ? dayjs(values?.updateTime).format("MMMM DD, YYYY")
                     : "--/--/--"}

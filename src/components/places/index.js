@@ -3,11 +3,12 @@ import { Box, Grid, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
 import { getPlaces } from "./action";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
-import Action from "../common/Action";
+import Actions from "./others/Actions";
 
 import places from "../../constants/tables/places";
 
@@ -16,6 +17,7 @@ const ManagePlaces = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [searchBy, setSearchBy] = useState("name");
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -44,7 +46,7 @@ const ManagePlaces = () => {
           getPlaces({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
-            SearchBy: "name",
+            SearchBy: searchBy,
             Search: search,
           })
         );
@@ -65,7 +67,7 @@ const ManagePlaces = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, pageModelState.page, pageModelState.pageSize]);
+  }, [search, searchBy, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
@@ -79,23 +81,14 @@ const ManagePlaces = () => {
     {
       field: "action",
       headerName: "Actions",
-      width: 120,
+      width: 100,
       align: "center",
       headerAlign: "center",
       sortable: false,
       renderCell: (params) => {
         return (
-          <Action
-            titleAc={"Are you sure you want to activate?"}
-            titleDe={"Are you sure you want to deactivate?"}
-            messageAc={
-              "This action of yours will make this place active again and users can operate directly with this place."
-            }
-            messageDe={
-              "Your action will cause this place to no longer be used in the system."
-            }
+          <Actions
             id={params.row.id}
-            api="portal/places/changestatus"
             status={params.row.status}
             getData={getData}
             notification={notification}
@@ -113,20 +106,21 @@ const ManagePlaces = () => {
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
-      {/* Title */}
-
       <ErrorModal
         open={notification.errorState}
         setOpen={setNotification}
         message={notification.errorMessage}
         status={notification.status}
       />
+
       <Header
         title={"Manage Places"}
         subTitle={"Manage all them existing places or update status."}
         showSearch={true}
+        showFilter={true}
         search={search}
         setSearch={setSearch}
+        setSearchBy={setSearchBy}
       />
 
       {/* Data Table */}

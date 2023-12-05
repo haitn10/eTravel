@@ -2,62 +2,47 @@ import { Box, Typography, alpha } from "@mui/material";
 import { theme } from "../../styles/theme";
 import dayjs from "dayjs";
 
-import { TimeFive } from "@styled-icons/boxicons-regular";
-
-const places = [
-  {
-    field: "id",
-    headerName: "No.",
-    sortable: false,
-    width: 50,
-  },
+const beacons = [
   {
     field: "name",
-    headerName: "Place Name",
+    headerName: "Beacon Name",
     sortable: false,
-    flex: 2,
+    flex: 1.5,
   },
   {
-    field: "languageList",
+    field: "beaconId",
+    headerName: "Beacon ID",
+    sortable: false,
+    flex: 1,
+  },
+  {
+    field: "image",
+    headerName: "Beacon Image",
+    flex: 1,
+    headerAlign: "center",
+    align: "center",
+    sortable: false,
+    renderCell: (params) => (
+      <img
+        src={params.row.image}
+        alt={`${params.row.name}`}
+        style={{
+          width: 100,
+          height: 70,
+          border: `2px solid ${theme.palette.background.third}`,
+        }}
+      />
+    ),
+  },
+
+  {
+    field: "languages",
     headerName: "Num of Languages",
     sortable: false,
     headerAlign: "center",
     align: "center",
     flex: 1,
-    renderCell: (params) => params.row.languageList?.length,
-  },
-  {
-    field: "price",
-    headerName: "Price",
-    sortable: false,
-    headerAlign: "center",
-    align: "center",
-    flex: 1,
-    renderCell: (params) => {
-      return (
-        "$" +
-        params.row.price.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
-      );
-    },
-  },
-  {
-    field: "duration",
-    headerName: "Duration",
-    sortable: false,
-    headerAlign: "center",
-    align: "center",
-    flex: 1,
-    renderCell: (params) => {
-      return (
-        <Box display="flex" alignItems="center" gap={1}>
-          <TimeFive width={14} />
-          {params.row.duration
-            .toFixed(2)
-            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
-          h
-        </Box>
-      );
-    },
+    renderCell: (params) => params.row.itemDescriptions.length,
   },
 
   {
@@ -66,7 +51,7 @@ const places = [
     sortable: false,
     headerAlign: "right",
     align: "right",
-    flex: 1,
+    flex: 0.75,
     renderCell: (params) => dayjs(params.row.createTime).format("ll"),
   },
   {
@@ -81,8 +66,6 @@ const places = [
       if (params.row.status === 0) {
         color = theme.palette.text.active;
       } else if (params.row.status === 1) {
-        color = theme.palette.text.pending;
-      } else if (params.row.status === 2) {
         color = theme.palette.text.onStatus;
       }
 
@@ -110,4 +93,4 @@ const places = [
     },
   },
 ];
-export default places;
+export default beacons;
