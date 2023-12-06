@@ -13,7 +13,3 @@ body,
   min-height: 100vh;
   font-family: "Poppins", sans-serif;
 }
-
-.dragover {
-  opacity: 0.6;
-}
