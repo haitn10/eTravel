@@ -175,14 +175,14 @@ const DialogUpdateLang = ({
                         border: "1px solid #ccc",
                       }}
                     />
-                    <Typography fontWeight="medium" textTransform="uppercase">
+                    <Typography textTransform="uppercase">
                       {getLanguage(item.languageCode)[0]?.name}
                     </Typography>
                   </Box>
                   {fields.length === 1 ? null : (
                     <IconButton
                       color="error"
-                      disabled={update}
+                      disabled={update || item.status === 1}
                       onClick={() => remove(index)}
                       sx={{ marginLeft: 2 }}
                     >
@@ -193,7 +193,7 @@ const DialogUpdateLang = ({
               </Grid>
 
               <Grid item sm={12} lg={3}>
-                <Typography fontWeight="medium">
+                <Typography>
                   Place Name{" "}
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
@@ -222,7 +222,7 @@ const DialogUpdateLang = ({
 
               {/* Tour Decription */}
               <Grid item sm={12} lg={3}>
-                <Typography fontWeight="medium">
+                <Typography>
                   Decription{" "}
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
@@ -258,7 +258,7 @@ const DialogUpdateLang = ({
 
               {/* Voice File */}
               <Grid item sm={12} lg={3}>
-                <Typography fontWeight="medium">
+                <Typography>
                   Voice File{" "}
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
@@ -282,7 +282,7 @@ const DialogUpdateLang = ({
                       validate: (value) => {
                         return (
                           hasDuplicate(value.name) ||
-                          "This file name has been duplicate!"
+                          "This file has been duplicated!"
                         );
                       },
                     }}

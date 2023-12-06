@@ -9,11 +9,10 @@ import {
   Skeleton,
   TextField,
   Typography,
-  Tooltip,
   alpha,
   useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Controller, useFieldArray } from "react-hook-form";
 
 import { Add } from "@styled-icons/ionicons-outline";
@@ -32,20 +31,11 @@ const MultiLanguages = ({
   errors,
 }) => {
   const theme = useTheme();
-  const [isDuplicateName, setIsDuplicateName] = useState(true);
   const { fields, append, remove } = useFieldArray({
     control,
     name: "placeDescriptions",
   });
   const MAXIMUM_FILE_SIZE = 70 * 1024 * 1024;
-
-  useEffect(() => {
-    const formData = getValues();
-    for (const data of formData.placeDescriptions) {
-      hasDuplicateVoiceFile(data.voiceFile?.name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const hasDuplicate = () => {
     const formData = getValues();
@@ -60,17 +50,19 @@ const MultiLanguages = ({
     return true;
   };
 
-  const hasDuplicateVoiceFile = async (nameFile) => {
+  const hasDuplicateVoiceFile = async () => {
     const formData = getValues();
     const languageCodes = new Set();
     for (const data of formData.placeDescriptions) {
       if (languageCodes.has(data.voiceFile?.name)) {
-        return setIsDuplicateName(false);
+        return false;
       }
       languageCodes.add(data.voiceFile?.name);
     }
-    return;
+    return true;
   };
+
+  console.log(errors);
 
   return (
     <Box padding={5} marginX={10}>
@@ -140,11 +132,7 @@ const MultiLanguages = ({
                                 </MenuItem>
                               ))}
                             </Select>
-                            <FormHelperText
-                              htmlFor="render-select"
-                              error
-                              sx={{ marginLeft: 2 }}
-                            >
+                            <FormHelperText error sx={{ marginLeft: 2 }}>
                               {error?.message}
                             </FormHelperText>
                           </>
@@ -283,33 +271,29 @@ const MultiLanguages = ({
                             rules={{
                               required: "Voice file is required!",
                               validate: (e) => {
-                                console.log(e);
-                                hasDuplicateVoiceFile(e.name);
                                 return (
-                                  (e.size < MAXIMUM_FILE_SIZE &&
-                                    isDuplicateName) ||
-                                  "This file name already exists in the system!"
+                                  (hasDuplicateVoiceFile() &&
+                                    e.size < MAXIMUM_FILE_SIZE) ||
+                                  "This file has been duplicated!"
                                 );
                               },
                             }}
-                            render={({ field }) => (
+                            render={({ field, fieldState: { error } }) => (
                               <>
                                 {field.value ? (
                                   <Box display="flex" alignItems="center">
-                                    {isDuplicateName ? (
+                                    {!!!error ? (
                                       <CloudCheckmark
                                         height={24}
                                         color={theme.palette.text.onStatus}
                                         style={{ margin: 10 }}
                                       />
                                     ) : (
-                                      <Tooltip title="This file name already exist or File is not mp3!">
-                                        <CloudDismiss
-                                          height={24}
-                                          color={theme.palette.text.active}
-                                          style={{ margin: 10 }}
-                                        />
-                                      </Tooltip>
+                                      <CloudDismiss
+                                        height={24}
+                                        color={theme.palette.text.active}
+                                        style={{ margin: 10 }}
+                                      />
                                     )}
                                     <Typography noWrap>
                                       {field.value?.name}

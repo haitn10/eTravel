@@ -10,16 +10,57 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import ReactMapGL, {
+  Marker,
+  Popup,
+  GeolocateControl,
+  ScaleControl,
+  NavigationControl,
+} from "@goongmaps/goong-map-react";
 
 import { labels } from "../../../../constants/rating";
 import date from "../../../../constants/date";
-import MapCoordinates from "./MapCoordinates";
+import { GOONG_MAPTILES_KEY } from "../../../../api";
+
 import { StarFill } from "@styled-icons/bootstrap";
+import PlaceInfo from "../../../common/PlaceInfo";
+
+const geolocateStyle = {
+  top: 0,
+  left: 0,
+  padding: "10px",
+};
+
+const navStyle = {
+  top: 72,
+  left: 0,
+  padding: "10px",
+};
+
+const scaleControlStyle = {
+  bottom: 36,
+  left: 0,
+  padding: "10px",
+};
 
 const GeneralInfo = ({ values, loading }) => {
   const theme = useTheme();
+  const [popupInfo, setPopupInfo] = useState(null);
+  const [viewport, setViewport] = useState({
+    latitude: 10.762622,
+    longitude: 106.660172,
+    zoom: 14,
+  });
+
+  useEffect(() => {
+    setViewport({
+      latitude: values?.latitude,
+      longitude: values?.longitude,
+      zoom: 14,
+    });
+  }, [values]);
 
   const data = () => {
     const newDateOfWeek = [];
@@ -160,7 +201,7 @@ const GeneralInfo = ({ values, loading }) => {
                   Duration{" "}
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
-                <Typography>{values?.placeItems?.length}</Typography>
+                <Typography>{values?.hour}</Typography>
               </Box>
             )}
 
@@ -310,16 +351,16 @@ const GeneralInfo = ({ values, loading }) => {
                     </Typography>
                     <Box
                       paddingX={1}
-                      bgcolor={alpha(color(values.status), 0.2)}
+                      bgcolor={alpha(color(values?.status), 0.2)}
                       borderRadius={2.5}
                     >
                       <Typography
                         fontWeight="medium"
                         fontSize={14}
                         textTransform="capitalize"
-                        color={color(values.status)}
+                        color={color(values?.status)}
                       >
-                        {values.statusType}
+                        {values?.statusType}
                       </Typography>
                     </Box>
                   </>
@@ -343,7 +384,7 @@ const GeneralInfo = ({ values, loading }) => {
                       <Rating
                         readOnly
                         size="small"
-                        value={values.rate || 0}
+                        value={values?.rate || 0}
                         precision={0.5}
                         sx={{
                           ".MuiRating-icon": {
@@ -355,7 +396,7 @@ const GeneralInfo = ({ values, loading }) => {
                         }}
                       />
                       <Typography marginLeft={1} fontSize={14}>
-                        ({labels[values.rate || 0]})
+                        ({labels[values?.rate || 0]})
                       </Typography>
                     </Box>
                   </>
@@ -456,7 +497,82 @@ const GeneralInfo = ({ values, loading }) => {
       </Grid>
 
       <Grid item md={12} lg={6}>
-        <MapCoordinates loading={loading} />
+        <Box>
+          {loading ? (
+            <Skeleton width={150} />
+          ) : (
+            <Typography
+              fontSize={14}
+              letterSpacing={0.5}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+            >
+              Place in Map
+            </Typography>
+          )}
+          <Box padding={2}>
+            {loading ? (
+              <Skeleton variant="rounded" width="100%" height={400} />
+            ) : (
+              <Box
+                border={1}
+                borderColor={theme.palette.background.third}
+                borderRadius={2.5}
+                padding={1}
+                height={400}
+              >
+                <ReactMapGL
+                  {...viewport}
+                  width="100%"
+                  height="100%"
+                  borderRadius={5}
+                  onViewportChange={setViewport}
+                  goongApiAccessToken={GOONG_MAPTILES_KEY}
+                >
+                  <Marker
+                    longitude={values?.longitude}
+                    latitude={values?.latitude}
+                  >
+                    <svg
+                      height={20}
+                      viewBox="0 0 24 24"
+                      style={{
+                        cursor: "pointer",
+                        fill: "#d00",
+                        stroke: "none",
+                        transform: `translate(${-20 / 2}px,${-20}px)`,
+                      }}
+                      onClick={() => setPopupInfo(values)}
+                    >
+                      <path
+                        d={`M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,4.5,2,10c0,2,0.6,3.9,1.6,5.4c0,0.1,0.1,0.2,0.2,0.3
+  c0,0,0.1,0.1,0.1,0.2c0.2,0.3,0.4,0.6,0.7,0.9c2.6,3.1,7.4,7.6,7.4,7.6s4.8-4.5,7.4-7.5c0.2-0.3,0.5-0.6,0.7-0.9
+  C20.1,15.8,20.2,15.8,20.2,15.7z`}
+                      />
+                    </svg>
+                  </Marker>
+
+                  {popupInfo && (
+                    <Popup
+                      tipSize={5}
+                      anchor="top"
+                      longitude={popupInfo?.longitude}
+                      latitude={popupInfo?.latitude}
+                      closeOnClick={false}
+                      onClose={setPopupInfo}
+                    >
+                      <PlaceInfo info={popupInfo} />
+                    </Popup>
+                  )}
+                  <GeolocateControl style={geolocateStyle} />
+                  <NavigationControl style={navStyle} />
+                  <ScaleControl style={scaleControlStyle} />
+                </ReactMapGL>
+              </Box>
+            )}
+          </Box>
+        </Box>
 
         <Box>
           {loading ? (

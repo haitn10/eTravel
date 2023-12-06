@@ -23,16 +23,19 @@ import dayjs from "dayjs";
 
 import { CloudArrowUp } from "@styled-icons/fluentui-system-regular";
 
-import { getPlaceItem, updatePlace } from "../../action";
+import { updatePlace } from "../../action";
 
 import { imageFileTypes } from "../../../../constants/fileType";
 
 const DialogUpdateBeacon = ({
   dialog,
   setDialog,
-  index,
-  getValuesTotal,
+  setValues,
+  location,
+  locationIndex,
   languages,
+  updateItem,
+  getValuesTotal,
   update,
   setUpdate,
   notification,
@@ -47,30 +50,16 @@ const DialogUpdateBeacon = ({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm({ defaultValue: {} });
+  } = useForm();
+
+  useEffect(() => {
+    reset(location);
+  }, [location, reset]);
 
   const { fields } = useFieldArray({
     control: control,
     name: "itemDescriptions",
   });
-
-  useEffect(() => {
-    async function getInfo() {
-      try {
-        const data = await getPlaceItem(index);
-        reset(data);
-      } catch (error) {
-        // setNotification({
-        //   ...notification,
-        //   errorState: true,
-        //   errorMessage: "Can't get data details for place!",
-        //   status: "error",
-        // });
-      }
-    }
-    getInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index]);
 
   const previewImage = (image) => {
     if (image instanceof File && imageFileTypes.includes(image.type)) {
@@ -82,26 +71,96 @@ const DialogUpdateBeacon = ({
   const getLanguage = (code) =>
     languages.filter((desc) => desc.languageCode === code);
 
+  const checkTime = (time) => {
+    return dayjs(time).isValid()
+      ? dayjs(time).isAfter(
+          dayjs(
+            dayjs(getValues("startTime")).isValid()
+              ? getValues("startTime")
+              : "2022-04-17T" + getValues("startTime")
+          )
+        )
+      : dayjs("2022-04-17T" + time).isAfter(
+          dayjs(
+            dayjs(getValues("startTime")).isValid()
+              ? getValues("startTime")
+              : "2022-04-17T" + getValues("startTime")
+          )
+        );
+  };
+
   const onUpdate = async () => {
+    updateItem(`placeItems.${locationIndex}`, getValues());
     let dataUpdate = {
       name: getValuesTotal("name"),
-      image: getValuesTotal("image"),
-      total: getValuesTotal("total"),
-      tourDetails: [],
-      tourDescriptions: getValuesTotal("tourDescriptions"),
+      longitude: getValuesTotal("longitude"),
+      latitude: getValuesTotal("latitude"),
+      address: getValuesTotal("address"),
+      hour: getValuesTotal("hour"),
+      googlePlaceId: getValuesTotal("googlePlaceId"),
+      price: getValuesTotal("price"),
+      entryTicket: getValuesTotal("entryTicket"),
+      placeCategories: [],
+      placeImages: [],
+      placeDescriptions: [],
+      placeTimes: [],
+      placeItems: [],
     };
-    for (const place of getValuesTotal("tourDetails")) {
-      dataUpdate.tourDetails.push({ id: place.id, price: place.price });
+
+    for (const cate of getValuesTotal("placeCategories")) {
+      dataUpdate.placeCategories.push({ id: cate.id });
+    }
+
+    for (const img of getValuesTotal("placeImages")) {
+      dataUpdate.placeImages.push({
+        image: img.image,
+        isPrimary: img.isPrimary,
+      });
+    }
+
+    for (const desc of getValuesTotal("placeDescriptions")) {
+      dataUpdate.placeDescriptions.push({
+        languageCode: desc.languageCode,
+        voiceFile: desc.voiceFile,
+        name: desc.name,
+        description: desc.description,
+      });
+    }
+
+    for (const time of getValuesTotal("placeTimes")) {
+      dataUpdate.placeTimes.push({
+        daysOfWeek: time.daysOfWeek,
+        openTime: time.openTime,
+        endTime: time.endTime,
+      });
+    }
+
+    for (const item of getValuesTotal("placeItems")) {
+      dataUpdate.placeItems.push({
+        name: item.name,
+        beaconId: item.beaconId,
+        image: item.image,
+        startTime: dayjs(item.startTime).isValid()
+          ? dayjs(item.startTime).format("HH:mm:ss")
+          : item.startTime,
+        endTime: dayjs(item.endTime).isValid()
+          ? dayjs(item.endTime).format("HH:mm:ss")
+          : item.endTime,
+        beaconMajorNumber: item.beaconMajorNumber,
+        beaconMinorNumber: item.beaconMinorNumber,
+        itemDescriptions: item.itemDescriptions,
+      });
     }
 
     try {
       setUpdate(true);
       const res = await updatePlace(getValuesTotal().id, dataUpdate);
+      setValues(res.place);
       if (res) {
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: "Updated itinerary successfully!",
+          errorMessage: "Updated location successfully!",
           status: "success",
         });
         setUpdate(false);
@@ -125,26 +184,25 @@ const DialogUpdateBeacon = ({
       sx={{ "& .MuiDialog-paper": { overflowY: "hidden" } }}
       onClose={() => setDialog(false)}
     >
-      <DialogTitle>Update Beacon</DialogTitle>
+      <DialogTitle>Location Details & Update</DialogTitle>
 
       <DialogContent sx={{ paddingX: 10 }}>
         <Grid container spacing={3}>
           <Grid item sm={12} lg={6}>
-            <Box>
-              <Typography
-                fontSize={14}
-                letterSpacing={0.5}
-                fontWeight="medium"
-                textTransform="uppercase"
-                color={theme.palette.text.third}
-              >
-                Beacon Information
-              </Typography>
-            </Box>
+            <Typography
+              fontSize={14}
+              letterSpacing={0.5}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+              marginBottom={1}
+            >
+              Location Information
+            </Typography>
 
             <Box marginBottom={2}>
               <Typography marginLeft={1}>
-                Beacon Name{" "}
+                Location Name{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
               <TextField
@@ -248,7 +306,7 @@ const DialogUpdateBeacon = ({
                   validate: (value) => {
                     return (
                       (!dayjs(value).isSame(dayjs("2022-04-17T00:00:00")) &&
-                        dayjs(value).isAfter(dayjs(getValues("startTime")))) ||
+                        checkTime(value)) ||
                       "End time must be different from 00:00:00 and must be greater than start time!"
                     );
                   },
@@ -286,32 +344,29 @@ const DialogUpdateBeacon = ({
               <Controller
                 control={control}
                 name="beaconMajorNumber"
-                defaultValue={getValues("beaconMajorNumber")}
                 disabled={update}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    <Select
-                      {...field}
-                      fullWidth
-                      size="small"
-                      sx={{
-                        borderRadius: 2.5,
-                      }}
-                      error={!!error}
-                    >
-                      <MenuItem value={0}>0</MenuItem>
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                    </Select>
-                    <FormHelperText
-                      htmlFor="render-select"
-                      error
-                      sx={{ marginLeft: 2 }}
-                    >
-                      {error?.message}
-                    </FormHelperText>
-                  </>
-                )}
+                render={({ field, fieldState: { error } }) => {
+                  return (
+                    <>
+                      <Select
+                        {...field}
+                        fullWidth
+                        size="small"
+                        sx={{
+                          borderRadius: 2.5,
+                        }}
+                        error={!!error}
+                      >
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                      </Select>
+                      <FormHelperText error sx={{ marginLeft: 2 }}>
+                        {error?.message}
+                      </FormHelperText>
+                    </>
+                  );
+                }}
               />
             </Box>
 
@@ -320,52 +375,52 @@ const DialogUpdateBeacon = ({
               <Controller
                 control={control}
                 name="beaconMinorNumber"
-                defaultValue={getValues("beaconMinorNumber")}
                 disabled={update}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    <Select
-                      {...field}
-                      fullWidth
-                      size="small"
-                      sx={{
-                        borderRadius: 2.5,
-                      }}
-                      error={!!error}
-                    >
-                      <MenuItem value={0}>0</MenuItem>
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                    </Select>
-                    <FormHelperText
-                      htmlFor="render-select"
-                      error
-                      sx={{ marginLeft: 2 }}
-                    >
-                      {error?.message}
-                    </FormHelperText>
-                  </>
-                )}
+                render={({ field, fieldState: { error } }) => {
+                  return (
+                    <>
+                      <Select
+                        {...field}
+                        fullWidth
+                        size="small"
+                        sx={{
+                          borderRadius: 2.5,
+                        }}
+                        error={!!error}
+                      >
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                      </Select>
+                      <FormHelperText
+                        htmlFor="render-select"
+                        error
+                        sx={{ marginLeft: 2 }}
+                      >
+                        {error?.message}
+                      </FormHelperText>
+                    </>
+                  );
+                }}
               />
             </Box>
           </Grid>
 
           <Grid item sm={12} lg={6}>
-            <Box>
-              <Typography
-                fontSize={14}
-                letterSpacing={0.5}
-                fontWeight="medium"
-                textTransform="uppercase"
-                color={theme.palette.text.third}
-              >
-                Beacon Name Follow Language
-              </Typography>
-            </Box>
+            <Typography
+              fontSize={14}
+              letterSpacing={0.5}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+              marginBottom={1}
+            >
+              Location Name Follow Language
+            </Typography>
 
             {fields.map((item, index) => (
               <Box key={item.id} marginBottom={2}>
-                <Box display="flex" alignItems="center">
+                <Box display="flex" alignItems="center" marginLeft={1}>
                   <img
                     src={getLanguage(item.languageCode)[0]?.icon}
                     alt={getLanguage(item.languageCode)[0]?.name}
@@ -403,7 +458,9 @@ const DialogUpdateBeacon = ({
                   helperText={
                     errors?.itemDescriptions?.[index]?.nameItem?.message
                   }
-                  placeholder={`Name by ${item.languageName}`}
+                  placeholder={`Name by ${
+                    getLanguage(item.languageCode)[0]?.name
+                  }`}
                 />
               </Box>
             ))}

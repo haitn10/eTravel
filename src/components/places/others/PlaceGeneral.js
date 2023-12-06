@@ -165,6 +165,9 @@ const PlaceGeneral = ({
                 value={values.name}
                 {...register("name", {
                   required: "Place Name is required!",
+                  validate: (value) => {
+                    return value.trim() !== "" || "Place name is not empty!";
+                  },
                   onChange: (e) =>
                     setValues({ ...values, name: e.target.value }),
                 })}
@@ -251,6 +254,9 @@ const PlaceGeneral = ({
                 value={values.price}
                 {...register("price", {
                   required: "Price is required!",
+                  validate: (value) => {
+                    return Number(value) !== 0 || "Price greater than 0!";
+                  },
                   onChange: (e) =>
                     setValues({ ...values, price: Number(e.target.value) }),
                 })}
@@ -324,7 +330,9 @@ const PlaceGeneral = ({
                 rules={{
                   validate: (value) => {
                     return (
-                      !dayjs(value).isSame(dayjs("2022-04-17T00:00")) ||
+                      (!dayjs(value).isSame(dayjs("2022-04-17T00:00")) &&
+                        dayjs(value).isValid() &&
+                        value !== null) ||
                       "Duration is required!"
                     );
                   },

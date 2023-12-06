@@ -51,7 +51,7 @@ const PlaceDetails = () => {
   const [values, setValues] = useState({});
   const [data, setData] = useState({});
   const [number, setNumber] = useState("1");
-  const [beaconIndex, setBeaconIndex] = useState(0);
+  const [beaconId, setBeaconId] = useState("");
   const [languagesList, setLanguagesList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
 
@@ -65,15 +65,22 @@ const PlaceDetails = () => {
     getValues,
     register,
     reset,
+    setValue,
     resetField,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm({ defaultValue: { placeCategories: [] } });
 
-  const { fields, remove } = useFieldArray({
+  const { fields: fieldsDescriptions, remove: removeDescriptions } =
+    useFieldArray({
+      control,
+      name: "placeDescriptions",
+    });
+
+  const { fields: fieldsItems, remove: removeItems } = useFieldArray({
     control,
-    name: "placeDescriptions",
+    name: "placeItems",
   });
 
   useEffect(() => {
@@ -105,19 +112,21 @@ const PlaceDetails = () => {
   useEffect(() => {
     reset(values);
     setData(values);
-  }, [reset, values, showPopupLang, showPopup]);
+  }, [reset, values, showPopup, showPopupLang, showPopupBeacon]);
 
   const handleTabs = (event, newValue) => {
     setNumber(newValue);
   };
 
-  const filterLanguage = languagesList.filter(
+  const filterLanguage = languagesList?.filter(
     (desc) =>
       !values?.placeDescriptions?.some(
         (lang) => lang.languageCode === desc.languageCode
       )
   );
 
+  const filterItem = fieldsItems?.filter((item) => item.id === beaconId);
+  const IndexItem = fieldsItems?.findIndex((item) => item.id === beaconId);
   return (
     <Box
       minHeight="94vh"
@@ -155,7 +164,7 @@ const PlaceDetails = () => {
         register={register}
         handleSubmit={handleSubmit}
         errors={errors}
-        getValues={setValues}
+        getValues={getValues}
         update={update}
         setUpdate={setUpdate}
         notification={notification}
@@ -166,8 +175,8 @@ const PlaceDetails = () => {
         dialog={showPopupLang}
         setDialog={setShowPopupLang}
         setValues={setValues}
-        fields={fields}
-        remove={remove}
+        fields={fieldsDescriptions}
+        remove={removeDescriptions}
         control={control}
         resetField={resetField}
         register={register}
@@ -196,9 +205,12 @@ const PlaceDetails = () => {
       <DialogUpdateBeacon
         dialog={showPopupBeacon}
         setDialog={setShowPopupBeacon}
-        index={beaconIndex}
-        getValues={getValues}
+        setValues={setValues}
+        location={filterItem[0]}
+        locationIndex={IndexItem}
         languages={languagesList}
+        updateItem={setValue}
+        getValuesTotal={getValues}
         update={update}
         setUpdate={setUpdate}
         notification={notification}
@@ -286,7 +298,7 @@ const PlaceDetails = () => {
               )}
               {loading ? (
                 <Skeleton width={100} />
-              ) : values?.tourDescriptions?.length < languagesList?.length ? (
+              ) : values?.placeDescriptions?.length < languagesList?.length ? (
                 <Button
                   variant="outlined"
                   sx={{
@@ -322,10 +334,11 @@ const PlaceDetails = () => {
               )}
             </Box>
             <BeaconSub
-              values={values.placeItems}
+              values={fieldsItems}
               loading={loading}
               setDialog={setShowPopupBeacon}
-              setBeaconIndex={setBeaconIndex}
+              setBeaconId={setBeaconId}
+              remove={removeItems}
             />
           </TabPanel>
 
