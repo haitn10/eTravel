@@ -4,7 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import beacons from "../../../../constants/tables/beacons";
 
-const BeaconSub = ({ values, loading, setDialog, setBeaconIndex }) => {
+const BeaconSub = ({ values, loading, setDialog, setBeaconId }) => {
   const theme = useTheme();
 
   return (
@@ -33,14 +33,13 @@ const BeaconSub = ({ values, loading, setDialog, setBeaconIndex }) => {
           columns={beacons}
           rows={values}
           loading={loading}
-          pageSizeOptions={[5, 10]}
           onRowClick={(params) => {
-            setBeaconIndex(params.id);
+            setBeaconId(params.id);
             setDialog(true);
           }}
           sx={{
             border: 0,
-            minHeight: "60vh",
+            minHeight: "55vh",
             "& .MuiDataGrid-row:hover": {
               cursor: "pointer",
             },

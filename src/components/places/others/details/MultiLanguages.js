@@ -40,7 +40,11 @@ const MultiLanguages = ({ values, loading }) => {
               {loading ? (
                 <Skeleton width={200} />
               ) : (
-                <Box display="flex" alignItems="center" justifyContent='space-between'>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
                   <Box display="flex" alignItems="center">
                     <img
                       src={item?.languageIcon}
@@ -126,17 +130,23 @@ const MultiLanguages = ({ values, loading }) => {
 
             {/* Voice File */}
             <Grid item xs={12} md={3} lg={2}>
-              <Typography
-                fontSize={14}
-                fontWeight="medium"
-                color={theme.palette.text.third}
-              >
-                Voice File{" "}
-                <small style={{ color: theme.palette.text.active }}>*</small>
-              </Typography>
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : (
+                <Typography
+                  fontSize={14}
+                  fontWeight="medium"
+                  color={theme.palette.text.third}
+                >
+                  Voice File{" "}
+                  <small style={{ color: theme.palette.text.active }}>*</small>
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={12} md={9} lg={10}>
-              {item.status === 1 ? (
+              {loading ? (
+                <Skeleton width="100%" />
+              ) : item.status === 1 ? (
                 <Box>
                   <Typography fontSize={14} color={theme.palette.text.third}>
                     The voice file is converting...

@@ -167,6 +167,33 @@ export const getPlaceItem = async (itemId) => {
   }
 };
 
+export const updatePlaceItem = async (locationId, values) => {
+  try {
+    setState({ isFetching: true });
+
+    if (values.image instanceof File) {
+      let formData = new FormData();
+      formData.append("file", values.image);
+      const { data } = await uploadFile(
+        formData,
+        `place/PlaceItemImg/${values.name}`
+      );
+      values.image = data.imageFiles[0].fileLink;
+    }
+
+    const { data } = await API.put(
+      `portal/places/placeitem/${locationId}`,
+      values
+    );
+
+    setState({ isFetching: false });
+    return Promise.resolve(data);
+  } catch (e) {
+    setState({ isFetching: false });
+    return Promise.reject(e);
+  }
+};
+
 export const changePlaceState = async (tourId, status) => {
   try {
     const { data } = await API.put(

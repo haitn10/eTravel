@@ -89,6 +89,7 @@ const Login = () => {
             variant="outlined"
             name="username"
             type="text"
+            disabled={loading}
             value={username}
             onChange={(e) => setUserName(e.target.value)}
             placeholder="e.g admin123"
@@ -102,6 +103,7 @@ const Login = () => {
             variant="outlined"
             name="password"
             type="password"
+            disabled={loading}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Type your password"
