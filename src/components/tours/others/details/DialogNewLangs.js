@@ -17,6 +17,7 @@ import {
 import React from "react";
 import { updateTour } from "../../action";
 import { Controller, useForm } from "react-hook-form";
+import dayjs from "dayjs";
 
 const DialogNewLangs = ({
   dialog,
@@ -52,15 +53,23 @@ const DialogNewLangs = ({
       image: getValuesTotal("image"),
       total: getValuesTotal("total"),
       tourDetails: [],
-      tourDescriptions: [getValues()],
+      tourDescriptions: [],
     };
     for (const desc of getValuesTotal("tourDescriptions")) {
       dataUpdate.tourDescriptions.push({
         name: desc.name,
         description: desc.description,
         languageCode: desc.languageCode,
+        createTime: desc.createTime,
       });
     }
+
+    dataUpdate.tourDescriptions.push({
+      name: getValues().name,
+      description: getValues().description,
+      languageCode: getValues().languageCode,
+      createTime: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+    });
     for (const place of getValuesTotal("tourDetails")) {
       dataUpdate.tourDetails.push({ id: place.id, price: place.price });
     }
