@@ -78,7 +78,7 @@ const PlaceDetails = () => {
       name: "placeDescriptions",
     });
 
-  const { fields: fieldsItems, remove: removeItems } = useFieldArray({
+  const { fields: fieldsItems } = useFieldArray({
     control,
     name: "placeItems",
   });
@@ -112,7 +112,7 @@ const PlaceDetails = () => {
   useEffect(() => {
     reset(values);
     setData(values);
-  }, [reset, values, showPopup, showPopupLang, showPopupBeacon]);
+  }, [reset, values]);
 
   const handleTabs = (event, newValue) => {
     setNumber(newValue);
@@ -334,11 +334,18 @@ const PlaceDetails = () => {
               )}
             </Box>
             <BeaconSub
+              placeName={values.name}
               values={fieldsItems}
               loading={loading}
+              getValues={getValues}
+              setValues={setValues}
               setDialog={setShowPopupBeacon}
+              locationIndex={IndexItem}
               setBeaconId={setBeaconId}
-              remove={removeItems}
+              update={update}
+              setUpdate={setUpdate}
+              notification={notification}
+              setNotification={setNotification}
             />
           </TabPanel>
 

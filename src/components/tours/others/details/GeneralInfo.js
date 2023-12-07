@@ -4,23 +4,28 @@ import {
   Grid,
   Rating,
   Skeleton,
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   Typography,
-  Paper,
   alpha,
   useTheme,
 } from "@mui/material";
 import React from "react";
-import { labels } from "../../../../constants/rating";
 import dayjs from "dayjs";
+import { DataGrid } from "@mui/x-data-grid";
+import { useNavigate } from "react-router-dom";
+
+import { labels } from "../../../../constants/rating";
+import placeSub from "../../../../constants/tables/placeSub";
+import TableSkeletion from "../../../common/skeletion/TableSkeletion";
+import CustomNoRowsOverlay from "../../../common/CustomNoRowsOverlay";
 
 const GeneralInfo = ({ values, loading }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
+  const onNavigate = (params) => {
+    navigate("/places/details", { state: { placeId: params.row.id } });
+  };
+
   return (
     <Box>
       <Grid container columnSpacing={5}>
@@ -39,7 +44,7 @@ const GeneralInfo = ({ values, loading }) => {
               Illustration Image
             </Typography>
           )}
-          <Box padding={1}>
+          <Box padding={1} display="flex" justifyContent="center">
             {loading ? (
               <Skeleton variant="rounded" width="100%" height={200}>
                 <Avatar />
@@ -47,7 +52,7 @@ const GeneralInfo = ({ values, loading }) => {
             ) : values?.image ? (
               <img
                 src={values?.image}
-                style={{ width: "100%", borderRadius: 2.5 }}
+                style={{ maxWidth: "100%", maxHeight: 350, borderRadius: 2.5 }}
                 alt=""
               />
             ) : (
@@ -108,7 +113,8 @@ const GeneralInfo = ({ values, loading }) => {
                 </Typography>
                 <Typography>
                   $
-                  {values?.total?.toFixed(2)
+                  {values?.total
+                    ?.toFixed(2)
                     .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
                 </Typography>
               </Box>
@@ -158,7 +164,7 @@ const GeneralInfo = ({ values, loading }) => {
                 >
                   Number of Feedbacks
                 </Typography>
-                <Typography>{values?.tourDetails?.length}</Typography>
+                <Typography>{values?.feedBacks?.length}</Typography>
               </Box>
             )}
 
@@ -206,30 +212,30 @@ const GeneralInfo = ({ values, loading }) => {
                   Status
                 </Typography>
                 <Box
-                      display="flex"
-                      alignItems="center"
-                      paddingX={1}
-                      bgcolor={alpha(
-                        values.status
-                          ? theme.palette.text.onStatus
-                          : theme.palette.text.active,
-                        0.2
-                      )}
-                      borderRadius={2.5}
-                    >
-                      <Typography
-                        fontWeight="medium"
-                        fontSize={14}
-                        textTransform="capitalize"
-                        color={
-                          values.status
-                            ? theme.palette.text.onStatus
-                            : theme.palette.text.active
-                        }
-                      >
-                        {values.statusType}
-                      </Typography>
-                    </Box>
+                  display="flex"
+                  alignItems="center"
+                  paddingX={1}
+                  bgcolor={alpha(
+                    values.status
+                      ? theme.palette.text.onStatus
+                      : theme.palette.text.active,
+                    0.2
+                  )}
+                  borderRadius={2.5}
+                >
+                  <Typography
+                    fontWeight="medium"
+                    fontSize={14}
+                    textTransform="capitalize"
+                    color={
+                      values.status
+                        ? theme.palette.text.onStatus
+                        : theme.palette.text.active
+                    }
+                  >
+                    {values.statusType}
+                  </Typography>
+                </Box>
               </Box>
             )}
             {loading ? (
@@ -274,58 +280,50 @@ const GeneralInfo = ({ values, loading }) => {
 
         {/* Place */}
         <Grid item xs={12}>
-          {loading ? (
-            <Skeleton width={150} />
-          ) : (
-            <Typography
-              fontSize={14}
-              letterSpacing={0.5}
-              fontWeight="medium"
-              textTransform="uppercase"
-              color={theme.palette.text.third}
-            >
-              Place List
-            </Typography>
-          )}
-          <Box padding={1}>
+          <Box marginTop={2}>
             {loading ? (
-              <Skeleton width="100%" variant="rounded" height={400} />
+              <Skeleton width={150} />
             ) : (
-              <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
-                <Table sx={{ minWidth: 550 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell width={40}>PlaceId</TableCell>
-                      <TableCell>Place Name</TableCell>
-                      <TableCell>Price</TableCell>
-                      <TableCell align="right">Rating</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {values.tourDetails?.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell>{row.id}</TableCell>
-                        <TableCell component="th" scope="row">
-                          {row.name}
-                        </TableCell>
-                        <TableCell>
-                          $
-                          {row.price
-                            .toFixed(2)
-                            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}
-                        </TableCell>
-                        <TableCell align="right">{row.carbs}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <Typography
+                fontSize={14}
+                letterSpacing={0.5}
+                fontWeight="medium"
+                textTransform="uppercase"
+                color={theme.palette.text.third}
+              >
+                Place List
+              </Typography>
             )}
+            <Box padding={1} width="99.5%">
+              {loading ? (
+                <TableSkeletion rowsNum={5} columnsNum={5} />
+              ) : (
+                <DataGrid
+                  disableColumnMenu
+                  disableRowSelectionOnClick
+                  columns={placeSub}
+                  rows={values?.tourDetails}
+                  autoPageSize
+                  pagination
+                  slots={{ noRowsOverlay: CustomNoRowsOverlay }}
+                  onRowClick={(params) => {
+                    window.scrollTo({ top: 0, left: 0 });
+                    onNavigate(params);
+                  }}
+                  sx={{
+                    border: 0,
+                    minHeight: "55vh",
+                    "& .MuiDataGrid-row:hover": {
+                      cursor: "pointer",
+                    },
+                    "& .MuiDataGrid-cell:focus": {
+                      outline: "none",
+                    },
+                    "--DataGrid-overlayHeight": "300px",
+                  }}
+                />
+              )}
+            </Box>
           </Box>
         </Grid>
       </Grid>

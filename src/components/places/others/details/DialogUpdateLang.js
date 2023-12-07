@@ -178,6 +178,15 @@ const DialogUpdateLang = ({
                     <Typography textTransform="uppercase">
                       {getLanguage(item.languageCode)[0]?.name}
                     </Typography>
+                    {item.status === 1 ? (
+                      <Typography
+                        fontSize={12}
+                        color={theme.palette.text.active}
+                      >
+                       Please wait for the file conversion process to finish to
+                        update this description.
+                      </Typography>
+                    ) : null}
                   </Box>
                   {fields.length === 1 ? null : (
                     <IconButton
@@ -201,7 +210,7 @@ const DialogUpdateLang = ({
               <Grid item sm={12} lg={9}>
                 <TextField
                   fullWidth
-                  disabled={update}
+                  disabled={update || item.status === 1}
                   size="small"
                   InputProps={{
                     style: {
@@ -236,7 +245,7 @@ const DialogUpdateLang = ({
                   rows={12}
                   multiline
                   size="small"
-                  disabled={update}
+                  disabled={update || item.status === 1}
                   InputProps={{
                     style: {
                       borderRadius: 10,
@@ -267,6 +276,7 @@ const DialogUpdateLang = ({
                 <Box display="flex" alignItems="center" gap={2}>
                   <Button
                     component="label"
+                    disabled={update || item.status === 1}
                     sx={{ borderRadius: 2.5, width: 180, height: 35, gap: 0.5 }}
                     htmlFor={`placeDescriptions.${index}.voiceFile`}
                     variant="contained"
@@ -277,6 +287,7 @@ const DialogUpdateLang = ({
                   <Controller
                     name={`placeDescriptions.${index}.voiceFile`}
                     control={control}
+                    disabled={update || item.status === 1}
                     rules={{
                       required: "Voice file is required!",
                       validate: (value) => {

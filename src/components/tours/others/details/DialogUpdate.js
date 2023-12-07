@@ -6,6 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
   TextField,
   Typography,
   FormHelperText,
@@ -108,7 +109,7 @@ const DialogUpdate = ({
     for (const place of data.tourDetails) {
       value.tourDetails.push({ id: place.id, price: place.price });
     }
-    
+
     try {
       setUpdate(true);
       const res = await updateTour(data.id, value);
@@ -125,9 +126,7 @@ const DialogUpdate = ({
       }
     } catch (e) {
       console.log(e);
-      // const message = e.response.data
-      //   ? e.response.data.errors
-      //   : "Something went wrong!";
+
       setUpdate(false);
       setNotification({
         ...notification,
@@ -141,130 +140,155 @@ const DialogUpdate = ({
     <Dialog
       open={dialog}
       fullWidth
-      maxWidth="lg"
+      maxWidth="xl"
       onClose={() => setDialog(false)}
     >
       <DialogTitle>Update Itinerary Infomations</DialogTitle>
 
       <DialogContent sx={{ paddingX: 10 }}>
-        <Box display="flex" marginBottom={2}>
-          <Typography width={200}>
-            Itinerary Name{" "}
-            <small style={{ color: theme.palette.text.active }}>*</small>
-          </Typography>
-          <TextField
-            fullWidth
-            size="small"
-            disabled={update}
-            InputProps={{
-              style: {
-                borderRadius: 10,
-              },
-            }}
-            value={data.name}
-            {...register("name", {
-              required: "Place Name is required!",
-              validate: (value) => {
-                return value.trim() !== "" || "Tour name is not empty!";
-              },
-              onChange: (e) => setData({ ...data, name: e.target.value }),
-            })}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-            placeholder={`Type tour name here`}
-          />
-        </Box>
-
-        <Box display="flex" marginBottom={2}>
-          <Typography width={200}>
-            Image <small style={{ color: theme.palette.text.active }}>*</small>
-          </Typography>
-
-          <Box width="100%">
-            <Box
-              display="flex"
-              alignItems="center"
-              position="relative"
-              overflow="hidden"
-              width="100%"
-              border={1}
-              borderRadius={2.5}
-              borderColor={
-                errors.image
-                  ? theme.palette.text.active
-                  : alpha(theme.palette.text.primary, 0.28)
-              }
-              height={40}
-            >
-              <label
-                htmlFor="image"
-                style={{
-                  display: "flex",
-                  width: "100%",
-                  color: theme.palette.text.third,
-                  cursor: "pointer",
+        <Typography
+          fontSize={14}
+          letterSpacing={0.5}
+          fontWeight="medium"
+          textTransform="uppercase"
+          color={theme.palette.text.third}
+        >
+          Information
+        </Typography>
+        <Grid container padding={2} spacing={5}>
+          <Grid item sm={12} lg={7}>
+            <Box>
+              <Box marginLeft={1}>
+                <Typography width={200}>
+                  Itinerary Name{" "}
+                  <small style={{ color: theme.palette.text.active }}>*</small>
+                </Typography>
+              </Box>
+              <TextField
+                fullWidth
+                size="small"
+                disabled={update}
+                InputProps={{
+                  style: {
+                    borderRadius: 10,
+                  },
                 }}
-              >
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  color={alpha(theme.palette.text.secondary, 0.4)}
-                >
-                  <CloudArrowUp height={24} style={{ margin: 10 }} />
-                  <Typography noWrap>
-                    {data.image instanceof File
-                      ? data.image.name
-                      : "Click to change image..."}
-                  </Typography>
-                </Box>
-
-                <input
-                  id="image"
-                  name="image"
-                  type="file"
-                  disabled={update}
-                  accept="image/jpeg, image/png"
-                  style={{
-                    opacity: 0,
-                    position: "absolute",
-                  }}
-                  {...register("image", {
-                    required: data.image ? false : "Image is required!",
-                    validate: (value) => {
-                      if (value.length === 1)
-                        return (
-                          imageFileTypes.includes(value[0].type) ||
-                          "Images must be in PNG or JPG format!"
-                        );
-                    },
-                    onChange: (e) => {
-                      setData({ ...data, image: e.target.files[0] });
-                    },
-                  })}
-                />
-              </label>
-            </Box>
-            <FormHelperText
-              htmlFor="render-select"
-              error
-              sx={{ marginLeft: 2 }}
-            >
-              {errors.image?.message}
-            </FormHelperText>
-            <Box marginTop={2}>
-              <img
-                src={previewImage(data.image)}
-                style={{
-                  borderRadius: 10,
-                  maxWidth: "100%",
-                  maxHeight: 300,
-                }}
-                alt=""
+                value={data.name}
+                {...register("name", {
+                  required: "Itinerary Name is required!",
+                  validate: (value) => {
+                    return (
+                      value.trim() !== "" || "Itinerary name is not empty!"
+                    );
+                  },
+                  onChange: (e) => setData({ ...data, name: e.target.value }),
+                })}
+                error={!!errors.name}
+                helperText={errors.name?.message}
+                placeholder={`Type itinerary name here`}
               />
             </Box>
-          </Box>
-        </Box>
 
+            <Box marginTop={2}>
+              <Box marginLeft={1}>
+                <Typography width={200}>
+                  Illustration Image{" "}
+                  <small style={{ color: theme.palette.text.active }}>*</small>
+                </Typography>
+              </Box>
+
+              <Box
+                display="flex"
+                alignItems="center"
+                border={1}
+                borderRadius={2.5}
+                borderColor={
+                  errors.image
+                    ? theme.palette.text.active
+                    : alpha(theme.palette.text.primary, 0.28)
+                }
+                height={40}
+              >
+                <label
+                  htmlFor="image"
+                  style={{
+                    display: "flex",
+                    width: "100%",
+                    color: theme.palette.text.third,
+                    cursor: "pointer",
+                  }}
+                >
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    color={alpha(theme.palette.text.secondary, 0.4)}
+                  >
+                    <CloudArrowUp height={24} style={{ margin: 10 }} />
+                    <Typography noWrap>
+                      {data.image instanceof File
+                        ? data.image.name
+                        : "Click to change image..."}
+                    </Typography>
+                  </Box>
+
+                  <input
+                    id="image"
+                    name="image"
+                    type="file"
+                    disabled={update}
+                    accept="image/jpeg, image/png"
+                    style={{
+                      opacity: 0,
+                      position: "absolute",
+                    }}
+                    {...register("image", {
+                      required: data.image ? false : "Image is required!",
+                      validate: (value) => {
+                        if (value.length === 1)
+                          return (
+                            imageFileTypes.includes(value[0].type) ||
+                            "Images must be in PNG or JPG format!"
+                          );
+                      },
+                      onChange: (e) => {
+                        setData({ ...data, image: e.target.files[0] });
+                      },
+                    })}
+                  />
+                </label>
+              </Box>
+              <FormHelperText
+                htmlFor="render-select"
+                error
+                sx={{ marginLeft: 2 }}
+              >
+                {errors.image?.message}
+              </FormHelperText>
+            </Box>
+          </Grid>
+
+          <Grid item sm={12} lg={5} display="flex" justifyContent="center">
+            <img
+              src={previewImage(data.image)}
+              style={{
+                borderRadius: 10,
+                maxWidth: "100%",
+                maxHeight: 300,
+              }}
+              alt=""
+            />
+          </Grid>
+        </Grid>
+
+        <Typography
+          fontSize={14}
+          letterSpacing={0.5}
+          fontWeight="medium"
+          textTransform="uppercase"
+          color={theme.palette.text.third}
+        >
+          Place List
+        </Typography>
         <Box>
           <PlacesList
             values={data}

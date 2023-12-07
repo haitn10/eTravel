@@ -8,8 +8,8 @@ export const GOONG_API_KEY = "lufMpKjvYBPBQqq13Zwl0vTLnPUHtkksPTV1YcEs";
 export const GOONG_URL = "https://rsapi.goong.io/Place/AutoComplete";
 
 // URL
-// export const BASE_URL = "http://localhost:8000";
-export const BASE_URL = "https://etravelapi.azurewebsites.net";
+export const BASE_URL = "http://localhost:8000";
+// export const BASE_URL = "https://etravelapi.azurewebsites.net";
 
 export const API = axios.create({
   baseURL: `${BASE_URL}/api/`,
@@ -23,20 +23,20 @@ API.interceptors.request.use(function (config) {
 });
 
 export const convertVoiceFile = (item) => {
-  return API.post("portal/places/convertv2", item, {
+  return API.post("portal/assets/convert/mp3", item, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 };
 
 export const removeVoiceFile = (name) => {
-  return API.delete("portal/azures/fileName", {
+  return API.delete("portal/assets/fileName", {
     params: { fileName: name },
   });
 };
 
 export const uploadFile = (files, path) => {
   return API.post(
-    "/portal/azures/image",
+    "/portal/assets/image",
     files,
     { params: { imagePath: path } },
     {
@@ -46,7 +46,7 @@ export const uploadFile = (files, path) => {
 };
 
 export const removeFile = (path, name) => {
-  return API.delete("portal/azures/image", {
+  return API.delete("portal/assets/image", {
     params: { imagePath: path, imageName: name },
   });
 };
@@ -67,40 +67,13 @@ export const fetch = async (state, dispatch, setState, path, payload) => {
   }
 };
 
-export const process = async (state, dispatch, setState, path, item) => {
+export const process = async (state, dispatch, setState, path, item, files) => {
   if (state.isFetching) {
     return Promise.reject(new Error("This item is being processed."));
   }
 
   try {
     dispatch(setState({ isFetching: true }));
-
-    //Convert voice file
-    if (item.placeDescriptions) {
-      let formData = new FormData();
-      item.placeDescriptions.forEach((description) => {
-        if (description.voiceFile instanceof File) {
-          formData.append("listMp3", description.voiceFile);
-        }
-      });
-
-      // Check if formData has data before calling convertVoiceFile
-      if (
-        formData &&
-        formData.getAll &&
-        formData.getAll("listMp3").length > 0
-      ) {
-        const { data } = await convertVoiceFile(formData);
-        data.voiceFiles.forEach((itm) => {
-          const indexFile = item.placeDescriptions.findIndex(
-            (file) => itm.fileName === file.voiceFile.name
-          );
-          if (indexFile !== -1) {
-            item.placeDescriptions[indexFile].voiceFile = itm.fileLink;
-          }
-        });
-      }
-    }
 
     //Upload image place
     if (item.placeImages) {
@@ -172,6 +145,20 @@ export const process = async (state, dispatch, setState, path, item) => {
     }
 
     await API.post(path, item);
+
+    //Convert voice file
+    if (files) {
+      let formData = new FormData();
+      files.forEach((file) => {
+        if (file.voiceFile instanceof File) {
+          formData.append("listMp3", file.voiceFile);
+        }
+      });
+
+      // Check if formData has data before calling convertVoiceFile
+      if (formData && formData.getAll && formData.getAll("listMp3").length > 0)
+        await convertVoiceFile(formData);
+    }
     dispatch(setState({ isFetching: false }));
     return Promise.resolve();
   } catch (e) {
