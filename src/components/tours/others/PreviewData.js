@@ -54,7 +54,11 @@ const PreviewData = ({ data, descriptionList }) => {
 
           <Box marginLeft={2} marginTop={2}>
             <Box display="flex" alignItems="center" marginBottom={1}>
-              <Typography width={150} color={theme.palette.text.third}>
+              <Typography
+                width={150}
+                fontSize={14}
+                color={theme.palette.text.third}
+              >
                 Itinerary Name:{" "}
               </Typography>
               <Typography marginLeft={1} fontWeight="medium">
@@ -62,15 +66,23 @@ const PreviewData = ({ data, descriptionList }) => {
               </Typography>
             </Box>
             <Box display="flex" alignItems="center" marginBottom={1}>
-              <Typography width={150} color={theme.palette.text.third}>
+              <Typography
+                width={150}
+                fontSize={14}
+                color={theme.palette.text.third}
+              >
                 Number of Places:{" "}
               </Typography>
               <Typography marginLeft={1} fontWeight="medium">
-                {data?.tourDetails.length}
+                {data?.tourDetails?.length}
               </Typography>
             </Box>
             <Box display="flex" alignItems="center" marginBottom={1}>
-              <Typography width={150} color={theme.palette.text.third}>
+              <Typography
+                width={150}
+                fontSize={14}
+                color={theme.palette.text.third}
+              >
                 Price:{" "}
               </Typography>
               <Typography marginLeft={1} fontWeight="medium">
@@ -81,7 +93,11 @@ const PreviewData = ({ data, descriptionList }) => {
               </Typography>
             </Box>
             <Box marginBottom={1}>
-              <Typography marginBottom={1} color={theme.palette.text.third}>
+              <Typography
+                marginBottom={1}
+                fontSize={14}
+                color={theme.palette.text.third}
+              >
                 Illustration Image:{" "}
               </Typography>
               <Box display="flex" justifyContent="center">

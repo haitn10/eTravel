@@ -76,16 +76,15 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
           </MenuItem>
         )}
 
-        
         {status === 1 ? null : (
           <MenuItem
             onClick={() => {
-              setValue(2);
+              setValue(1);
               setPopupConfirm(true);
               setAnchorEl(false);
             }}
           >
-            <Typography variant="span">Public</Typography>
+            <Typography variant="span">Activate</Typography>
           </MenuItem>
         )}
       </Menu>
@@ -102,10 +101,10 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {value === 0
-              ? "Your action will cause this tour to no longer be used in the system."
+              ? "Your action will cause this itinerary to no longer be used in the system."
               : null}
             {value === 1
-              ? "Your action will make this tour active again and users can operate directly with this tour."
+              ? "Your action will make the itinerary active again, and users can operate on it."
               : null}
           </DialogContentText>
         </DialogContent>

@@ -52,6 +52,8 @@ const HomePage = () => {
   const [user, setUser] = useState([]);
   const [nationalAd, setNationalAd] = useState([]);
 
+  const { afterToday } = DateRangePicker;
+
   useEffect(() => {
     let startTime = "",
       endTime = "";
@@ -174,11 +176,14 @@ const HomePage = () => {
                   ) : (
                     <DateRangePicker
                       value={time}
+                      showOneCalendar
+                      disabledDate={afterToday()}
                       onClean={() => setGetDataByDate(false)}
                       onChange={(newValue) => {
                         setGetDataByDate(true);
                         setTime(newValue);
                       }}
+                      placeholder="Show Data By Date Range"
                     />
                   )}
                 </Box>

@@ -1,4 +1,4 @@
-import { Box, Typography, alpha } from "@mui/material";
+import { Box, Typography, Rating, alpha } from "@mui/material";
 import dayjs from "dayjs";
 import { theme } from "../../styles/theme";
 
@@ -7,6 +7,11 @@ const tours = [
     field: "id",
     headerName: "No.",
     sortable: false,
+    headerAlign: "center",
+    align: "center",
+    renderCell: (params) => {
+      return params.api.getAllRowIds().indexOf(params.id) + 1;
+    },
     width: 50,
   },
   {
@@ -38,12 +43,30 @@ const tours = [
     flex: 1,
   },
   {
-    field: "totalFeedback",
-    headerName: "Num of Feedbacks",
+    field: "rate",
+    headerName: "Rating",
     sortable: false,
     headerAlign: "center",
     align: "center",
     flex: 1,
+    renderCell: (params) => {
+      return (
+        <Rating
+          readOnly
+          size="small"
+          value={params.row.rate || 0}
+          precision={0.5}
+          sx={{
+            ".MuiRating-icon": {
+              borderColor: theme.palette.text.active,
+            },
+            "& .MuiRating-iconFilled": {
+              color: theme.palette.text.active,
+            },
+          }}
+        />
+      );
+    },
   },
   {
     field: "createTime",
