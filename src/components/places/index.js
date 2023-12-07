@@ -11,6 +11,7 @@ import Header from "../common/Header";
 import Actions from "./others/Actions";
 
 import places from "../../constants/tables/places";
+import CustomNoRowsOverlay from "../common/CustomNoRowsOverlay";
 
 const ManagePlaces = () => {
   const theme = useTheme();
@@ -139,6 +140,7 @@ const ManagePlaces = () => {
             paginationMode="server"
             onPaginationModelChange={setPageModelState}
             onRowClick={(params) => onNavigate(params)}
+            slots={{ noRowsOverlay: CustomNoRowsOverlay }}
             sx={{
               border: 0,
               minHeight: "75vh",
@@ -148,6 +150,7 @@ const ManagePlaces = () => {
               "& .MuiDataGrid-cell:focus": {
                 outline: "none",
               },
+              "--DataGrid-overlayHeight": "300px",
             }}
           />
         </Grid>

@@ -196,25 +196,36 @@ const AddPlace = () => {
   };
 
   const onSubmit = async () => {
-    let arrCate = [],
-      arrDesc = [],
-      arrBeac = [],
-      arrTime = [];
+    let dataCreate = {
+      name: values.name,
+      longitude: values.longitude,
+      latitude: values.latitude,
+      address: values.address,
+      hour: dayjs(values.hour).format("HH:mm:ss"),
+      googlePlaceId: values.googlePlaceId,
+      price: values.price,
+      entryTicket: values.entryTicket ? values.entryTicket : 0,
+      placeImages: values.placeImages,
+      placeCategories: [],
+      placeDescriptions: [],
+      placeTimes: [],
+      placeItems: [],
+    };
 
     for (const cate of getValues("placeCategories")) {
-      arrCate.push({ id: cate.id });
+      dataCreate.placeCategories.push({ id: cate.id });
     }
     for (const desc of getValues("placeDescriptions")) {
-      arrDesc.push({
+      dataCreate.placeDescriptions.push({
         languageCode: desc.languageCode,
-        voiceFile: desc.voiceFile,
+        voiceFile: desc.voiceFile.name,
         name: desc.name,
         description: desc.description,
       });
     }
 
     for (const beacon of getValues("placeItems")) {
-      arrBeac.push({
+      dataCreate.placeItems.push({
         name: beacon.name,
         beaconId: beacon.beaconId,
         image: beacon.image,
@@ -227,25 +238,16 @@ const AddPlace = () => {
     }
 
     for (const time of values.placeTimes) {
-      arrTime.push({
+      dataCreate.placeTimes.push({
         daysOfWeek: time.id,
         openTime: time.openTime,
         endTime: time.endTime,
       });
     }
-    const data = {
-      ...values,
-      entryTicket: values.entryTicket ? values.entryTicket : 0,
-      hour: dayjs(values.hour).format("HH:mm:ss"),
-      placeCategories: arrCate,
-      placeDescriptions: arrDesc,
-      placeItems: arrBeac,
-      placeTimes: arrTime,
-    };
 
     try {
       setCreate(true);
-      await dispatch(processPlace(data));
+      await dispatch(processPlace(dataCreate, getValues("placeDescriptions")));
       await setCreate(false);
       await setValues(initialState);
       await reset(initialState);

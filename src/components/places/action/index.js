@@ -36,14 +36,15 @@ export const getPlaceDetails = async (placeId) => {
   }
 };
 
-export const processPlace = (newPlace) => {
+export const processPlace = (newPlace, files) => {
   return async (dispatch, getState) => {
     return process(
       getState().places,
       dispatch,
       setState,
       "portal/places",
-      newPlace
+      newPlace,
+      files
     );
   };
 };
@@ -109,9 +110,9 @@ export const updatePlace = async (placeId, values, files) => {
     //Convert voice file
     if (files) {
       let formData = new FormData();
-      files.forEach((description) => {
-        if (description.voiceFile instanceof File) {
-          formData.append("listMp3", description.voiceFile);
+      files.forEach((file) => {
+        if (file.voiceFile instanceof File) {
+          formData.append("listMp3", file.voiceFile);
         }
       });
 

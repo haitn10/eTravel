@@ -124,6 +124,7 @@ const DialogUpdateBeacon = ({
         voiceFile: desc.voiceFile,
         name: desc.name,
         description: desc.description,
+        status: desc.status,
       });
     }
 
@@ -417,7 +418,6 @@ const DialogUpdateBeacon = ({
             >
               Location Name Follow Language
             </Typography>
-
             {fields.map((item, index) => (
               <Box key={item.id} marginBottom={2}>
                 <Box display="flex" alignItems="center" marginLeft={1}>
@@ -464,12 +464,20 @@ const DialogUpdateBeacon = ({
                 />
               </Box>
             ))}
-          </Grid>
-
-          <Grid item sm={12}>
+            <Box marginTop={9}>
+              <Typography
+                fontSize={14}
+                letterSpacing={0.5}
+                fontWeight="medium"
+                textTransform="uppercase"
+                color={theme.palette.text.third}
+              >
+                Location Image
+              </Typography>
+            </Box>
             <Box>
               <Typography marginLeft={1}>
-                Image{" "}
+                Choose Image{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
               <Controller
@@ -521,6 +529,7 @@ const DialogUpdateBeacon = ({
 
                         <input
                           type="file"
+                          hidden
                           disabled={update}
                           accept="image/jpeg, image/png"
                           style={{
