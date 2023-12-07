@@ -9,6 +9,11 @@ const places = [
     field: "id",
     headerName: "No.",
     sortable: false,
+    headerAlign: "center",
+    align: "center",
+    renderCell: (params) => {
+      return params.api.getAllRowIds().indexOf(params.id) + 1;
+    },
     width: 50,
   },
   {

@@ -21,6 +21,7 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
   const [value, setValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [update, setUpdate] = useState(false);
 
   const showMenu = async (event) => {
     event.stopPropagation();
@@ -28,10 +29,12 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
   };
 
   const onConfirm = async () => {
+    setUpdate(true);
     try {
       const response = await changePlaceState(id, value);
       if (response) {
         getData();
+        setUpdate(false);
         setNotification({
           ...notification,
           errorState: true,
@@ -40,6 +43,7 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
         });
       }
     } catch (e) {
+      setUpdate(false);
       setNotification({
         ...notification,
         errorState: true,
@@ -76,17 +80,6 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
           </MenuItem>
         )}
 
-        {status === 1 ? null : (
-          <MenuItem
-            onClick={() => {
-              setValue(1);
-              setPopupConfirm(true);
-              setAnchorEl(false);
-            }}
-          >
-            <Typography variant="span">Prepare</Typography>
-          </MenuItem>
-        )}
         {status === 2 ? null : (
           <MenuItem
             onClick={() => {
@@ -95,7 +88,7 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
               setAnchorEl(false);
             }}
           >
-            <Typography variant="span">Public</Typography>
+            <Typography variant="span">Activate</Typography>
           </MenuItem>
         )}
       </Menu>
@@ -107,27 +100,31 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
       >
         <DialogTitle id="alert-dialog-title">
           {value === 0 ? "Are you sure you want to deactivate?" : null}
-          {value === 1 ? "Are you sure you want to preparing?" : null}
           {value === 2 ? "Are you sure you want to activate?" : null}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {value === 0
-              ? "Your action will cause this tour to no longer be used in the system."
+              ? "Your action will cause this place to no longer be used in the system."
               : null}
-            {value === 1 ? "Are you sure you want to preparing?" : null}
             {value === 2
-              ? "Your action will make this tour active again and users can operate directly with this tour."
+              ? "Your action will make the place active again, and users can operate on it."
               : null}
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ padding: 3 }}>
-          <Button variant="outlined" onClick={onConfirm} autoFocus>
+          <Button
+            variant="outlined"
+            onClick={onConfirm}
+            disabled={update}
+            autoFocus
+          >
             Confirm
           </Button>
           <Button
             variant="outlined"
             color="error"
+            disabled={update}
             onClick={() => setPopupConfirm(false)}
           >
             Cancel

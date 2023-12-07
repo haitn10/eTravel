@@ -25,6 +25,8 @@ const MultiLanguages = ({ values, loading }) => {
       color = theme.palette.text.pending;
     } else if (status === 2) {
       color = theme.palette.text.onStatus;
+    } else if (status === 3) {
+      color = theme.palette.text.active;
     }
 
     return color;

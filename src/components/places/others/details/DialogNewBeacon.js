@@ -87,36 +87,83 @@ const DialogNewBeacon = ({
   const onUpdate = async () => {
     let dataUpdate = {
       name: getValuesTotal("name"),
-      image: getValuesTotal("image"),
-      total: getValuesTotal("total"),
-      tourDetails: [],
-      tourDescriptions: [getValues()],
+      longitude: getValuesTotal("longitude"),
+      latitude: getValuesTotal("latitude"),
+      address: getValuesTotal("address"),
+      hour: getValuesTotal("hour"),
+      googlePlaceId: getValuesTotal("googlePlaceId"),
+      price: getValuesTotal("price"),
+      entryTicket: getValuesTotal("entryTicket"),
+      placeCategories: [],
+      placeImages: [],
+      placeDescriptions: [],
+      placeTimes: [],
+      placeItems: [],
     };
-    for (const desc of getValuesTotal("placeDescriptions")) {
-      dataUpdate.tourDescriptions.push({
-        name: desc.name,
-        description: desc.description,
-        languageCode: desc.languageCode,
+
+    for (const cate of getValuesTotal("placeCategories")) {
+      dataUpdate.placeCategories.push({ id: cate.id });
+    }
+
+    for (const img of getValuesTotal("placeImages")) {
+      dataUpdate.placeImages.push({
+        image: img.image,
+        isPrimary: img.isPrimary,
       });
     }
-    for (const place of getValuesTotal("placeDetails")) {
-      dataUpdate.tourDetails.push({ id: place.id, price: place.price });
+
+    for (const desc of getValuesTotal("placeDescriptions")) {
+      dataUpdate.placeDescriptions.push({
+        languageCode: desc.languageCode,
+        voiceFile:
+          desc.voiceFile instanceof File ? desc.voiceFile.name : desc.voiceFile,
+        name: desc.name,
+        description: desc.description,
+        status: desc.status,
+      });
     }
+
+    for (const time of getValuesTotal("placeTimes")) {
+      dataUpdate.placeTimes.push({
+        daysOfWeek: time.daysOfWeek,
+        openTime: time.openTime,
+        endTime: time.endTime,
+      });
+    }
+
+    for (const item of getValuesTotal("placeItems")) {
+      dataUpdate.placeItems.push({
+        name: item.name,
+        beaconId: item.beaconId,
+        image: item.image,
+        startTime: item.startTime,
+        endTime: item.endTime,
+        beaconMajorNumber: item.beaconMajorNumber,
+        beaconMinorNumber: item.beaconMinorNumber,
+        itemDescriptions: item.itemDescriptions,
+      });
+    }
+
+    dataUpdate.placeItems.push({
+      name: getValues("name"),
+      beaconId: getValues("beaconId"),
+      image: getValues("image"),
+      startTime: dayjs(getValues("startTime")).format("HH:mm:ss"),
+      endTime: dayjs(getValues("endTime")).format("HH:mm:ss"),
+      beaconMajorNumber: getValues("beaconMajorNumber"),
+      beaconMinorNumber: getValues("beaconMinorNumber"),
+      itemDescriptions: getValues("itemDescriptions"),
+    });
 
     try {
       setUpdate(true);
       const res = await updatePlace(getValuesTotal().id, dataUpdate);
       if (res) {
-        reset({
-          languageCode: "",
-          name: "",
-          description: "",
-        });
-        setValues(res.tour);
+        setValues(res.place);
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: "Create itinerary descriptions successfully!",
+          errorMessage: "Create location successfully!",
           status: "success",
         });
         setUpdate(false);
@@ -141,7 +188,7 @@ const DialogNewBeacon = ({
       sx={{ "& .MuiDialog-paper": { overflowY: "hidden" } }}
       onClose={() => setDialog(false)}
     >
-      <DialogTitle>Create New Beacons</DialogTitle>
+      <DialogTitle>Create New Location</DialogTitle>
 
       <DialogContent sx={{ paddingX: 10 }}>
         <Grid container spacing={3}>
@@ -154,13 +201,13 @@ const DialogNewBeacon = ({
                 textTransform="uppercase"
                 color={theme.palette.text.third}
               >
-                Beacon Information
+                Location Information
               </Typography>
             </Box>
             {/* Beacon Name */}
             <Box marginBottom={2}>
               <Typography marginLeft={1}>
-                Beacon Name{" "}
+                Location Name{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
               <TextField
@@ -427,13 +474,21 @@ const DialogNewBeacon = ({
                 />
               </Box>
             ))}
-          </Grid>
 
-          <Grid item sm={12}>
-            {/* Image */}
+            <Box marginTop={9}>
+              <Typography
+                fontSize={14}
+                letterSpacing={0.5}
+                fontWeight="medium"
+                textTransform="uppercase"
+                color={theme.palette.text.third}
+              >
+                Location Image
+              </Typography>
+            </Box>
             <Box>
               <Typography marginLeft={1}>
-                Image{" "}
+                Choose Image{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
               <Controller

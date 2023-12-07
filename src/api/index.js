@@ -67,7 +67,7 @@ export const fetch = async (state, dispatch, setState, path, payload) => {
   }
 };
 
-export const process = async (state, dispatch, setState, path, item) => {
+export const process = async (state, dispatch, setState, path, item, files) => {
   if (state.isFetching) {
     return Promise.reject(new Error("This item is being processed."));
   }
@@ -147,30 +147,17 @@ export const process = async (state, dispatch, setState, path, item) => {
     await API.post(path, item);
 
     //Convert voice file
-    if (item.placeDescriptions) {
+    if (files) {
       let formData = new FormData();
-      item.placeDescriptions.forEach((description) => {
-        if (description.voiceFile instanceof File) {
-          formData.append("listMp3", description.voiceFile);
+      files.forEach((file) => {
+        if (file.voiceFile instanceof File) {
+          formData.append("listMp3", file.voiceFile);
         }
       });
 
       // Check if formData has data before calling convertVoiceFile
-      if (
-        formData &&
-        formData.getAll &&
-        formData.getAll("listMp3").length > 0
-      ) {
-        const { data } = await convertVoiceFile(formData);
-        data.voiceFiles.forEach((itm) => {
-          const indexFile = item.placeDescriptions.findIndex(
-            (file) => itm.fileName === file.voiceFile.name
-          );
-          if (indexFile !== -1) {
-            item.placeDescriptions[indexFile].voiceFile = itm.fileLink;
-          }
-        });
-      }
+      if (formData && formData.getAll && formData.getAll("listMp3").length > 0)
+        await convertVoiceFile(formData);
     }
     dispatch(setState({ isFetching: false }));
     return Promise.resolve();

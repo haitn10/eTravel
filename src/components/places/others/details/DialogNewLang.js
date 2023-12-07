@@ -83,6 +83,7 @@ const DialogNewLang = ({
         voiceFile: desc.voiceFile,
         name: desc.name,
         description: desc.description,
+        status: desc.status,
       });
     }
     dataUpdate.placeDescriptions.push({
