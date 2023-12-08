@@ -116,12 +116,13 @@ const ManagePlaces = () => {
 
       <Header
         title={"Manage Places"}
-        subTitle={"Manage all them existing places or update status."}
+        subTitle={"Manage all existing places in the system."}
         showSearch={true}
         showFilter={true}
         search={search}
         setSearch={setSearch}
         setSearchBy={setSearchBy}
+        isPlace={true}
       />
 
       {/* Data Table */}

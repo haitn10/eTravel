@@ -28,6 +28,7 @@ const Header = ({
   search,
   setSearch,
   setSearchBy,
+  isPlace,
 }) => {
   const theme = useTheme();
   return (
@@ -86,7 +87,11 @@ const Header = ({
         ) : null}
         {showFilter ? (
           !loading ? (
-            <FilterData setSearchBy={setSearchBy} setSearch={setSearch} />
+            <FilterData
+              setSearchBy={setSearchBy}
+              setSearch={setSearch}
+              isPlace={isPlace}
+            />
           ) : (
             <Skeleton width={200} />
           )

@@ -8,11 +8,13 @@ import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
 import { getBookings } from "./action";
 import bookings from "../../constants/tables/bookings";
+import CustomNoRowsOverlay from "../common/CustomNoRowsOverlay";
 
 const ManageBookings = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -41,6 +43,8 @@ const ManageBookings = () => {
           getBookings({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "customerName",
+            Search: search,
           })
         );
         setPageState((old) => ({
@@ -60,7 +64,7 @@ const ManageBookings = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
@@ -88,8 +92,10 @@ const ManageBookings = () => {
       />
       <Header
         title={"Manage Bookings"}
-        subTitle={"Manage all them existing bookings."}
+        subTitle={"Manage all existing bookings in the system"}
         showSearch={true}
+        search={search}
+        setSearch={setSearch}
       />
 
       {/* Data Table */}
@@ -108,6 +114,7 @@ const ManageBookings = () => {
             paginationMode="server"
             onPaginationModelChange={setPageModelState}
             onRowClick={(params) => onNavigate(params)}
+            slots={{ noRowsOverlay: CustomNoRowsOverlay }}
             sx={{
               border: 0,
               minHeight: "75vh",
@@ -117,6 +124,7 @@ const ManageBookings = () => {
               "& .MuiDataGrid-cell:focus": {
                 outline: "none",
               },
+              "--DataGrid-overlayHeight": "300px",
             }}
           />
         </Grid>

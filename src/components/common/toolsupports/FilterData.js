@@ -12,7 +12,7 @@ import {
 import { FilterAlt } from "@styled-icons/boxicons-regular";
 import { StyledMenu } from "../styled/StyledMenu";
 
-const FilterData = ({ setSearchBy, setSearch }) => {
+const FilterData = ({ setSearchBy, setSearch, isPlace }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -26,9 +26,9 @@ const FilterData = ({ setSearchBy, setSearch }) => {
   const [statusChecked, setStatusChecked] = useState("All");
   const [paymentMethodChecked, setPaymentMethodChecked] = useState("All");
 
-  const handleChangeMethod = (event) => {
-    setPaymentMethodChecked(event.target.value);
-  };
+  // const handleChangeMethod = (event) => {
+  //   setPaymentMethodChecked(event.target.value);
+  // };
 
   return (
     <Box>
@@ -66,7 +66,7 @@ const FilterData = ({ setSearchBy, setSearch }) => {
             <Typography variant="h6">Filter</Typography>
           </Box>
 
-          {statusChecked !== "All" || paymentMethodChecked !== "All" ? (
+          {(statusChecked !== "All" || paymentMethodChecked !== "All") && (
             <Button
               variant="text"
               color="error"
@@ -83,7 +83,7 @@ const FilterData = ({ setSearchBy, setSearch }) => {
             >
               Clear
             </Button>
-          ) : null}
+          )}
         </Box>
 
         {/* <Divider sx={{ marginBottom: 0.5 }} />
@@ -156,11 +156,11 @@ const FilterData = ({ setSearchBy, setSearch }) => {
 
           <MenuItem dense sx={{ borderRadius: 1 }}>
             <FormControlLabel
-              label="Inactive"
+              label="Deactive"
               control={
                 <Checkbox
-                  checked={statusChecked === "Inactive"}
-                  value="Inactive"
+                  checked={statusChecked === "Deactive"}
+                  value="Deactive"
                   onChange={(event) => {
                     setSearchBy("status");
                     setSearch(0);
@@ -171,22 +171,24 @@ const FilterData = ({ setSearchBy, setSearch }) => {
             />
           </MenuItem>
 
-          <MenuItem dense sx={{ borderRadius: 1 }}>
-            <FormControlLabel
-              label="Pending"
-              control={
-                <Checkbox
-                  checked={statusChecked === "Pending"}
-                  value="Pending"
-                  onChange={(event) => {
-                    setSearchBy("status");
-                    setSearch(1);
-                    setStatusChecked(event.target.value);
-                  }}
-                />
-              }
-            />
-          </MenuItem>
+          {isPlace && (
+            <MenuItem dense sx={{ borderRadius: 1 }}>
+              <FormControlLabel
+                label="Prepared"
+                control={
+                  <Checkbox
+                    checked={statusChecked === "Prepared"}
+                    value="Prepared"
+                    onChange={(event) => {
+                      setSearchBy("status");
+                      setSearch(1);
+                      setStatusChecked(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </MenuItem>
+          )}
 
           <MenuItem dense sx={{ borderRadius: 1 }}>
             <FormControlLabel
