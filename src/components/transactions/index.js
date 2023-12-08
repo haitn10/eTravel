@@ -13,6 +13,7 @@ const ManageTransactions = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -41,6 +42,8 @@ const ManageTransactions = () => {
           getTransactions({
             PageNumber: pageModelState.page,
             PageSize: pageModelState.pageSize,
+            SearchBy: "customerName",
+            Search: search,
           })
         );
         setPageState((old) => ({
@@ -60,7 +63,7 @@ const ManageTransactions = () => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageModelState.page, pageModelState.pageSize]);
+  }, [search, pageModelState.page, pageModelState.pageSize]);
 
   useEffect(() => {
     getData();
@@ -91,10 +94,9 @@ const ManageTransactions = () => {
       <Header
         title={"Manage Transactions"}
         subTitle={"Manage all transactions performed on the system."}
-        showBack={false}
         showSearch={true}
-        showFilter={false}
-        buttonAdd={false}
+        search={search}
+        setSearch={setSearch}
       />
 
       {/* Data Table */}

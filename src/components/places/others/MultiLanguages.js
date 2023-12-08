@@ -50,19 +50,20 @@ const MultiLanguages = ({
     return true;
   };
 
-  const hasDuplicateVoiceFile = async () => {
+  const checkVoiceFile = () => {
     const formData = getValues();
     const languageCodes = new Set();
     for (const data of formData.placeDescriptions) {
       if (languageCodes.has(data.voiceFile?.name)) {
         return false;
       }
+      if (data.voiceFile?.size > MAXIMUM_FILE_SIZE) {
+        return false;
+      }
       languageCodes.add(data.voiceFile?.name);
     }
     return true;
   };
-
-  console.log(errors);
 
   return (
     <Box padding={5} marginX={10}>
@@ -83,7 +84,7 @@ const MultiLanguages = ({
                 ) : (
                   <>
                     <Grid item sm={12} lg={3}>
-                      <Typography fontWeight="medium">
+                      <Typography color={theme.palette.text.third}>
                         Choose Language{" "}
                         <small style={{ color: theme.palette.text.active }}>
                           *
@@ -148,7 +149,7 @@ const MultiLanguages = ({
                 ) : (
                   <>
                     <Grid item sm={12} lg={3}>
-                      <Typography fontWeight="medium">
+                      <Typography color={theme.palette.text.third}>
                         Place Name{" "}
                         <small style={{ color: theme.palette.text.active }}>
                           *
@@ -188,14 +189,17 @@ const MultiLanguages = ({
                 ) : (
                   <>
                     <Grid item sm={12} lg={3}>
-                      <Typography fontWeight="medium">
+                      <Typography color={theme.palette.text.third}>
                         Decription{" "}
                         <small style={{ color: theme.palette.text.active }}>
                           *
                         </small>
                       </Typography>
-                      <Typography>
-                        <small>Write a short decription</small>
+                      <Typography
+                        fontSize={12}
+                        color={theme.palette.text.third}
+                      >
+                        Write a short decription
                       </Typography>
                     </Grid>
                     <Grid item sm={12} lg={9}>
@@ -234,7 +238,7 @@ const MultiLanguages = ({
                 ) : (
                   <>
                     <Grid item sm={12} lg={3}>
-                      <Typography fontWeight="medium">
+                      <Typography color={theme.palette.text.third}>
                         Voice File{" "}
                         <small style={{ color: theme.palette.text.active }}>
                           *
@@ -270,11 +274,10 @@ const MultiLanguages = ({
                             control={control}
                             rules={{
                               required: "Voice file is required!",
-                              validate: (e) => {
+                              validate: () => {
                                 return (
-                                  (hasDuplicateVoiceFile() &&
-                                    e.size < MAXIMUM_FILE_SIZE) ||
-                                  "This file has been duplicated!"
+                                  checkVoiceFile() ||
+                                  "This file name has been duplicated!"
                                 );
                               },
                             }}
@@ -300,7 +303,11 @@ const MultiLanguages = ({
                                     </Typography>
                                   </Box>
                                 ) : (
-                                  <Box display="flex" alignItems="center">
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    color={alpha(theme.palette.text.third, 0.5)}
+                                  >
                                     <CloudArrowUp
                                       height={24}
                                       style={{ margin: 10 }}
@@ -318,6 +325,7 @@ const MultiLanguages = ({
                                     opacity: 0,
                                     position: "absolute",
                                   }}
+                                  hidden
                                   onChange={(e) =>
                                     field.onChange(e.target.files[0])
                                   }
@@ -373,9 +381,7 @@ const MultiLanguages = ({
               sx={{ borderRadius: 2.5 }}
             >
               <Add width={20} />
-              <Typography fontWeight="medium" fontSize={14}>
-                Add More
-              </Typography>
+              <Typography fontWeight='medium' fontSize={14}>Add More</Typography>
             </Button>
           )
         ) : null}

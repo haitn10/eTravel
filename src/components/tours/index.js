@@ -9,9 +9,9 @@ import { getTours } from "./action";
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
 import Actions from "./others/Actions";
+import CustomNoRowsOverlay from "../common/CustomNoRowsOverlay";
 
 import tours from "../../constants/tables/tours";
-import CustomNoRowsOverlay from "../common/CustomNoRowsOverlay";
 
 const ManageTours = () => {
   const theme = useTheme();

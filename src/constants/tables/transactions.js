@@ -1,18 +1,21 @@
 import { Box, Typography, alpha } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../styles/theme";
+import paypal from "../../assets/paypal.png";
+import mastercard from "../../assets/mastercard.png";
 
 const transactions = [
   {
     field: "id",
-    headerName: "TransID",
+    headerName: "No.",
+    sortable: false,
     headerAlign: "center",
     align: "center",
-    width: 100,
   },
   {
     field: "bookingId",
     headerName: "BookingID",
+    sortable: false,
     headerAlign: "center",
     align: "center",
     width: 100,
@@ -20,18 +23,34 @@ const transactions = [
   {
     field: "customerName",
     headerName: "Customer Name",
-    flex: 1,
+    sortable: false,
+    flex: 1.5,
   },
   {
     field: "paymentMethod",
     headerName: "Payment Method",
+    sortable: false,
     headerAlign: "center",
     align: "center",
+    renderCell: (params) => {
+      return (
+        <Box display="flex" alignItems="center" gap={1}>
+          {params.row.paymentMethod === "PayPal" ? (
+            <img src={paypal} width="20px" alt={params.row.paymentMethod} />
+          ) : (
+            <img src={mastercard} width="20px" alt={params.row.paymentMethod} />
+          )}
+          {params.row.paymentMethod}
+        </Box>
+      );
+    },
+    width: 50,
     flex: 1,
   },
   {
     field: "amount",
     headerName: "Amount",
+    sortable: false,
     headerAlign: "center",
     align: "center",
     flex: 1,
@@ -46,6 +65,7 @@ const transactions = [
   {
     field: "createTime",
     headerName: "Payment Time",
+    sortable: false,
     headerAlign: "right",
     align: "right",
     flex: 1,
@@ -56,11 +76,12 @@ const transactions = [
   {
     field: "status",
     headerName: "Status",
+    sortable: false,
     headerAlign: "center",
     align: "center",
-    width: 150,
+    width: 100,
     renderCell: (params) => {
-      let color = theme.palette.text.primary;
+      let color = theme.palette.text.active;
       if (params.row.status === 0) {
         color = theme.palette.text.active;
       } else if (params.row.status === 1) {
@@ -73,14 +94,19 @@ const transactions = [
         <Box
           border={1}
           borderRadius={20}
-          minWidth={100}
+          paddingX={1}
           display="flex"
           alignItems="center"
           justifyContent="center"
           borderColor={alpha(color, 0.1)}
           bgcolor={alpha(color, 0.1)}
         >
-          <Typography variant="span" fontWeight="medium" color={color}>
+          <Typography
+            variant="span"
+            fontWeight="medium"
+            color={color}
+            textTransform="capitalize"
+          >
             {params.row.statusType}
           </Typography>
         </Box>

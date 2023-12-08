@@ -1,7 +1,7 @@
 import { theme } from "../../styles/theme";
 import { Rating } from "@mui/material";
 
-const placeSub = [
+const location = [
   {
     field: "id",
     headerName: "No.",
@@ -70,4 +70,4 @@ const placeSub = [
     },
   },
 ];
-export default placeSub;
+export default location;
