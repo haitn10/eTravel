@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Skeleton, Typography, alpha, useTheme } from "@mui/material";
-import { Box } from "@mui/system";
-import Header from "../common/Header";
-import { getTransactionDetails } from "./action";
+import {
+  Box,
+  Grid,
+  Skeleton,
+  Typography,
+  alpha,
+  useTheme,
+} from "@mui/material";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
+
+import Header from "../common/Header";
+
+import { getTransactionDetails } from "./action";
+
+import paypal from "../../assets/paypal.png";
+import mastercard from "../../assets/mastercard.png";
 
 const TransactionDetails = () => {
   const theme = useTheme();
@@ -18,6 +29,19 @@ const TransactionDetails = () => {
     errorMessage: "",
     status: "error",
   });
+
+  const colorTransStatus = (state) => {
+    let color = theme.palette.text.active;
+    if (state === 0) {
+      color = theme.palette.text.active;
+    } else if (state === 1) {
+      color = theme.palette.text.checked;
+    } else if (state === 2) {
+      color = theme.palette.text.onStatus;
+    }
+
+    return color;
+  };
 
   useEffect(() => {
     async function getInfoDetails() {
@@ -40,13 +64,11 @@ const TransactionDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId]);
 
-  console.log(values);
   return (
     <Box
       minHeight="94vh"
       margin="1.25em"
       padding={2}
-      paddingBottom={10}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
@@ -56,16 +78,13 @@ const TransactionDetails = () => {
         subTitle={"Show information about transactions of customers."}
         loading={loading}
         showBack={true}
-        showSearch={false}
-        showFilter={false}
-        buttonAdd={false}
       />
 
       <Box marginX={5} padding={4}>
         <Box
           padding={2}
           paddingLeft={5}
-          bgcolor={alpha(theme.palette.background.third, 0.5)}
+          bgcolor={alpha(theme.palette.background.secondary, 0.5)}
           borderRadius={5}
         >
           {loading ? (
@@ -73,39 +92,25 @@ const TransactionDetails = () => {
           ) : (
             <Grid container spacing={2}>
               <Grid item lg={3}>
-                <Typography
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
-                >
+                <Typography color={theme.palette.text.third}>
                   Transaction No
                 </Typography>
                 <Typography fontSize={14}>{values.id}</Typography>
               </Grid>
               <Grid item lg={3}>
-                <Typography
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
-                >
+                <Typography color={theme.palette.text.third}>
                   Customer ID
                 </Typography>
                 <Typography fontSize={14}>{values.id}</Typography>
               </Grid>
               <Grid item lg={3}>
-                <Typography
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
-                >
+                <Typography color={theme.palette.text.third}>
                   Booking ID
                 </Typography>
                 <Typography fontSize={14}>{values.bookingId}</Typography>
               </Grid>
               <Grid item lg={3}>
-                <Typography
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
-                >
-                  Amount
-                </Typography>
+                <Typography color={theme.palette.text.third}>Amount</Typography>
 
                 <Typography fontSize={14}>
                   {values.amount.toLocaleString("en-US", {
@@ -115,19 +120,13 @@ const TransactionDetails = () => {
                 </Typography>
               </Grid>
               <Grid item lg={3}>
-                <Typography
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
-                >
+                <Typography color={theme.palette.text.third}>
                   Currency
                 </Typography>
                 <Typography fontSize={14}>USD</Typography>
               </Grid>
               <Grid item lg={3}>
-                <Typography
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
-                >
+                <Typography color={theme.palette.text.third}>
                   Transaction Date
                 </Typography>
 
@@ -136,22 +135,28 @@ const TransactionDetails = () => {
                 </Typography>
               </Grid>
               <Grid item lg={3}>
-                <Typography
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
-                >
+                <Typography color={theme.palette.text.third}>
                   Payment Method
                 </Typography>
-                <Typography fontSize={14}>{values.paymentMethod}</Typography>
+                <Box display="flex" alignItems="center" gap={1}>
+                  {values.paymentMethod === "PayPal" ? (
+                    <img src={paypal} width="20px" alt={values.paymentMethod} />
+                  ) : (
+                    <img
+                      src={mastercard}
+                      width="20px"
+                      alt={values.paymentMethod}
+                    />
+                  )}
+                  <Typography fontSize={14}>{values.paymentMethod}</Typography>
+                </Box>
               </Grid>
               <Grid item lg={3}>
+                <Typography color={theme.palette.text.third}>Status</Typography>
                 <Typography
-                  color={theme.palette.text.third}
-                  fontWeight="medium"
+                  fontSize={14}
+                  color={colorTransStatus(values.status)}
                 >
-                  Status
-                </Typography>
-                <Typography fontSize={14} color={theme.palette.text.onStatus}>
                   {values.statusType}
                 </Typography>
               </Grid>

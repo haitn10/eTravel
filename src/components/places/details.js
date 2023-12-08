@@ -251,7 +251,7 @@ const PlaceDetails = () => {
               <TabList onChange={handleTabs}>
                 <Tab label="General" value="1" />
                 <Tab label="Languages" value="2" />
-                <Tab label="Beacons" value="3" />
+                <Tab label="Locations" value="3" />
                 <Tab label="Feedbacks" value="4" />
               </TabList>
             </Box>

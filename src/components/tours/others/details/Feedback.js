@@ -154,7 +154,7 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
             borderRadius={2.5}
           >
             <Typography fontSize={14} color={theme.palette.text.third}>
-              Rating:
+              Total Rating:
             </Typography>
             <Rating
               readOnly
@@ -171,7 +171,6 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
               }}
             />
             <Typography
-              marginLeft={1}
               fontSize={12}
               color={theme.palette.text.third}
             >
@@ -197,13 +196,13 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
                 <TimelineOppositeContent color="textSecondary">
                   {comment.updateTime ? (
                     <Box>
-                      <Box>{dayjs(comment.updateTime).format("ll")}</Box>
-                      <Box>{dayjs(comment.updateTime).format("h:mm A")}</Box>
+                      <Box fontSize={14}>{dayjs(comment.updateTime).format("ll")}</Box>
+                      <Box fontSize={14}>{dayjs(comment.updateTime).format("h:mm A")}</Box>
                     </Box>
                   ) : (
                     <Box>
-                      <Box>{dayjs(comment.createTime).format("ll")}</Box>
-                      <Box>{dayjs(comment.createTime).format("h:mm A")}</Box>
+                      <Box fontSize={14}>{dayjs(comment.createTime).format("ll")}</Box>
+                      <Box fontSize={14}>{dayjs(comment.createTime).format("h:mm A")}</Box>
                     </Box>
                   )}
                 </TimelineOppositeContent>
@@ -240,7 +239,7 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
                             },
                           }}
                         />
-                        <Typography marginLeft={1} fontSize={14}>
+                        <Typography fontSize={14}>
                           ({labels[comment.rate || 0]})
                         </Typography>
                       </Box>

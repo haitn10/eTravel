@@ -148,7 +148,7 @@ const PlaceGeneral = ({
         ) : (
           <>
             <Grid item xs={12} lg={4}>
-              <Typography fontWeight="medium">
+              <Typography color={theme.palette.text.third}>
                 Place Name{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
@@ -185,7 +185,7 @@ const PlaceGeneral = ({
         ) : (
           <>
             <Grid item xs={12} lg={4}>
-              <Typography fontWeight="medium">
+              <Typography color={theme.palette.text.third}>
                 Category{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
@@ -242,7 +242,7 @@ const PlaceGeneral = ({
         ) : (
           <>
             <Grid item xs={12} lg={4}>
-              <Typography fontWeight="medium">
+              <Typography color={theme.palette.text.third}>
                 Price{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
@@ -280,7 +280,7 @@ const PlaceGeneral = ({
         ) : (
           <>
             <Grid item xs={12} lg={4}>
-              <Typography fontWeight="medium">
+              <Typography color={theme.palette.text.third}>
                 Entry Ticket{" "}
                 <small
                   style={{ fontSize: 12, color: theme.palette.text.active }}
@@ -315,12 +315,12 @@ const PlaceGeneral = ({
         ) : (
           <>
             <Grid item xs={12} lg={4}>
-              <Typography fontWeight="medium">
+              <Typography color={theme.palette.text.third}>
                 Duration{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
-              <Typography>
-                <small>Estimated place completion time.</small>
+              <Typography fontSize={12} color={theme.palette.text.third}>
+                Estimated place completion time.
               </Typography>
             </Grid>
             <Grid item xs={12} lg={8}>
@@ -369,7 +369,7 @@ const PlaceGeneral = ({
         ) : (
           <>
             <Grid item xs={12} lg={4}>
-              <Typography fontWeight="medium">
+              <Typography color={theme.palette.text.third}>
                 Primary Image{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
@@ -475,7 +475,9 @@ const PlaceGeneral = ({
         ) : (
           <>
             <Grid item xs={12} lg={4}>
-              <Typography fontWeight="medium">Other Images</Typography>
+              <Typography color={theme.palette.text.third}>
+                Other Images
+              </Typography>
             </Grid>
             <Grid item xs={12} lg={8}>
               <Box

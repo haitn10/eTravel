@@ -7,9 +7,12 @@ const feedbacks = [
   {
     field: "id",
     headerName: "No.",
-    align: "center",
     sortable: false,
-    width: 30,
+    align: "center",
+    renderCell: (params) => {
+      return params.api.getAllRowIds().indexOf(params.id) + 1;
+    },
+    width: 50,
   },
   {
     field: "userName",
@@ -80,7 +83,7 @@ const feedbacks = [
     headerAlign: "center",
     align: "center",
     sortable: false,
-    width: 90,
+    width: 100,
     renderCell: (params) => {
       let color = "";
       if (params.row.status === 0) {

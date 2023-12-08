@@ -14,8 +14,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 
 import { labels } from "../../../../constants/rating";
-import placeSub from "../../../../constants/tables/placeSub";
-import TableSkeletion from "../../../common/skeletion/TableSkeletion";
+import location from "../../../../constants/tables/location";
 import CustomNoRowsOverlay from "../../../common/CustomNoRowsOverlay";
 
 const GeneralInfo = ({ values, loading }) => {
@@ -296,12 +295,12 @@ const GeneralInfo = ({ values, loading }) => {
             )}
             <Box padding={1} width="99.5%">
               {loading ? (
-                <TableSkeletion rowsNum={5} columnsNum={5} />
+                <Skeleton width="100%" variant="rounded" height={100} />
               ) : (
                 <DataGrid
                   disableColumnMenu
                   disableRowSelectionOnClick
-                  columns={placeSub}
+                  columns={location}
                   rows={values?.tourDetails}
                   autoPageSize
                   pagination

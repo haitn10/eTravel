@@ -25,7 +25,7 @@ import date from "../../constants/date";
 import { getLanguages } from "../languages/action";
 
 const steps = [
-  "Information General",
+  "General Information",
   "Multi-Language",
   "Beacons",
   "Coordinates",
