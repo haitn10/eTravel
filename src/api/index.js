@@ -8,8 +8,8 @@ export const GOONG_API_KEY = "lufMpKjvYBPBQqq13Zwl0vTLnPUHtkksPTV1YcEs";
 export const GOONG_URL = "https://rsapi.goong.io/Place/AutoComplete";
 
 // URL
-export const BASE_URL = "http://localhost:8000";
-// export const BASE_URL = "https://etravelapi.azurewebsites.net";
+// export const BASE_URL = "http://localhost:8000";
+export const BASE_URL = "https://etravelapi.azurewebsites.net";
 
 export const API = axios.create({
   baseURL: `${BASE_URL}/api/`,
