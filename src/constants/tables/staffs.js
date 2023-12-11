@@ -1,33 +1,36 @@
 import { Box, Typography, alpha } from "@mui/material";
 import { theme } from "../../styles/theme";
-import moment from "moment/moment";
+import dayjs from "dayjs";
 
 const staffs = [
   {
     field: "id",
-    headerName: "StaffID",
+    headerName: "No.",
+    sortable: false,
     headerAlign: "center",
-    width: 80,
+    width: 50,
     align: "center",
   },
-  { field: "fullName", headerName: "Full Name", flex: 1 },
-  { field: "gender", headerName: "Gender", width: 120 },
-  { field: "role", headerName: "Role", width: 120 },
-  { field: "phone", headerName: "Phone", width: 150 },
-  { field: "email", headerName: "Email", width: 200 },
+  { field: "fullName", headerName: "Full Name", sortable: false, flex: 1 },
+  { field: "gender", headerName: "Gender", sortable: false, width: 120 },
+  { field: "role", headerName: "Role", sortable: false, width: 120 },
+  { field: "phone", headerName: "Phone", sortable: false, width: 150 },
+  { field: "email", headerName: "Email", sortable: false, width: 200 },
   {
     field: "createTime",
     headerName: "Create Time",
+    sortable: false,
     headerAlign: "right",
     align: "right",
     flex: 1,
     renderCell: (params) => {
-      return moment(params.row.createTime).format("DD MMMM, YYYY");
+      return dayjs(params.row.createTime).format("ll");
     },
   },
   {
     field: "status",
     headerName: "Status",
+    sortable: false,
     headerAlign: "center",
     align: "center",
     width: 100,

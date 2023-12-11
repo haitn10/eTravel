@@ -311,7 +311,6 @@ const GeneralInfo = ({ values, loading }) => {
                   }}
                   sx={{
                     border: 0,
-                    minHeight: "55vh",
                     "& .MuiDataGrid-row:hover": {
                       cursor: "pointer",
                     },

@@ -102,10 +102,9 @@ const StaffDetails = () => {
 
   return (
     <Box
-      minWidth="94vh"
+      minHeight="94vh"
       margin="1.25em"
       padding={2}
-      paddingBottom={10}
       bgcolor={theme.palette.background.primary}
       borderRadius={5}
     >
@@ -117,8 +116,8 @@ const StaffDetails = () => {
       />
 
       <Header
-        title={"Tour Operator Details"}
-        subTitle={"Display all information of tour operator and update them."}
+        title={"Moderator Details"}
+        subTitle={"Display all information of moderator and update them."}
         loading={loading}
         showBack={true}
       />
@@ -137,7 +136,7 @@ const StaffDetails = () => {
             ) : (
               <>
                 <Typography color={theme.palette.text.third}>
-                  {data.roleId === 1 ? "Adminitrator" : "Tour Operator"} ID:
+                  {data.roleId === 1 ? "Adminitrator" : "Moderator"} ID:
                 </Typography>
                 <Typography fontWeight="medium">#{data.id}</Typography>
               </>

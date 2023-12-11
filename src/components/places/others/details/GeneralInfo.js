@@ -49,9 +49,9 @@ const GeneralInfo = ({ values, loading }) => {
   const theme = useTheme();
   const [popupInfo, setPopupInfo] = useState(null);
   const [viewport, setViewport] = useState({
-    latitude: 10.762622,
-    longitude: 106.660172,
-    zoom: 14,
+    latitude: values.latitude || 10.762622,
+    longitude: values.longitude || 106.660172,
+    zoom: 16,
   });
 
   useEffect(() => {

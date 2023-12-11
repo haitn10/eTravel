@@ -105,24 +105,24 @@ export const updatePlace = async (placeId, values, files) => {
       }
     }
 
-    const { data } = await API.put(`portal/places/${placeId}`, values);
-
     //Convert voice file
+    let formData = new FormData();
     if (files) {
-      let formData = new FormData();
-      files.forEach((file) => {
-        if (file.voiceFile instanceof File) {
-          formData.append("listMp3", file.voiceFile);
+      files.forEach((item) => {
+        if (item.voiceFile instanceof File) {
+          formData.append("listMp3", item.voiceFile);
         }
       });
-
-      // Check if formData has data before calling convertVoiceFile
-      if (formData && formData.getAll && formData.getAll("listMp3").length > 0)
-        await convertVoiceFile(formData);
     }
 
+    const { data } = await API.put(`portal/places/${placeId}`, values);
+
+    // Check if formData has data before calling convertVoiceFile
+    if (formData && formData.getAll && formData.getAll("listMp3").length > 0)
+      await convertVoiceFile(formData);
+
     setState({ isFetching: false });
-    return Promise.resolve(data);
+    return await Promise.resolve(data);
   } catch (e) {
     setState({ isFetching: false });
     return Promise.reject(e);

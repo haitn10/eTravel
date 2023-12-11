@@ -10,9 +10,9 @@ const MapCoordinates = ({ values, setValues }) => {
   const theme = useTheme();
   const mapRef = useRef(null);
   const [viewport, setViewport] = useState({
-    latitude: 10.762622,
-    longitude: 106.660172,
-    zoom: 11,
+    latitude: values.latitude || 10.762622,
+    longitude: values.longitude || 106.660172,
+    zoom: 12,
     bearing: 0,
     pitch: 0,
   });

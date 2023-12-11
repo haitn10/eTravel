@@ -186,7 +186,7 @@ const BeaconSub = ({
             textTransform="uppercase"
             color={theme.palette.text.third}
           >
-            Beacon Information
+            Location List
           </Typography>
         )}
       </Box>
