@@ -10,25 +10,29 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { Fragment, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import dayjs from "dayjs";
+
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
 import PlaceGeneral from "./others/PlaceGeneral";
 import MultiLanguages from "./others/MultiLanguages";
 import Coordinates from "./others/Coordinates";
-import { useDispatch } from "react-redux";
 import PreviewData from "./others/PreviewData";
-import { useForm } from "react-hook-form";
-import { processPlace } from "./action";
-import dayjs from "dayjs";
 import Beacon from "./others/Beacon";
-import date from "../../constants/date";
+
+import { processPlace } from "./action";
 import { getLanguages } from "../languages/action";
+
+import date from "../../constants/date";
 
 const steps = [
   "General Information",
   "Multi-Language",
-  "Beacons",
-  "Coordinates",
+  "Locations",
+  "Coordinate",
   "Confirmation",
 ];
 
@@ -51,6 +55,7 @@ const initialState = {
 const AddPlace = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
 
@@ -72,7 +77,6 @@ const AddPlace = () => {
     setError,
     clearErrors,
     register,
-    reset,
     control,
     formState: { errors },
   } = useForm({
@@ -249,14 +253,18 @@ const AddPlace = () => {
       setCreate(true);
       await dispatch(processPlace(dataCreate, getValues("placeDescriptions")));
       await setCreate(false);
-      await setValues(initialState);
-      await reset(initialState);
-      await setActiveStep(0);
       await setNotification({
         ...notification,
         errorState: true,
         errorMessage: "Created Place Successfully!",
         status: "success",
+      });
+      navigate("/places", {
+        state: {
+          errorState: true,
+          errorMessage: "Created Place Successfully!",
+          status: "success",
+        },
       });
     } catch (e) {
       if (e.response.status === 500) {

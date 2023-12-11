@@ -72,6 +72,7 @@ const Beacon = ({
             <Skeleton width={200} />
           ) : (
             <Typography
+              fontSize={14}
               fontWeight="medium"
               textTransform="uppercase"
               color={theme.palette.text.third}

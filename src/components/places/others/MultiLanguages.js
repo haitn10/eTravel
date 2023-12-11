@@ -1,5 +1,6 @@
 import {
   Box,
+  IconButton,
   Button,
   Divider,
   FormHelperText,
@@ -69,13 +70,29 @@ const MultiLanguages = ({
     <Box padding={5} marginX={10}>
       {fields.map((item, index) => {
         return (
-          <Box
-            key={item.id}
-            display="flex"
-            justifyContent="center"
-            width="100%"
-            padding={1}
-          >
+          <Box key={item.id} padding={1}>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography
+                fontWeight="medium"
+                fontSize={18}
+                color={alpha(theme.palette.text.primary, 0.75)}
+              >
+                Language Number {index + 1}
+              </Typography>
+              {fields.length === 1 ? null : (
+                <IconButton
+                  color="error"
+                  onClick={() => remove(index)}
+                  sx={{ marginLeft: 2 }}
+                >
+                  <Trash3 width={20} />
+                </IconButton>
+              )}
+            </Box>
             <Box>
               <Grid container rowGap={2} marginY={2}>
                 {/* Language*/}
@@ -349,15 +366,6 @@ const MultiLanguages = ({
               </Grid>
               <Divider />
             </Box>
-            {fields.length === 1 ? null : (
-              <Button
-                color="error"
-                onClick={() => remove(index)}
-                sx={{ marginLeft: 2 }}
-              >
-                <Trash3 width={20} />
-              </Button>
-            )}
           </Box>
         );
       })}
@@ -381,7 +389,9 @@ const MultiLanguages = ({
               sx={{ borderRadius: 2.5 }}
             >
               <Add width={20} />
-              <Typography fontWeight='medium' fontSize={14}>Add More</Typography>
+              <Typography fontWeight="medium" fontSize={14}>
+                New Language
+              </Typography>
             </Button>
           )
         ) : null}

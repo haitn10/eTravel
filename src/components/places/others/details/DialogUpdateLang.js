@@ -31,6 +31,7 @@ const DialogUpdateLang = ({
   remove,
   control,
   resetField,
+  reset,
   register,
   errors,
   getValues,
@@ -63,6 +64,7 @@ const DialogUpdateLang = ({
   };
 
   const onUpdate = async () => {
+    const descData = getValues("placeDescriptions");
     let dataUpdate = {
       name: getValues("name"),
       longitude: getValues("longitude"),
@@ -90,7 +92,7 @@ const DialogUpdateLang = ({
       });
     }
 
-    for (const desc of getValues("placeDescriptions")) {
+    for (const desc of descData) {
       dataUpdate.placeDescriptions.push({
         languageCode: desc.languageCode,
         voiceFile:
@@ -124,11 +126,7 @@ const DialogUpdateLang = ({
 
     try {
       setUpdate(true);
-      const res = await updatePlace(
-        getValues().id,
-        dataUpdate,
-        getValues("placeDescriptions")
-      );
+      const res = await updatePlace(getValues().id, dataUpdate, descData);
       if (res) {
         setValues(res.place);
         setNotification({
@@ -183,7 +181,7 @@ const DialogUpdateLang = ({
                         fontSize={12}
                         color={theme.palette.text.active}
                       >
-                       Please wait for the file conversion process to finish to
+                        Please wait for the file conversion process to finish to
                         update this description.
                       </Typography>
                     ) : null}

@@ -105,8 +105,8 @@ const AppRouter = () => {
               <Route path="/dashboard" element={<HomePage />} />
               <Route path="/users" element={<ManageUsers />} />
               <Route path="/users/details" element={<UserDetails />} />
-              <Route path="/staffs" element={<ManageStaffs />} />
-              <Route path="/staffs/details" element={<StaffDetails />} />
+              <Route path="/moderators" element={<ManageStaffs />} />
+              <Route path="/moderators/details" element={<StaffDetails />} />
               <Route path="/categories" element={<ManageCategories />} />
               <Route path="/categories/details" element={<CategoryDetails />} />
               <Route path="/languages" element={<ManageLanguages />} />
