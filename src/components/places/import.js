@@ -4,7 +4,6 @@ import {
   Typography,
   useTheme,
   alpha,
-  LinearProgress,
   Grid,
   FormHelperText,
   IconButton,
@@ -12,7 +11,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 
 import ErrorModal from "../common/ErrorModal";
 import Header from "../common/Header";
@@ -293,6 +292,7 @@ const ImportPlaces = () => {
                   borderRadius: 2.5,
                   height: 300,
                   cursor: "pointer",
+                  color: theme.palette.text.third,
                 }}
               >
                 <FileEarmarkArrowUp width={30} style={{ marginRight: 5 }} />

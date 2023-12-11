@@ -50,22 +50,29 @@ const tours = [
     align: "center",
     flex: 1,
     renderCell: (params) => {
-      return (
-        <Rating
-          readOnly
-          size="small"
-          value={params.row.rate || 0}
-          precision={0.5}
-          sx={{
-            ".MuiRating-icon": {
-              borderColor: theme.palette.text.active,
-            },
-            "& .MuiRating-iconFilled": {
-              color: theme.palette.text.active,
-            },
-          }}
-        />
-      );
+      if (params.row.rate === 0 || params.row.rate === null) {
+        return (
+          <Typography fontSize={12} color={theme.palette.text.third}>
+            No reviews
+          </Typography>
+        );
+      } else
+        return (
+          <Rating
+            readOnly
+            size="small"
+            value={params.row.rate || 0}
+            precision={0.5}
+            sx={{
+              ".MuiRating-icon": {
+                borderColor: theme.palette.text.active,
+              },
+              "& .MuiRating-iconFilled": {
+                color: theme.palette.text.active,
+              },
+            }}
+          />
+        );
     },
   },
   {

@@ -25,6 +25,7 @@ import Action from "../common/Action";
 
 import staffs from "../../constants/tables/staffs";
 import { getStaffs, processStaff } from "./action";
+import CustomNoRowsOverlay from "../common/CustomNoRowsOverlay";
 
 const initialState = {
   firstName: "",
@@ -107,7 +108,7 @@ const ManageStaffs = () => {
   }, [getData]);
 
   const onNavigate = async (params) => {
-    navigate("/staffs/details", { state: { accountId: params.row.id } });
+    navigate("/moderators/details", { state: { accountId: params.row.id } });
   };
 
   const handleChange = (event) => {
@@ -120,7 +121,7 @@ const ManageStaffs = () => {
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: "Created successfully!",
+        errorMessage: "Created moderator successfully!",
         status: "success",
       });
 
@@ -141,8 +142,8 @@ const ManageStaffs = () => {
   const action = [
     {
       field: "action",
-      headerName: "Actions",
-      width: 80,
+      headerName: "Action",
+      width: 100,
       align: "center",
       headerAlign: "center",
       sortable: false,
@@ -171,7 +172,7 @@ const ManageStaffs = () => {
 
   return (
     <Box
-      minWidth="94vh"
+      minHeight="94vh"
       margin="1.25em"
       padding={2}
       bgcolor={theme.palette.background.primary}
@@ -184,8 +185,8 @@ const ManageStaffs = () => {
         status={notification.status}
       />
       <Header
-        title={"Manage Tour Operators"}
-        subTitle={"Manage all available tour operators."}
+        title={"Manage Moderators"}
+        subTitle={"Manage all available moderators."}
         showSearch={true}
         buttonAdd={true}
         setOpen={setOpen}
@@ -209,6 +210,7 @@ const ManageStaffs = () => {
             paginationMode="server"
             onPaginationModelChange={setPageModelState}
             onRowClick={(params) => onNavigate(params)}
+            slots={{ noRowsOverlay: CustomNoRowsOverlay }}
             sx={{
               border: 0,
               minHeight: "75vh",
@@ -218,6 +220,7 @@ const ManageStaffs = () => {
               "& .MuiDataGrid-cell:focus": {
                 outline: "none",
               },
+              "--DataGrid-overlayHeight": "300px",
             }}
           />
         </Grid>
@@ -240,7 +243,7 @@ const ManageStaffs = () => {
           borderBottom={1}
           borderColor={theme.palette.background.third}
         >
-          New Staff
+          New Moderator
         </DialogTitle>
         <DialogContent sx={{ paddingX: 15, marginTop: 5 }}>
           <form noValidate>
@@ -391,7 +394,7 @@ const ManageStaffs = () => {
                     onChange={handleChange}
                   >
                     <MenuItem value={2} defaultValue>
-                      Tour Operator
+                      Moderator
                     </MenuItem>
                     <MenuItem value={1}>Admin</MenuItem>
                   </Select>

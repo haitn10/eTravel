@@ -70,7 +70,7 @@ const PlaceDetails = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm({ defaultValue: { placeCategories: [] } });
+  } = useForm();
 
   const { fields: fieldsDescriptions, remove: removeDescriptions } =
     useFieldArray({
@@ -179,6 +179,7 @@ const PlaceDetails = () => {
         remove={removeDescriptions}
         control={control}
         resetField={resetField}
+        reset={reset}
         register={register}
         errors={errors}
         getValues={getValues}
@@ -334,7 +335,7 @@ const PlaceDetails = () => {
               )}
             </Box>
             <BeaconSub
-              placeName={values.name}
+              placeName={values?.name}
               values={fieldsItems}
               loading={loading}
               getValues={getValues}
