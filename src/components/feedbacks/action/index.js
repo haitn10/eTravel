@@ -19,10 +19,10 @@ export const getFeedbacks = (payload) => {
   };
 };
 
-export const getFeedbackDetails = async (bookingId) => {
+export const getFeedbackDetails = async (feedbackId) => {
   try {
-    const { data } = await API.get(`portal/bookings/${bookingId}`);
-    return Promise.resolve(data.booking);
+    const { data } = await API.get(`portal/feedbacks/detail/${feedbackId}`);
+    return Promise.resolve(data.feedback);
   } catch (e) {
     return Promise.reject(e);
   }

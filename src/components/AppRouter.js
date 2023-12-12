@@ -18,6 +18,7 @@ import ImportPlaces from "./places/import";
 import ManageBookings from "./bookings";
 import BookingDetails from "./bookings/details";
 import ManageFeedbacks from "./feedbacks";
+import { FeedbackDetails } from "./feedbacks/details";
 import ManageTransactions from "./transactions";
 import TransactionDetails from "./transactions/details";
 import Profile from "./auth";
@@ -83,6 +84,7 @@ const AppRouter = () => {
               <Route path="/bookings" element={<ManageBookings />} />
               <Route path="/bookings/details" element={<BookingDetails />} />
               <Route path="/feedbacks" element={<ManageFeedbacks />} />
+              <Route path="/feedbacks/details" element={<FeedbackDetails />} />
               <Route path="/bookings/details" element={<BookingDetails />} />
               <Route path="/transactions" element={<ManageTransactions />} />
               <Route
