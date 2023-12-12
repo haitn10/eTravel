@@ -381,100 +381,86 @@ const BookingDetails = () => {
         </Grid>
 
         <Box marginTop={4}>
-          {loading ? (
-            <Skeleton width="100%" />
-          ) : (
-            <Accordion
-              sx={{
-                marginTop: 1,
-                boxShadow: " rgba(0, 0, 0, 0.04) 0px 3px 5px;",
-                "&:before": {
-                  display: "none",
-                },
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMore width={24} />}
-                sx={{
-                  padding: "4px 20px",
-                }}
+          <Box>
+            {loading ? (
+              <Skeleton width={100} />
+            ) : (
+              <Typography
+                fontSize={14}
+                letterSpacing={0.5}
+                fontWeight="medium"
+                textTransform="uppercase"
+                color={theme.palette.text.third}
               >
-                <Typography>Transactions History</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                {values.historyTransactions.length !== 0 ? (
-                  <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>ID</TableCell>
-                          <TableCell>Payment Method</TableCell>
-                          <TableCell>Amount</TableCell>
-                          <TableCell align="right">Payment Time</TableCell>
-                          <TableCell align="right">Status</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {values.historyTransactions.map((trans) => (
-                          <TableRow
-                            key={trans.id}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                          >
-                            <TableCell component="th" scope="row">
-                              {trans.id}
-                            </TableCell>
-                            <TableCell>
-                              <Box display="flex" alignItems='center' gap={1}>
-                                {trans.paymentMethod === "PayPal" ? (
-                                  <img
-                                    src={paypal}
-                                    width="20px"
-                                    alt={trans.paymentMethod}
-                                  />
-                                ) : (
-                                  <img
-                                    src={mastercard}
-                                    width="20px"
-                                    alt={trans.paymentMethod}
-                                  />
-                                )}
-                                {trans.paymentMethod}
-                              </Box>
-                            </TableCell>
-                            <TableCell>
-                              {trans.amount.toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                              })}
-                            </TableCell>
-                            <TableCell align="right">
-                              {dayjs(trans.createTime).format("lll")}
-                            </TableCell>
-                            <TableCell align="right">
-                              <Typography
-                                variant="span"
-                                fontWeight="medium"
-                                color={colorTransStatus(trans.status)}
-                                textTransform="capitalize"
-                              >
-                                {trans.statusType}
-                              </Typography>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : (
-                  <Box display="flex" justifyContent="center">
-                    <Typography>(No data)</Typography>
-                  </Box>
-                )}
-              </AccordionDetails>
-            </Accordion>
-          )}
+                Transaction List
+              </Typography>
+            )}
+          </Box>
+          <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Payment Method</TableCell>
+                  <TableCell>Amount</TableCell>
+                  <TableCell align="right">Payment Time</TableCell>
+                  <TableCell align="right">Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {values?.historyTransactions &&
+                  values?.historyTransactions?.map((trans) => (
+                    <TableRow
+                      key={trans.id}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {trans.id}
+                      </TableCell>
+                      <TableCell>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          {trans.paymentMethod === "PayPal" ? (
+                            <img
+                              src={paypal}
+                              width="20px"
+                              alt={trans.paymentMethod}
+                            />
+                          ) : (
+                            <img
+                              src={mastercard}
+                              width="20px"
+                              alt={trans.paymentMethod}
+                            />
+                          )}
+                          {trans.paymentMethod}
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        {trans.amount.toLocaleString("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        })}
+                      </TableCell>
+                      <TableCell align="right">
+                        {dayjs(trans.createTime).format("lll")}
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography
+                          variant="span"
+                          fontWeight="medium"
+                          color={colorTransStatus(trans.status)}
+                          textTransform="capitalize"
+                        >
+                          {trans.statusType}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </Box>
     </Box>

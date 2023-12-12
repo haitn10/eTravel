@@ -64,8 +64,8 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
   };
 
   return (
-    <Box paddingX={4} width="100%">
-      <Grid container marginBottom={3} spacing={7}>
+    <Box paddingX={4} width="100%" marginTop={3}>
+      <Grid container marginBottom={3} spacing={3}>
         <Grid item xs={12} lg={6}>
           <Box
             padding={2}
@@ -86,14 +86,19 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
         </Grid>
 
         <Grid item xs={12} lg={6}>
-          <Box marginTop={3}>
-            <Typography fontWeight={"semiBold"} textTransform={"uppercase"}>
+          <Box>
+            <Typography
+              fontSize={14}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+            >
               Location
             </Typography>
             <Grid container rowGap={1.5} paddingX={1} marginTop={2}>
               {/* Place Address */}
               <Grid item xs={12} md={4}>
-                <Typography>
+                <Typography color={theme.palette.text.third}>
                   Place Address{" "}
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
@@ -120,7 +125,7 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
               </Grid>
               {/* Latitude */}
               <Grid item xs={12} md={4}>
-                <Typography>
+                <Typography color={theme.palette.text.third}>
                   Latitude{" "}
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
@@ -154,7 +159,7 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
 
               {/* Longitude */}
               <Grid item xs={12} md={4}>
-                <Typography>
+                <Typography color={theme.palette.text.third}>
                   Longitude{" "}
                   <small style={{ color: theme.palette.text.active }}>*</small>
                 </Typography>
@@ -188,7 +193,9 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
 
               {/* GooglePlaceID */}
               <Grid item xs={12} md={4}>
-                <Typography>GooglePlaceID</Typography>
+                <Typography color={theme.palette.text.third}>
+                  GooglePlaceID
+                </Typography>
               </Grid>
               <Grid item xs={12} md={8}>
                 <TextField
@@ -209,7 +216,12 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
             </Grid>
           </Box>
           <Box marginTop={3}>
-            <Typography fontWeight={"semiBold"} textTransform={"uppercase"}>
+            <Typography
+              fontSize={14}
+              fontWeight="medium"
+              textTransform="uppercase"
+              color={theme.palette.text.third}
+            >
               Date Of Week
             </Typography>
 
@@ -222,7 +234,9 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
                 spacing={1}
               >
                 <Grid item xs={12} lg={4}>
-                  <Typography width={100}>{data.day}</Typography>
+                  <Typography width={100} color={theme.palette.text.third}>
+                    {data.day}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
                   <TextField

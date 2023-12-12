@@ -7,7 +7,7 @@ import {
   Grid,
   ImageList,
   ImageListItem,
-  TextField,
+  Divider,
   Typography,
   Tooltip,
   alpha,
@@ -18,8 +18,9 @@ import { ExpandMore } from "styled-icons/material";
 import { imageFileTypes } from "../../../constants/fileType";
 
 import { StarFill } from "@styled-icons/bootstrap";
+import DescriptionItem from "../../common/DescriptionItem";
 
-const PreviewData = ({ data, setValues, getValues, language }) => {
+const PreviewData = ({ data, getValues, language }) => {
   const theme = useTheme();
 
   const previewImage = (image) => {
@@ -36,9 +37,11 @@ const PreviewData = ({ data, setValues, getValues, language }) => {
     );
     return value;
   };
+
   return (
-    <Box padding={5} marginX={5}>
+    <Box padding={5}>
       <Typography
+        fontSize={14}
         fontWeight="medium"
         textTransform="uppercase"
         color={theme.palette.text.third}
@@ -47,19 +50,17 @@ const PreviewData = ({ data, setValues, getValues, language }) => {
       </Typography>
       <Box
         bgcolor={theme.palette.background.secondary}
-        paddingY={2}
+        padding={2}
         marginTop={1}
         borderRadius={2.5}
       >
-        <Grid container spacing={2}>
-          <Grid item lg={0.5} />
-
+        <Grid container columnSpacing={1}>
           <Grid item sm={6} lg={2}>
             <Typography fontWeight="medium" color={theme.palette.text.third}>
               Place Name
             </Typography>
             <Tooltip title={data.name}>
-              <Typography>{data.name}</Typography>
+              <Typography noWrap>{data.name}</Typography>
             </Tooltip>
           </Grid>
 
@@ -68,7 +69,7 @@ const PreviewData = ({ data, setValues, getValues, language }) => {
               Google Place IDs
             </Typography>
             <Tooltip title={data.googlePlaceId}>
-              <Typography>
+              <Typography noWrap>
                 {data.googlePlaceId ? data.googlePlaceId : "(No data)"}
               </Typography>
             </Tooltip>
@@ -92,51 +93,66 @@ const PreviewData = ({ data, setValues, getValues, language }) => {
             </Tooltip>
           </Grid>
 
-          <Grid item sm={10} lg={3}>
+          <Grid item sm={10} lg={4}>
             <Typography fontWeight="medium" color={theme.palette.text.third}>
               Place Address
             </Typography>
-            <Typography>{data.address}</Typography>
+            <Tooltip title={data.address}>
+              <Typography noWrap>{data.address}</Typography>
+            </Tooltip>
           </Grid>
-
-          <Grid item lg={0.5} />
-          <Grid item lg={0.5} />
 
           <Grid item sm={4} lg={2}>
             <Typography fontWeight="medium" color={theme.palette.text.third}>
               Duration
             </Typography>
-            <Typography>{dayjs(data.hour).format("HH:mm:ss")}</Typography>
+            <Tooltip title={dayjs(data.hour).format("HH:mm:ss")}>
+              <Typography>{dayjs(data.hour).format("HH:mm:ss")}</Typography>
+            </Tooltip>
           </Grid>
 
           <Grid item sm={4} lg={2}>
             <Typography fontWeight="medium" color={theme.palette.text.third}>
               Price
             </Typography>
-            <Typography>
-              {data.price?.toLocaleString("en-US", {
+            <Tooltip
+              title={data.price?.toLocaleString("en-US", {
                 style: "currency",
                 currency: "USD",
               })}
-            </Typography>
+            >
+              <Typography noWrap>
+                {data.price?.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </Typography>
+            </Tooltip>
           </Grid>
 
           <Grid item sm={4} lg={2}>
             <Typography fontWeight="medium" color={theme.palette.text.third}>
               Entry Ticket
             </Typography>
-            <Typography>
-              {data.entryTicket?.toLocaleString("en-US", {
+            <Tooltip
+              title={data.entryTicket?.toLocaleString("en-US", {
                 style: "currency",
                 currency: "USD",
               })}
-            </Typography>
+            >
+              <Typography noWrap>
+                {data.entryTicket?.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </Typography>
+            </Tooltip>
           </Grid>
-          <Grid item sm={12} lg={5}>
+          <Grid item sm={12} lg={6}>
             <Typography fontWeight="medium" color={theme.palette.text.third}>
               Category
             </Typography>
-            <Box display="flex" flexWrap="wrap">
+            <Box display="flex" flexWrap="wrap" maxWidth={500}>
               {getValues("placeCategories").map((category) => (
                 <Box
                   key={category.id}
@@ -162,6 +178,7 @@ const PreviewData = ({ data, setValues, getValues, language }) => {
 
       <Box marginTop={7}>
         <Typography
+          fontSize={14}
           fontWeight="medium"
           textTransform="uppercase"
           color={theme.palette.text.third}
@@ -201,10 +218,35 @@ const PreviewData = ({ data, setValues, getValues, language }) => {
               <Typography>{getLanguage(item.languageCode)[0]?.name}</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography fontWeight="semiBold">{item.name}</Typography>
-              <Typography>
-                {item.description ? item.description : "(No script)"}
-              </Typography>
+              <Box display="flex" gap={2} marginBottom={2}>
+                <Box minWidth={100}>
+                  <Typography
+                    width={100}
+                    fontSize={14}
+                    color={theme.palette.text.third}
+                  >
+                    Place Name:
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography>{item.name}</Typography>
+                </Box>
+              </Box>
+
+              <Box display="flex" gap={2}>
+                <Box minWidth={100}>
+                  <Typography
+                    width={100}
+                    fontSize={14}
+                    color={theme.palette.text.third}
+                  >
+                    Description:
+                  </Typography>
+                </Box>
+                <Box>
+                  <DescriptionItem {...item} />
+                </Box>
+              </Box>
             </AccordionDetails>
           </Accordion>
         ))}
@@ -213,6 +255,7 @@ const PreviewData = ({ data, setValues, getValues, language }) => {
       <Grid container spacing={5} marginTop={4}>
         <Grid item sm={12} lg={6}>
           <Typography
+            fontSize={14}
             fontWeight="medium"
             textTransform="uppercase"
             color={theme.palette.text.third}
@@ -264,167 +307,183 @@ const PreviewData = ({ data, setValues, getValues, language }) => {
           </ImageList>
         </Grid>
         <Grid item sm={12} lg={6}>
-          <Box>
-            <Typography
-              fontWeight="medium"
-              textTransform="uppercase"
-              color={theme.palette.text.third}
+          <Typography
+            fontSize={14}
+            fontWeight="medium"
+            textTransform="uppercase"
+            color={theme.palette.text.third}
+          >
+            Location List
+          </Typography>
+          {getValues("placeItems").map((item, index) => (
+            <Accordion
+              key={index}
+              sx={{
+                marginTop: 1,
+                boxShadow: " rgba(0, 0, 0, 0.04) 0px 3px 5px;",
+                "&:before": {
+                  display: "none",
+                },
+              }}
             >
-              Beacons List
-            </Typography>
-            {getValues("placeItems").map((item, index) => (
-              <Accordion
-                key={index}
+              <AccordionSummary
+                expandIcon={<ExpandMore width={24} />}
                 sx={{
-                  marginTop: 1,
-                  boxShadow: " rgba(0, 0, 0, 0.04) 0px 3px 5px;",
-                  "&:before": {
-                    display: "none",
-                  },
+                  alignItems: "center",
+                  bgcolor: theme.palette.background.primary,
                 }}
               >
-                <AccordionSummary
-                  expandIcon={<ExpandMore width={24} />}
-                  sx={{
-                    alignItems: "center",
-                    bgcolor: theme.palette.background.primary,
-                  }}
-                >
-                  <Typography>Beacon Number {index + 1}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box display="flex" justifyContent="space-around">
+                <Typography textTransform="capitalize">{item.name}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box>
+                  <Box display="flex" alignItems="center">
                     <Box>
-                      <Box display="flex" alignItems="center">
-                        <Typography
-                          width={150}
-                          color={alpha(theme.palette.text.third, 0.75)}
-                        >
-                          Code:
-                        </Typography>
-                        <Typography fontWeight="medium">
-                          {item.beaconId}
-                        </Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center">
-                        <Typography
-                          width={150}
-                          color={alpha(theme.palette.text.third, 0.75)}
-                        >
-                          Name:
-                        </Typography>
-                        <Typography fontWeight="medium">{item.name}</Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center">
-                        <Typography
-                          width={150}
-                          color={alpha(theme.palette.text.third, 0.75)}
-                        >
-                          Major Number:
-                        </Typography>
-                        <Typography>{item.beaconMajorNumber}</Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center">
-                        <Typography
-                          width={150}
-                          color={alpha(theme.palette.text.third, 0.75)}
-                        >
-                          MinorNumber:
-                        </Typography>
-                        <Typography>{item.beaconMinorNumber}</Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center">
-                        <Typography
-                          width={150}
-                          color={alpha(theme.palette.text.third, 0.75)}
-                        >
-                          Start Time:
-                        </Typography>
-                        <Typography>
-                          {dayjs(item.startTime).format("HH:mm:ss")}
-                        </Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center">
-                        <Typography
-                          width={150}
-                          color={alpha(theme.palette.text.third, 0.75)}
-                        >
-                          End Time:
-                        </Typography>
-                        <Typography>
-                          {dayjs(item.endTime).format("HH:mm:ss")}
-                        </Typography>
-                      </Box>
+                      <Typography
+                        width={120}
+                        color={alpha(theme.palette.text.third, 0.75)}
+                      >
+                        Beacon Code:
+                      </Typography>
                     </Box>
-                    <Box>
-                      {item.image ? (
-                        <img
-                          src={previewImage(item.image)}
-                          style={{ width: 120, height: 120, borderRadius: 10 }}
-                          alt={item.name}
-                        />
-                      ) : (
-                        <Box width={120} />
-                      )}
-                    </Box>
+                    <Typography noWrap>{item.beaconId}</Typography>
                   </Box>
-                </AccordionDetails>
-              </Accordion>
-            ))}
-          </Box>
+
+                  <Box display="flex" alignItems="center">
+                    <Box>
+                      <Typography
+                        width={120}
+                        color={alpha(theme.palette.text.third, 0.75)}
+                      >
+                        Major Number:
+                      </Typography>
+                    </Box>
+                    <Typography>{item.beaconMajorNumber}</Typography>
+                  </Box>
+
+                  <Box display="flex" alignItems="center">
+                    <Box>
+                      <Typography
+                        width={120}
+                        color={alpha(theme.palette.text.third, 0.75)}
+                      >
+                        MinorNumber:
+                      </Typography>
+                    </Box>
+                    <Typography>{item.beaconMinorNumber}</Typography>
+                  </Box>
+
+                  <Box display="flex" alignItems="center">
+                    <Box>
+                      <Typography
+                        width={120}
+                        color={alpha(theme.palette.text.third, 0.75)}
+                      >
+                        Start Time:
+                      </Typography>
+                    </Box>
+                    <Typography>
+                      {dayjs(item.startTime).format("HH:mm:ss")}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" alignItems="center">
+                    <Box>
+                      <Typography
+                        width={120}
+                        color={alpha(theme.palette.text.third, 0.75)}
+                      >
+                        End Time:
+                      </Typography>
+                    </Box>
+                    <Typography>
+                      {dayjs(item.endTime).format("HH:mm:ss")}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Divider sx={{ marginY: 2 }} />
+                <Box display="flex" justifyContent="space-between">
+                  <Box>
+                    <Typography color={alpha(theme.palette.text.third, 0.75)}>
+                      Location Name By Language
+                    </Typography>
+                    {item.itemDescriptions.map((desc, id) => (
+                      <Box key={id} display="flex" alignItems="center" gap={1}>
+                        <img
+                          src={getLanguage(desc.languageCode)[0]?.icon}
+                          alt={desc.languageCode}
+                          style={{
+                            width: 20,
+                            height: 12,
+                            border: "1px solid #ccc",
+                            marginRight: 5,
+                          }}
+                        />
+                        <Typography
+                          color={alpha(theme.palette.text.third, 0.75)}
+                        >
+                          :
+                        </Typography>
+                        <Typography
+                          color={alpha(theme.palette.text.third, 0.75)}
+                        >
+                          {desc.nameItem}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                  <Box>
+                    {item.image ? (
+                      <img
+                        src={previewImage(item.image)}
+                        style={{ width: 120, height: 120, borderRadius: 10 }}
+                        alt={item.name}
+                      />
+                    ) : (
+                      <Box />
+                    )}
+                  </Box>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+          ))}
 
           <Box marginTop={5}>
             <Typography
+              fontSize={14}
               fontWeight="medium"
               textTransform="uppercase"
               color={theme.palette.text.third}
             >
               Date Of Week
             </Typography>
-            {data.placeTimes.map((data, index) => (
-              <Grid
-                key={index}
-                container
-                paddingX={1}
-                marginTop={1}
-                spacing={1}
-              >
-                <Grid item sm={4}>
-                  <Typography width={100}>{data.day}</Typography>
-                </Grid>
-                <Grid item sm={4}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    type="time"
-                    value={data.openTime}
-                    InputProps={{
-                      style: {
-                        borderRadius: 10,
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid item sm={4}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    type="time"
-                    value={data.endTime}
-                    InputProps={{
-                      style: {
-                        borderRadius: 10,
-                      },
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            ))}
+            <Box padding={3}>
+              {data.placeTimes.map((date, index) => (
+                <Box
+                  key={index}
+                  display="flex"
+                  alignItems="center"
+                  gap={1.5}
+                  marginBottom={1.5}
+                >
+                  <Typography
+                    width={150}
+                    fontSize={16}
+                    color={theme.palette.text.third}
+                  >
+                    {date.day}
+                  </Typography>
+
+                  <Typography>
+                    {dayjs("2022-04-17T" + date.openTime).format("LT")}
+                  </Typography>
+                  <Typography>~</Typography>
+                  <Typography>
+                    {dayjs("2022-04-17T" + date.endTime).format("LT")}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </Box>
         </Grid>
       </Grid>

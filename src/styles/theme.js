@@ -6,6 +6,9 @@ export const theme = createTheme({
     error: {
       main: color.background[400],
     },
+    gray: {
+      main: color.text[300],
+    },
     background: {
       primary: color.background[100],
       secondary: color.background[200],
@@ -24,7 +27,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: `"Poppins", sans-serif `,
+    fontFamily: `"Inter", sans-serif `,
     button: {
       textTransform: "none",
     },
