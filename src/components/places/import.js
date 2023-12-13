@@ -90,7 +90,7 @@ const ImportPlaces = () => {
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: "Import Failed!",
+        errorMessage: e?.response?.data?.message || "Import Failed!",
         status: "error",
       });
     }
@@ -107,7 +107,6 @@ const ImportPlaces = () => {
       <ErrorModal
         open={notification.errorState}
         setOpen={setNotification}
-        title="Info"
         message={notification.errorMessage}
         status={notification.status}
       />
@@ -198,12 +197,13 @@ const ImportPlaces = () => {
                           "Please select excel file!"
                         );
                       },
+                      onChange: (e) => {
+                        if (excelFileTypes.includes(e.target.files[0].type)) {
+                          clearErrors("excelFile");
+                          setExcelFile(e.target.files[0]);
+                        }
+                      },
                     })}
-                    onChange={(e) => {
-                      if (excelFileTypes.includes(e.target.files[0].type))
-                        clearErrors("excelFile");
-                      setExcelFile(e.target.files[0]);
-                    }}
                   />
                 </label>
               </Box>
