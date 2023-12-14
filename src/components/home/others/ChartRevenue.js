@@ -13,10 +13,12 @@ import { CanvasRenderer } from "echarts/renderers";
 const ChartRevene = ({
   loading,
   loadingData,
+  loadingSelect,
   time,
   data,
   total,
   option,
+  setLoadingSelect,
   setOption,
 }) => {
   const theme = useTheme();
@@ -150,24 +152,27 @@ const ChartRevene = ({
             <Tabs
               value={option}
               sx={{ minHeight: 25 }}
-              onChange={(e, value) => setOption(value)}
+              onChange={(e, value) => {
+                setOption(value);
+                setLoadingSelect(true);
+              }}
             >
               <Tab
                 value={7}
                 label="7d"
-                disabled={time !== null && time.length !== 0}
+                disabled={(time !== null && time.length !== 0) || loadingSelect}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={1}
                 label="1m"
-                disabled={time !== null && time.length !== 0}
+                disabled={(time !== null && time.length !== 0) || loadingSelect}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={3}
                 label="3m"
-                disabled={time !== null && time.length !== 0}
+                disabled={(time !== null && time.length !== 0) || loadingSelect}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
             </Tabs>

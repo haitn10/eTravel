@@ -5,9 +5,12 @@ const cookies = new Cookies();
 
 export const GOONG_MAPTILES_KEY = "foAIsmKSYDQOdkoRfIj1T1MbkKaIIq5vvwSXb50U";
 export const GOONG_API_KEY = "lufMpKjvYBPBQqq13Zwl0vTLnPUHtkksPTV1YcEs";
-export const GOONG_URL = "https://rsapi.goong.io/Place/AutoComplete";
+export const GOOGLE_API_KEY = "AIzaSyCc_mGTPxKtDmD5HcOu1dw5vG0fFkuKROA";
 
 // URL
+const GOOGLE_TRANSLATE_API = "https://translation.googleapis.com/language/translate/v2";
+export const GOONG_URL = "https://rsapi.goong.io/Place/AutoComplete";
+
 // export const BASE_URL = "http://localhost:8000";
 export const BASE_URL = "https://etravelapi.azurewebsites.net";
 
@@ -165,6 +168,20 @@ export const process = async (state, dispatch, setState, path, item, files) => {
     dispatch(setState({ isFetching: false }));
     return Promise.reject(e);
   }
+};
+
+export const translate = async (item) => {
+  return await axios.post(
+    GOOGLE_TRANSLATE_API,
+    { q: item, target: "en", format: "text" },
+    {
+      headers: {
+        authorization: {
+          "X-goog-api-key": GOOGLE_API_KEY,
+        },
+      },
+    }
+  );
 };
 
 //   export const remove = async (

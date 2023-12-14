@@ -4,20 +4,20 @@ import dayjs from "dayjs";
 const beacons = [
   {
     field: "name",
-    headerName: "Location Name",
+    headerName: "Position Name",
     sortable: false,
-    flex: 1.5,
+    flex: 1,
   },
   {
     field: "beaconId",
     headerName: "Beacon ID",
     sortable: false,
-    flex: 1,
+    flex: 1.5,
   },
   {
     field: "image",
     headerName: "Image",
-    flex: 1,
+    flex: 0.5,
     headerAlign: "center",
     align: "center",
     sortable: false,
@@ -35,22 +35,12 @@ const beacons = [
   },
 
   {
-    field: "languages",
-    headerName: "Num of Languages",
-    sortable: false,
-    headerAlign: "center",
-    align: "center",
-    flex: 1,
-    renderCell: (params) => params.row.itemDescriptions.length,
-  },
-
-  {
     field: "createTime",
     headerName: "Create Time",
     sortable: false,
     headerAlign: "right",
     align: "right",
-    flex: 0.75,
+    flex: 0.5,
     renderCell: (params) => dayjs(params.row.createTime).format("ll"),
   },
 ];

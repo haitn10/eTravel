@@ -1,6 +1,8 @@
 import {
+  Backdrop,
   Box,
   Button,
+  CircularProgress,
   Typography,
   useTheme,
   alpha,
@@ -41,6 +43,7 @@ const ImportPlaces = () => {
   const theme = useTheme();
 
   const [excelFile, setExcelFile] = useState(null);
+  const [importFile, setImportFile] = useState(false);
   const [imageFileList, setImageFileList] = useState([]);
   const [mp3FileList, setMp3FileList] = useState([]);
   const [notification, setNotification] = useState({
@@ -72,6 +75,7 @@ const ImportPlaces = () => {
   };
 
   const onSubmit = async () => {
+    setImportFile(true);
     const data = imageFileList.concat(mp3FileList).concat(excelFile);
     try {
       const res = await importPlaceByFile(data);
@@ -79,6 +83,7 @@ const ImportPlaces = () => {
         setExcelFile(null);
         setImageFileList([]);
         setMp3FileList([]);
+        setImportFile(false);
         setNotification({
           ...notification,
           errorState: true,
@@ -87,6 +92,7 @@ const ImportPlaces = () => {
         });
       }
     } catch (e) {
+      setImportFile(false);
       setNotification({
         ...notification,
         errorState: true,
@@ -110,6 +116,13 @@ const ImportPlaces = () => {
         message={notification.errorMessage}
         status={notification.status}
       />
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={importFile}
+      >
+        <CircularProgress color="error" />
+      </Backdrop>
       <Header
         title={"Import Place By Excel"}
         subTitle={"More Places - More Experiences - More Amenity"}
