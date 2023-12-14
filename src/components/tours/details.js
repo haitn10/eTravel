@@ -62,7 +62,7 @@ const TourDetails = () => {
     formState: { errors },
   } = useForm();
 
-  const { fields, remove } = useFieldArray({
+  const { fields } = useFieldArray({
     control,
     name: "tourDescriptions",
   });
@@ -151,7 +151,7 @@ const TourDetails = () => {
         setDialog={setShowPopupLang}
         setValues={setValues}
         fields={fields}
-        remove={remove}
+        control={control}
         register={register}
         errors={errors}
         getValues={getValues}

@@ -8,7 +8,8 @@ export const GOONG_API_KEY = "lufMpKjvYBPBQqq13Zwl0vTLnPUHtkksPTV1YcEs";
 export const GOOGLE_API_KEY = "AIzaSyCc_mGTPxKtDmD5HcOu1dw5vG0fFkuKROA";
 
 // URL
-const GOOGLE_TRANSLATE_API = "https://translation.googleapis.com/language/translate/v2";
+const GOOGLE_TRANSLATE_API =
+  "https://translation.googleapis.com/language/translate/v2";
 export const GOONG_URL = "https://rsapi.goong.io/Place/AutoComplete";
 
 // export const BASE_URL = "http://localhost:8000";
@@ -171,17 +172,20 @@ export const process = async (state, dispatch, setState, path, item, files) => {
 };
 
 export const translate = async (item) => {
-  return await axios.post(
-    GOOGLE_TRANSLATE_API,
-    { q: item, target: "en", format: "text" },
-    {
-      headers: {
-        authorization: {
+  try {
+    const { data } = await axios.post(
+      GOOGLE_TRANSLATE_API,
+      { q: item, target: "en", format: "text" },
+      {
+        headers: {
           "X-goog-api-key": GOOGLE_API_KEY,
         },
-      },
-    }
-  );
+      }
+    );
+    return Promise.resolve(data.data);
+  } catch (e) {
+    Promise.reject(e);
+  }
 };
 
 //   export const remove = async (
