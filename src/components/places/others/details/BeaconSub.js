@@ -6,9 +6,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Typography,
-  Skeleton,
-  useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
@@ -31,7 +28,6 @@ const BeaconSub = ({
   notification,
   setNotification,
 }) => {
-  const theme = useTheme();
   const [popupConfirm, setPopupConfirm] = useState(false);
 
   const onConfirm = async () => {
@@ -175,21 +171,6 @@ const BeaconSub = ({
           </Button>
         </DialogActions>
       </Dialog>
-      <Box marginBottom={1} display="flex" justifyContent="space-between">
-        {loading ? (
-          <Skeleton width={150} />
-        ) : (
-          <Typography
-            fontSize={14}
-            letterSpacing={0.5}
-            fontWeight="medium"
-            textTransform="uppercase"
-            color={theme.palette.text.third}
-          >
-            Location List
-          </Typography>
-        )}
-      </Box>
       <Box width="99.5%">
         <DataGrid
           rowHeight={80}

@@ -185,7 +185,7 @@ const DialogUpdateBeacon = ({
       sx={{ "& .MuiDialog-paper": { overflowY: "hidden" } }}
       onClose={() => setDialog(false)}
     >
-      <DialogTitle>Location Details & Update</DialogTitle>
+      <DialogTitle>Position Details & Update</DialogTitle>
 
       <DialogContent sx={{ paddingX: 10 }}>
         <Grid container spacing={3}>
@@ -198,12 +198,12 @@ const DialogUpdateBeacon = ({
               color={theme.palette.text.third}
               marginBottom={1}
             >
-              Location Information
+              General Information
             </Typography>
 
             <Box marginBottom={2}>
               <Typography marginLeft={1}>
-                Location Name{" "}
+                Position Name{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
               <TextField
@@ -416,7 +416,7 @@ const DialogUpdateBeacon = ({
               color={theme.palette.text.third}
               marginBottom={1}
             >
-              Location Name Follow Language
+              Names By Language
             </Typography>
             {fields.map((item, index) => (
               <Box key={item.id} marginBottom={2}>
@@ -472,12 +472,12 @@ const DialogUpdateBeacon = ({
                 textTransform="uppercase"
                 color={theme.palette.text.third}
               >
-                Location Image
+                Image
               </Typography>
             </Box>
             <Box>
               <Typography marginLeft={1}>
-                Choose Image{" "}
+                Upload Image{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
               <Controller

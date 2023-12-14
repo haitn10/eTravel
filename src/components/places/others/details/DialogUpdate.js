@@ -208,7 +208,7 @@ const DialogUpdate = ({
               color={theme.palette.text.third}
               marginBottom={1}
             >
-              Place Information
+              General Information
             </Typography>
 
             <Box paddingX={1}>
@@ -545,6 +545,7 @@ const DialogUpdate = ({
               display="flex"
               alignItems="center"
               justifyContent="space-between"
+              marginTop={3}
             >
               <Typography
                 fontSize={14}
@@ -553,7 +554,7 @@ const DialogUpdate = ({
                 textTransform="uppercase"
                 color={theme.palette.text.third}
               >
-                Images List
+                Image List
               </Typography>
 
               <Button component="label">
@@ -634,7 +635,7 @@ const DialogUpdate = ({
           <Grid item sm={12} lg={6}>
             <MapCoordinates values={data} setValues={setData} />
 
-            <Box>
+            <Box marginTop={6}>
               <Typography
                 fontSize={14}
                 letterSpacing={0.5}

@@ -9,9 +9,11 @@ import dayjs from "dayjs";
 const ChartUserAnalysis = ({
   loading,
   loadingData,
+  loadingSelect,
   time,
   data,
   option,
+  setLoadingSelect,
   setOption,
 }) => {
   const theme = useTheme();
@@ -106,24 +108,27 @@ const ChartUserAnalysis = ({
             <Tabs
               value={option}
               sx={{ minHeight: 25 }}
-              onChange={(e, value) => setOption(value)}
+              onChange={(e, value) => {
+                setOption(value);
+                setLoadingSelect(true);
+              }}
             >
               <Tab
                 value={3}
                 label="3m"
-                disabled={time !== null && time.length !== 0}
+                disabled={(time !== null && time.length !== 0) || loadingSelect}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={6}
                 label="6m"
-                disabled={time !== null && time.length !== 0}
+                disabled={(time !== null && time.length !== 0) || loadingSelect}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
               <Tab
                 value={1}
                 label="1y"
-                disabled={time !== null && time.length !== 0}
+                disabled={(time !== null && time.length !== 0) || loadingSelect}
                 sx={{ minWidth: 50, minHeight: 25, padding: 0 }}
               />
             </Tabs>

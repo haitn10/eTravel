@@ -182,7 +182,7 @@ const GeneralInfo = ({ values, loading }) => {
                   width={150}
                   color={theme.palette.text.third}
                 >
-                  Number of Beacons
+                  Number of Positions
                 </Typography>
                 <Typography>{values?.placeItems?.length}</Typography>
               </Box>
@@ -440,7 +440,9 @@ const GeneralInfo = ({ values, loading }) => {
                     </Typography>
                     <Box>
                       <Typography fontSize={14}>
-                        {dayjs(values?.updateTime).format("MMMM DD, YYYY")}
+                        {dayjs(values?.updateTime).isValid()
+                          ? dayjs(values?.updateTime).format("MMMM DD, YYYY")
+                          : "(No update)"}
                       </Typography>
                     </Box>
                   </>

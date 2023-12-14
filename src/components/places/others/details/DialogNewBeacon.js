@@ -188,12 +188,12 @@ const DialogNewBeacon = ({
       sx={{ "& .MuiDialog-paper": { overflowY: "hidden" } }}
       onClose={() => setDialog(false)}
     >
-      <DialogTitle>Create New Location</DialogTitle>
+      <DialogTitle>Create New Position</DialogTitle>
 
       <DialogContent sx={{ paddingX: 10 }}>
         <Grid container spacing={3}>
           <Grid item sm={12} lg={6}>
-            <Box>
+            <Box marginBottom={1}>
               <Typography
                 fontSize={14}
                 letterSpacing={0.5}
@@ -201,13 +201,13 @@ const DialogNewBeacon = ({
                 textTransform="uppercase"
                 color={theme.palette.text.third}
               >
-                Location Information
+                General Information
               </Typography>
             </Box>
             {/* Beacon Name */}
             <Box marginBottom={2}>
               <Typography marginLeft={1}>
-                Location Name{" "}
+                Position Name{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
               <TextField
@@ -417,7 +417,7 @@ const DialogNewBeacon = ({
           </Grid>
 
           <Grid item sm={12} lg={6}>
-            <Box>
+            <Box marginBottom={1}>
               <Typography
                 fontSize={14}
                 letterSpacing={0.5}
@@ -425,7 +425,7 @@ const DialogNewBeacon = ({
                 textTransform="uppercase"
                 color={theme.palette.text.third}
               >
-                Beacon Name Follow Language
+                Names By Language
               </Typography>
             </Box>
             {/* Descriptions */}
@@ -483,12 +483,12 @@ const DialogNewBeacon = ({
                 textTransform="uppercase"
                 color={theme.palette.text.third}
               >
-                Location Image
+                Image
               </Typography>
             </Box>
             <Box>
               <Typography marginLeft={1}>
-                Choose Image{" "}
+                Upload Image{" "}
                 <small style={{ color: theme.palette.text.active }}>*</small>
               </Typography>
               <Controller

@@ -39,6 +39,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [loadingData, setLoadingData] = useState(true);
   const [getDataByDate, setGetDataByDate] = useState(false);
+  const [loadingSelect, setLoadingSelect] = useState(false);
   const [time, setTime] = useState([]);
 
   const [option, setOption] = useState(7);
@@ -97,7 +98,10 @@ const HomePage = () => {
             })
           );
           setRevenue(revenueData);
-        } catch (error) {}
+          setLoadingSelect(false);
+        } catch (error) {
+          setLoadingSelect(false);
+        }
 
         try {
           const userData = await dispatch(
@@ -108,7 +112,10 @@ const HomePage = () => {
             })
           );
           setUser(userData);
-        } catch (error) {}
+          setLoadingSelect(false);
+        } catch (error) {
+          setLoadingSelect(false);
+        }
       } else {
         if (getDataByDate) {
           setLoadingData(true);
@@ -136,7 +143,10 @@ const HomePage = () => {
             })
           );
           setUser(userData);
-        } catch (error) {}
+          setLoadingSelect(false);
+        } catch (error) {
+          setLoadingSelect(false);
+        }
       }
     }
 
@@ -286,19 +296,23 @@ const HomePage = () => {
               <ChartRevenue
                 loading={loading}
                 loadingData={loadingData}
+                loadingSelect={loadingSelect}
                 time={time}
                 data={revenue.charts}
                 option={option}
                 total={revenue.totalRevenue}
+                setLoadingSelect={setLoadingSelect}
                 setOption={setOption}
               />
             ) : (
               <ChartUserAnalysis
                 loading={loading}
                 loadingData={loadingData}
+                loadingSelect={loadingSelect}
                 time={time}
                 data={user.charts}
                 option={optionUser}
+                setLoadingSelect={setLoadingSelect}
                 setOption={setOptionUser}
               />
             )}
@@ -333,9 +347,11 @@ const HomePage = () => {
               <ChartUserAnalysis
                 loading={loading}
                 loadingData={loadingData}
+                loadingSelect={loadingSelect}
                 time={time}
                 data={user.charts}
                 option={optionUser}
+                setLoadingSelect={setLoadingSelect}
                 setOption={setOptionUser}
               />
             )}
