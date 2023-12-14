@@ -64,8 +64,8 @@ const DialogNewBeacon = ({
       image: "",
       startTime: "00:00:00",
       endTime: "00:00:00",
-      beaconMajorNumber: 0,
-      beaconMinorNumber: 0,
+      beaconMajorNumber: 1,
+      beaconMinorNumber: 1,
       itemDescriptions: arrLang,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -354,29 +354,19 @@ const DialogNewBeacon = ({
                 control={control}
                 name="beaconMajorNumber"
                 disabled={update}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    <Select
-                      {...field}
-                      fullWidth
-                      size="small"
-                      sx={{
-                        borderRadius: 2.5,
-                      }}
-                      error={!!error}
-                    >
-                      <MenuItem value={0}>0</MenuItem>
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                    </Select>
-                    <FormHelperText
-                      htmlFor="render-select"
-                      error
-                      sx={{ marginLeft: 2 }}
-                    >
-                      {error?.message}
-                    </FormHelperText>
-                  </>
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    fullWidth
+                    size="small"
+                    sx={{
+                      borderRadius: 2.5,
+                    }}
+                  >
+                    <MenuItem value={1}>1</MenuItem>
+                    <MenuItem value={2}>2</MenuItem>
+                    <MenuItem value={3}>3</MenuItem>
+                  </Select>
                 )}
               />
             </Box>
@@ -388,29 +378,19 @@ const DialogNewBeacon = ({
                 control={control}
                 name="beaconMinorNumber"
                 disabled={update}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    <Select
-                      {...field}
-                      fullWidth
-                      size="small"
-                      sx={{
-                        borderRadius: 2.5,
-                      }}
-                      error={!!error}
-                    >
-                      <MenuItem value={0}>0</MenuItem>
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                    </Select>
-                    <FormHelperText
-                      htmlFor="render-select"
-                      error
-                      sx={{ marginLeft: 2 }}
-                    >
-                      {error?.message}
-                    </FormHelperText>
-                  </>
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    fullWidth
+                    size="small"
+                    sx={{
+                      borderRadius: 2.5,
+                    }}
+                  >
+                    <MenuItem value={1}>1</MenuItem>
+                    <MenuItem value={2}>2</MenuItem>
+                    <MenuItem value={3}>3</MenuItem>
+                  </Select>
                 )}
               />
             </Box>
@@ -460,7 +440,7 @@ const DialogNewBeacon = ({
                       borderRadius: 10,
                     },
                   }}
-                  {...register(`.itemDescriptions.${index}.nameItem`, {
+                  {...register(`itemDescriptions.${index}.nameItem`, {
                     validate: (value) => {
                       return value.trim() !== "" || "Name is not empty!";
                     },

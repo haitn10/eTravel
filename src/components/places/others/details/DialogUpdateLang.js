@@ -98,7 +98,7 @@ const DialogUpdateLang = ({
           desc.voiceFile instanceof File ? desc.voiceFile.name : desc.voiceFile,
         name: desc.name,
         description: desc.description,
-        status: desc.status ? 2 : 0,
+        status: desc.status,
       });
     }
 
