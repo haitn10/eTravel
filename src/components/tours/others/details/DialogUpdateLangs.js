@@ -7,14 +7,15 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  IconButton,
+  Switch,
   TextField,
   Typography,
+  Tooltip,
   useTheme,
 } from "@mui/material";
 import React from "react";
+import { Controller } from "react-hook-form";
 
-import { Trash3 } from "@styled-icons/bootstrap";
 import { updateTour } from "../../action";
 
 const DialogUpdateLangs = ({
@@ -22,7 +23,7 @@ const DialogUpdateLangs = ({
   setDialog,
   setValues,
   fields,
-  remove,
+  control,
   register,
   errors,
   getValues,
@@ -45,10 +46,20 @@ const DialogUpdateLangs = ({
       image: getValues("image"),
       total: getValues("total"),
       tourDetails: [],
-      tourDescriptions: getValues("tourDescriptions"),
+      tourDescriptions: [],
     };
-    for (const place of getValues("tourDetails")) {
-      dataUpdate.tourDetails.push({ id: place.id, price: place.price });
+    for (const tour of getValues("tourDetails")) {
+      dataUpdate.tourDetails.push({ id: tour.id, price: tour.price });
+    }
+
+    for (const tour of getValues("tourDescriptions")) {
+      dataUpdate.tourDescriptions.push({
+        name: tour.name,
+        description: tour.description,
+        createTime: tour.createTime,
+        languageCode: tour.languageCode,
+        status: tour.status ? 1 : 0,
+      });
     }
 
     try {
@@ -104,16 +115,20 @@ const DialogUpdateLangs = ({
                       {getLanguage(item.languageCode)[0]?.name}
                     </Typography>
                   </Box>
-                  {fields.length === 1 ? null : (
-                    <IconButton
-                      color="error"
-                      disabled={update}
-                      onClick={() => remove(index)}
-                      sx={{ marginLeft: 2 }}
-                    >
-                      <Trash3 width={20} />
-                    </IconButton>
-                  )}
+                  <Controller
+                    control={control}
+                    name={`tourDescriptions.${index}.status`}
+                    render={({ field }) => (
+                      <Tooltip title={field.value ? "Deactive" : "Active"}>
+                        <Switch
+                          checked={field.value === 1 ? true : field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          inputProps={{ "aria-label": "controlled" }}
+                          color="error"
+                        />
+                      </Tooltip>
+                    )}
+                  />
                 </Box>
               </Grid>
 

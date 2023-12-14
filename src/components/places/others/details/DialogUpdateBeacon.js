@@ -150,6 +150,7 @@ const DialogUpdateBeacon = ({
         beaconMajorNumber: item.beaconMajorNumber,
         beaconMinorNumber: item.beaconMinorNumber,
         itemDescriptions: item.itemDescriptions,
+        status: item.status,
       });
     }
 
@@ -177,6 +178,7 @@ const DialogUpdateBeacon = ({
       });
     }
   };
+
   return (
     <Dialog
       open={dialog}
@@ -346,26 +348,20 @@ const DialogUpdateBeacon = ({
                 control={control}
                 name="beaconMajorNumber"
                 disabled={update}
-                render={({ field, fieldState: { error } }) => {
+                render={({ field }) => {
                   return (
-                    <>
-                      <Select
-                        {...field}
-                        fullWidth
-                        size="small"
-                        sx={{
-                          borderRadius: 2.5,
-                        }}
-                        error={!!error}
-                      >
-                        <MenuItem value={1}>1</MenuItem>
-                        <MenuItem value={2}>2</MenuItem>
-                        <MenuItem value={3}>3</MenuItem>
-                      </Select>
-                      <FormHelperText error sx={{ marginLeft: 2 }}>
-                        {error?.message}
-                      </FormHelperText>
-                    </>
+                    <Select
+                      {...field}
+                      fullWidth
+                      size="small"
+                      sx={{
+                        borderRadius: 2.5,
+                      }}
+                    >
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={2}>2</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                    </Select>
                   );
                 }}
               />
@@ -377,30 +373,48 @@ const DialogUpdateBeacon = ({
                 control={control}
                 name="beaconMinorNumber"
                 disabled={update}
-                render={({ field, fieldState: { error } }) => {
+                render={({ field }) => {
                   return (
-                    <>
-                      <Select
-                        {...field}
-                        fullWidth
-                        size="small"
-                        sx={{
-                          borderRadius: 2.5,
-                        }}
-                        error={!!error}
-                      >
-                        <MenuItem value={1}>1</MenuItem>
-                        <MenuItem value={2}>2</MenuItem>
-                        <MenuItem value={3}>3</MenuItem>
-                      </Select>
-                      <FormHelperText
-                        htmlFor="render-select"
-                        error
-                        sx={{ marginLeft: 2 }}
-                      >
-                        {error?.message}
-                      </FormHelperText>
-                    </>
+                    <Select
+                      {...field}
+                      fullWidth
+                      size="small"
+                      sx={{
+                        borderRadius: 2.5,
+                      }}
+                    >
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={2}>2</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                    </Select>
+                  );
+                }}
+              />
+            </Box>
+
+            <Box marginBottom={2}>
+              <Typography marginLeft={1}>Status</Typography>
+              <Controller
+                control={control}
+                name="status"
+                disabled={update}
+                render={({ field }) => {
+                  return (
+                    <Select
+                      {...field}
+                      fullWidth
+                      size="small"
+                      sx={{
+                        borderRadius: 2.5,
+                      }}
+                    >
+                      <MenuItem value={0}>
+                        <Typography color="error">Deactive</Typography>
+                      </MenuItem>
+                      <MenuItem value={1}>
+                        <Typography color="green">Active</Typography>
+                      </MenuItem>
+                    </Select>
                   );
                 }}
               />

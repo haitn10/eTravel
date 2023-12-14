@@ -10,6 +10,8 @@ import {
   IconButton,
   TextField,
   Typography,
+  Select,
+  MenuItem,
   FormHelperText,
   useTheme,
 } from "@mui/material";
@@ -21,17 +23,14 @@ import { updatePlace } from "../../action";
 
 import { Voiceprint } from "@styled-icons/remix-fill";
 import { CloseOutline } from "@styled-icons/evaicons-outline";
-import { Trash3 } from "@styled-icons/bootstrap";
 
 const DialogUpdateLang = ({
   dialog,
   setDialog,
   setValues,
   fields,
-  remove,
   control,
   resetField,
-  reset,
   register,
   errors,
   getValues,
@@ -148,6 +147,7 @@ const DialogUpdateLang = ({
       });
     }
   };
+
   return (
     <Dialog
       open={dialog}
@@ -181,21 +181,70 @@ const DialogUpdateLang = ({
                         fontSize={12}
                         color={theme.palette.text.active}
                       >
-                        Please wait for the file conversion process to finish to
-                        update this description.
+                        This description will be updated after the file
+                        converting procedure is complete.
                       </Typography>
                     ) : null}
                   </Box>
-                  {fields.length === 1 ? null : (
-                    <IconButton
-                      color="error"
-                      disabled={update || item.status === 1}
-                      onClick={() => remove(index)}
-                      sx={{ marginLeft: 2 }}
-                    >
-                      <Trash3 width={20} />
-                    </IconButton>
-                  )}
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Typography>Status</Typography>
+                    <Controller
+                      disabled={item.status === 1}
+                      control={control}
+                      name={`placeDescriptions.${index}.status`}
+                      render={({ field }) => (
+                        <Select
+                          {...field}
+                          fullWidth
+                          size="small"
+                          sx={{
+                            borderRadius: 2.5,
+                          }}
+                        >
+                          {item.status !== 3 ? (
+                            <MenuItem value={0}>
+                              <Typography
+                                color={theme.palette.text.active}
+                                fontWeight="medium"
+                              >
+                                Deactive
+                              </Typography>
+                            </MenuItem>
+                          ) : null}
+                          {item.status !== 1 ? null : (
+                            <MenuItem value={1}>
+                              <Typography
+                                color={theme.palette.text.pending}
+                                fontWeight="medium"
+                              >
+                                Preparing
+                              </Typography>
+                            </MenuItem>
+                          )}
+                          {item.status !== 3 ? (
+                            <MenuItem value={2}>
+                              <Typography
+                                color={theme.palette.text.onStatus}
+                                fontWeight="medium"
+                              >
+                                Active
+                              </Typography>
+                            </MenuItem>
+                          ) : null}
+                          {item.status !== 3 ? null : (
+                            <MenuItem value={3}>
+                              <Typography
+                                color={theme.palette.text.active}
+                                fontWeight="medium"
+                              >
+                                Error
+                              </Typography>
+                            </MenuItem>
+                          )}
+                        </Select>
+                      )}
+                    />
+                  </Box>
                 </Box>
               </Grid>
 
@@ -285,7 +334,6 @@ const DialogUpdateLang = ({
                   <Controller
                     name={`placeDescriptions.${index}.voiceFile`}
                     control={control}
-                    disabled={update || item.status === 1}
                     rules={{
                       required: "Voice file is required!",
                       validate: (value) => {

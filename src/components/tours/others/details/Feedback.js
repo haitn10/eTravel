@@ -8,8 +8,10 @@ import {
   DialogContentText,
   DialogActions,
   Typography,
+  Tooltip,
   Rating,
   Skeleton,
+  alpha,
   useTheme,
 } from "@mui/material";
 import {
@@ -29,8 +31,6 @@ import { labels } from "../../../../constants/rating";
 
 import { getTourComments } from "../../action";
 import { changeState } from "../../../users/action";
-
-import { EyeOutline, EyeOffOutline } from "@styled-icons/evaicons-outline";
 
 const Feedback = ({ id, rating, notification, setNotification }) => {
   const theme = useTheme();
@@ -84,6 +84,17 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
     await setPopupConfirm(false);
   };
 
+  const getColor = (status) => {
+    let color = theme.palette.text.active;
+    if (status === 0) {
+      color = theme.palette.text.active;
+    } else if (status === 1) {
+      color = theme.palette.text.onStatus;
+    }
+
+    return color;
+  };
+
   return (
     <Box>
       <Dialog
@@ -100,8 +111,8 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {value.status
-              ? "Your action will hide this user's comments about the tour or place."
-              : "Your action will display this user's comments for the tour or place."}
+              ? "Your action will hide this user's comments about the itinerary."
+              : "Your action will display this user's comments for the itinerary."}
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ padding: 3 }}>
@@ -121,7 +132,7 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       <Box display="flex" gap={2}>
         {loading ? (
           <Skeleton width={100} />
@@ -170,10 +181,7 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
                 },
               }}
             />
-            <Typography
-              fontSize={12}
-              color={theme.palette.text.third}
-            >
+            <Typography fontSize={12} color={theme.palette.text.third}>
               ({labels[rating || 0]})
             </Typography>
           </Box>
@@ -196,13 +204,21 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
                 <TimelineOppositeContent color="textSecondary">
                   {comment.updateTime ? (
                     <Box>
-                      <Box fontSize={14}>{dayjs(comment.updateTime).format("ll")}</Box>
-                      <Box fontSize={14}>{dayjs(comment.updateTime).format("h:mm A")}</Box>
+                      <Box fontSize={14}>
+                        {dayjs(comment.updateTime).format("ll")}
+                      </Box>
+                      <Box fontSize={14}>
+                        {dayjs(comment.updateTime).format("h:mm A")}
+                      </Box>
                     </Box>
                   ) : (
                     <Box>
-                      <Box fontSize={14}>{dayjs(comment.createTime).format("ll")}</Box>
-                      <Box fontSize={14}>{dayjs(comment.createTime).format("h:mm A")}</Box>
+                      <Box fontSize={14}>
+                        {dayjs(comment.createTime).format("ll")}
+                      </Box>
+                      <Box fontSize={14}>
+                        {dayjs(comment.createTime).format("h:mm A")}
+                      </Box>
                     </Box>
                   )}
                 </TimelineOppositeContent>
@@ -244,36 +260,41 @@ const Feedback = ({ id, rating, notification, setNotification }) => {
                         </Typography>
                       </Box>
                       <Box display="flex" gap={2}>
-                        {comment.status ? (
+                        <Tooltip
+                          title={`Click to ${
+                            comment.status === 1 ? "hide" : "show"
+                          } comment`}
+                        >
                           <Button
+                            disableRipple
+                            sx={{ "&:hover": { backgroundColor: "inherit" } }}
                             color="error"
                             onClick={() => {
                               setValue(comment);
                               setPopupConfirm(true);
                             }}
                           >
-                            <Box display="flex" gap={0.5}>
-                              <EyeOffOutline width={20} />
-                              <Typography fontSize={14} fontWeight="medium">
-                                Hide
+                            <Box
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              paddingX={1}
+                              paddingY={0.25}
+                              bgcolor={alpha(getColor(comment.status), 0.2)}
+                              borderRadius={2.5}
+                              width={80}
+                            >
+                              <Typography
+                                fontWeight="medium"
+                                fontSize={14}
+                                textTransform="capitalize"
+                                color={getColor(comment.status)}
+                              >
+                                {comment.status === 1 ? "Show" : "Hidden"}
                               </Typography>
                             </Box>
                           </Button>
-                        ) : (
-                          <Button
-                            onClick={() => {
-                              setValue(comment);
-                              setPopupConfirm(true);
-                            }}
-                          >
-                            <Box display="flex" gap={0.5}>
-                              <EyeOutline width={20} />
-                              <Typography fontSize={14} fontWeight="medium">
-                                Show
-                              </Typography>
-                            </Box>
-                          </Button>
-                        )}
+                        </Tooltip>
                       </Box>
                     </Box>
 

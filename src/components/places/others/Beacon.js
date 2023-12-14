@@ -60,8 +60,8 @@ const Beacon = ({
       image: "",
       startTime: dayjs("2022-04-17T00:00"),
       endTime: dayjs("2022-04-17T00:00"),
-      beaconMajorNumber: 0,
-      beaconMinorNumber: 0,
+      beaconMajorNumber: 1,
+      beaconMinorNumber: 1,
       itemDescriptions: arrLang,
     });
   };
@@ -274,9 +274,9 @@ const Beacon = ({
                             }}
                             error={!!error}
                           >
-                            <MenuItem value={0}>0</MenuItem>
                             <MenuItem value={1}>1</MenuItem>
                             <MenuItem value={2}>2</MenuItem>
+                            <MenuItem value={3}>3</MenuItem>
                           </Select>
                           <FormHelperText
                             htmlFor="render-select"
@@ -314,9 +314,9 @@ const Beacon = ({
                             }}
                             error={!!error}
                           >
-                            <MenuItem value={0}>0</MenuItem>
                             <MenuItem value={1}>1</MenuItem>
                             <MenuItem value={2}>2</MenuItem>
+                            <MenuItem value={3}>3</MenuItem>
                           </Select>
                           <FormHelperText
                             htmlFor="render-select"

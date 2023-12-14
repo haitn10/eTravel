@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Grid,
   Skeleton,
   Typography,
@@ -16,6 +17,7 @@ import Header from "../common/Header";
 
 import { getFeedbackDetails } from "./action";
 import { labels } from "../../constants/rating";
+import { translate } from "../../api";
 
 export const FeedbackDetails = () => {
   const theme = useTheme();
@@ -23,6 +25,8 @@ export const FeedbackDetails = () => {
   const { feedbackId } = state;
   const [values, setValues] = useState({});
   const [loading, setLoading] = useState(true);
+  const [translateText, setTranslateText] = useState("");
+  const [errorText, setErrorText] = useState("");
 
   const [notification, setNotification] = useState({
     errorState: false,
@@ -62,6 +66,19 @@ export const FeedbackDetails = () => {
     return color;
   };
 
+  const onTranslate = async (content) => {
+    setErrorText("");
+    try {
+      const { translations } = await translate(content);
+      setTranslateText(translations[0].translatedText);
+    } catch (e) {
+      setErrorText("Can't translate!");
+      setTranslateText("");
+    }
+  };
+
+  console.log(values);
+
   return (
     <Box
       minHeight="94vh"
@@ -81,60 +98,80 @@ export const FeedbackDetails = () => {
       <Box marginX={5} padding={4}>
         <Grid container spacing={2}>
           <Grid item sm={12} lg={8}>
-            Category
-          </Grid>
-          <Grid item sm={12} lg={4}>
-            <Box
-              padding={2}
-              bgcolor={theme.palette.background.secondary}
-              borderRadius={2.5}
-              align="center"
-            >
-              {loading ? (
-                <Skeleton variant="circle" height={100} width={100}>
-                  <Avatar />
-                </Skeleton>
-              ) : (
-                <Avatar
-                  variant="circular"
-                  src={values.account?.image || ""}
-                  sx={{
-                    width: 150,
-                    height: 150,
-                    border: 4,
-                    borderColor: theme.palette.text.second,
-                  }}
-                />
-              )}
+            {loading ? (
+              <Skeleton variant="circle" height={100} width={100}>
+                <Avatar />
+              </Skeleton>
+            ) : (
+              <Box
+                display="flex"
+                borderRadius={2.5}
+                border={1}
+                borderColor={theme.palette.background.secondary}
+              >
+                <Box>
+                  <img
+                    src={values.itinerary?.image || values.place?.image}
+                    alt=""
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderTopLeftRadius: 10,
+                      borderBottomLeftRadius: 10,
+                      objectFit: "cover",
+                    }}
+                  />
+                </Box>
+                <Box
+                  padding={2}
+                  minWidth={300}
+                  display="flex"
+                  flexDirection="column"
+                  gap={0.5}
+                  sx={{ borderTopRightRadius: 10, borderBottomRightRadius: 10 }}
+                >
+                  <Typography fontSize={18} fontWeight="medium">
+                    {values.itinerary?.name || values.place?.name}
+                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography color={theme.palette.text.third}>
+                      {values.itinerary?.total.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }) ||
+                        values.place?.price.toLocaleString("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        })}
+                    </Typography>{" "}
+                    <Rating
+                      readOnly
+                      size="small"
+                      value={values.rate || 0}
+                      precision={0.5}
+                      sx={{
+                        ".MuiRating-icon": {
+                          borderColor: theme.palette.text.active,
+                        },
+                        "& .MuiRating-iconFilled": {
+                          color: theme.palette.text.active,
+                        },
+                      }}
+                    />
+                    <Typography fontSize={12} color={theme.palette.text.third}>
+                      ({labels[values.rate || 0]})
+                    </Typography>
+                  </Box>
 
-              <Box marginTop={1}>
-                {loading ? (
-                  <Skeleton width={100} />
-                ) : (
-                  <Typography variant="h6">
-                    {values.account?.customerName}{" "}
-                    <small>({values.account?.gender})</small>
+                  <Typography color={theme.palette.text.third}>
+                    {values.place?.address}
                   </Typography>
-                )}
-                {loading ? (
-                  <Skeleton width={100} />
-                ) : (
-                  <Typography color={theme.palette.text.third} variant="body1">
-                    {values.account?.phone || values.account?.email}
-                  </Typography>
-                )}
-                {loading ? (
-                  <Skeleton width={200} />
-                ) : (
-                  <Typography>
-                    {values.account?.address},{values.account?.nationality}
-                  </Typography>
-                )}
+                </Box>
               </Box>
-            </Box>
-          </Grid>
-          <Grid item sm={12}>
+            )}
+
             <Box
+              marginTop={2}
               bgcolor={theme.palette.background.secondary}
               paddingY={3}
               paddingX={5}
@@ -224,15 +261,85 @@ export const FeedbackDetails = () => {
                     </Typography>
                   </Box>
 
-                  <Typography
-                    marginLeft={1}
-                    fontSize={14}
-                    color={theme.palette.text.third}
-                  >
-                    {values.content}
-                  </Typography>
+                  <Box>
+                    <Typography
+                      marginLeft={1}
+                      fontSize={14}
+                      color={theme.palette.text.third}
+                    >
+                      {translateText === "" ? values.content : translateText}
+                    </Typography>
+                    {errorText}
+                    {translateText === "" ? (
+                      <Button
+                        disableRipple
+                        sx={{ "&:hover": { backgroundColor: "inherit" } }}
+                        onClick={() => onTranslate(values.content)}
+                      >
+                        Translate
+                      </Button>
+                    ) : (
+                      <Button
+                        disableRipple
+                        sx={{ "&:hover": { backgroundColor: "inherit" } }}
+                        onClick={() => setTranslateText("")}
+                      >
+                        No Translate
+                      </Button>
+                    )}
+                  </Box>
                 </Box>
               )}
+            </Box>
+          </Grid>
+          <Grid item sm={12} lg={4}>
+            <Box
+              padding={2}
+              bgcolor={theme.palette.background.secondary}
+              borderRadius={2.5}
+              align="center"
+            >
+              {loading ? (
+                <Skeleton variant="circle" height={100} width={100}>
+                  <Avatar />
+                </Skeleton>
+              ) : (
+                <Avatar
+                  variant="circular"
+                  src={values.account?.image || ""}
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    border: 4,
+                    borderColor: theme.palette.text.second,
+                  }}
+                />
+              )}
+
+              <Box marginTop={1}>
+                {loading ? (
+                  <Skeleton width={100} />
+                ) : (
+                  <Typography variant="h6">
+                    {values.account?.customerName}{" "}
+                    <small>({values.account?.gender})</small>
+                  </Typography>
+                )}
+                {loading ? (
+                  <Skeleton width={100} />
+                ) : (
+                  <Typography color={theme.palette.text.third} variant="body1">
+                    {values.account?.phone || values.account?.email}
+                  </Typography>
+                )}
+                {loading ? (
+                  <Skeleton width={200} />
+                ) : (
+                  <Typography>
+                    {values.account?.address},{values.account?.nationality}
+                  </Typography>
+                )}
+              </Box>
             </Box>
           </Grid>
         </Grid>

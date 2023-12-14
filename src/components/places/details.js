@@ -72,11 +72,10 @@ const PlaceDetails = () => {
     formState: { errors },
   } = useForm();
 
-  const { fields: fieldsDescriptions, remove: removeDescriptions } =
-    useFieldArray({
-      control,
-      name: "placeDescriptions",
-    });
+  const { fields: fieldsDescriptions } = useFieldArray({
+    control,
+    name: "placeDescriptions",
+  });
 
   const { fields: fieldsItems } = useFieldArray({
     control,
@@ -176,10 +175,8 @@ const PlaceDetails = () => {
         setDialog={setShowPopupLang}
         setValues={setValues}
         fields={fieldsDescriptions}
-        remove={removeDescriptions}
         control={control}
         resetField={resetField}
-        reset={reset}
         register={register}
         errors={errors}
         getValues={getValues}
