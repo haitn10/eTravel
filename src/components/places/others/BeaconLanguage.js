@@ -70,7 +70,7 @@ const BeaconLanguage = ({
                 errors.placeItems?.[beaconIndex]?.itemDescriptions?.[i]
                   ?.nameItem?.message
               }
-              placeholder={`Location name by ${
+              placeholder={`Position name by ${
                 getLanguage(item.languageCode)[0]?.name
               } `}
             />
