@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Box, Grid, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { getPlaces } from "./action";
 
@@ -17,6 +17,7 @@ const ManagePlaces = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [search, setSearch] = useState("");
   const [searchBy, setSearchBy] = useState("name");
   const [pageState, setPageState] = useState({
@@ -35,6 +36,10 @@ const ManagePlaces = () => {
     errorMessage: "",
     status: "error",
   });
+
+  useEffect(() => {
+    setNotification(state || {});
+  }, [state]);
 
   const getData = useCallback(() => {
     async function fetchData() {

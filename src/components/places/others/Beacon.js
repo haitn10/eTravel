@@ -86,7 +86,7 @@ const Beacon = ({
               textTransform="uppercase"
               color={theme.palette.text.third}
             >
-              Location Details of Place
+              Position Details of Place
             </Typography>
           )}
 
@@ -105,7 +105,7 @@ const Beacon = ({
       {fields.map((item, index) => (
         <Box key={item.id} padding={1}>
           <Box display="flex" justifyContent="space-between">
-            Location {index + 1}
+            Position {index + 1}
             {loading ? (
               <Skeleton width={100} />
             ) : (
@@ -126,7 +126,7 @@ const Beacon = ({
               ) : (
                 <>
                   <Typography marginLeft={1} color={theme.palette.text.third}>
-                    Location Name{" "}
+                    Position Name{" "}
                     <small style={{ color: theme.palette.text.active }}>
                       *
                     </small>
@@ -143,14 +143,14 @@ const Beacon = ({
                     {...register(`placeItems.${index}.name`, {
                       validate: (value) => {
                         return (
-                          value.trim() !== "" || "Location name is not empty!"
+                          value.trim() !== "" || "Position name is not empty!"
                         );
                       },
-                      required: "Location name is required!",
+                      required: "Position name is required!",
                     })}
                     error={!!errors.placeItems?.[index]?.name}
                     helperText={errors.placeItems?.[index]?.name?.message}
-                    placeholder="Type location name here"
+                    placeholder="Type position name here"
                   />
                 </>
               )}

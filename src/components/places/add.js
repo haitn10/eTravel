@@ -31,7 +31,7 @@ import date from "../../constants/date";
 const steps = [
   "General Information",
   "Multi-Language",
-  "Locations",
+  "Positions",
   "Coordinate",
   "Confirmation",
 ];
@@ -252,13 +252,8 @@ const AddPlace = () => {
     try {
       setCreate(true);
       await dispatch(processPlace(dataCreate, getValues("placeDescriptions")));
-      await setCreate(false);
-      await setNotification({
-        ...notification,
-        errorState: true,
-        errorMessage: "Created Place Successfully!",
-        status: "success",
-      });
+      setCreate(false);
+
       navigate("/places", {
         state: {
           errorState: true,

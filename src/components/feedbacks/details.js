@@ -77,8 +77,6 @@ export const FeedbackDetails = () => {
     }
   };
 
-  console.log(values);
-
   return (
     <Box
       minHeight="94vh"

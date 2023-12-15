@@ -2,7 +2,6 @@ import {
   Avatar,
   Box,
   Button,
-  CircularProgress,
   FormControl,
   Grid,
   MenuItem,
@@ -56,7 +55,7 @@ const GeneralInfo = ({
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [languageCode.length, profile.id]);
+  }, [profile.id]);
 
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
