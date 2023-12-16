@@ -271,11 +271,10 @@ const AddPlace = () => {
           status: "error",
         });
       } else {
-        const message = e.response.data ? e.response.data.message : e.message;
         setNotification({
           ...notification,
           errorState: true,
-          errorMessage: message,
+          errorMessage: e?.response?.data?.message || "Create place failed!",
           status: "error",
         });
       }
