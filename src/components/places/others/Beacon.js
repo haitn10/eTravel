@@ -5,8 +5,8 @@ import {
   Divider,
   FormHelperText,
   Grid,
-  MenuItem,
-  Select,
+  // MenuItem,
+  // Select,
   Skeleton,
   TextField,
   Typography,
@@ -250,7 +250,7 @@ const Beacon = ({
                 )}
               </Box>
 
-              <Box display="flex" gap={2} marginTop={1}>
+              {/* <Box display="flex" gap={2} marginTop={1}>
                 {loading ? (
                   <Skeleton width="100%" />
                 ) : (
@@ -330,7 +330,7 @@ const Beacon = ({
                     />
                   </Box>
                 )}
-              </Box>
+              </Box> */}
 
               <BeaconLanguage
                 languageSelect={getValues("placeDescriptions")}

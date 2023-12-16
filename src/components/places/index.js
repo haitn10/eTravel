@@ -17,7 +17,7 @@ const ManagePlaces = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [searchBy, setSearchBy] = useState("name");
   const [pageState, setPageState] = useState({
@@ -38,8 +38,10 @@ const ManagePlaces = () => {
   });
 
   useEffect(() => {
-    setNotification(state || {});
-  }, [state]);
+    setNotification(location.state || {});
+    navigate(location.pathname, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getData = useCallback(() => {
     async function fetchData() {
