@@ -262,7 +262,8 @@ const AddPlace = () => {
         },
       });
     } catch (e) {
-      if (e.response.status === 500) {
+      console.log(e);
+      if (e?.response?.status === 500) {
         setNotification({
           ...notification,
           errorState: true,
