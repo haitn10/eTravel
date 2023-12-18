@@ -313,7 +313,7 @@ const PreviewData = ({ data, getValues, language }) => {
             textTransform="uppercase"
             color={theme.palette.text.third}
           >
-            Location List
+            Position List
           </Typography>
           {getValues("placeItems").map((item, index) => (
             <Accordion
@@ -405,7 +405,7 @@ const PreviewData = ({ data, getValues, language }) => {
                 <Box display="flex" justifyContent="space-between">
                   <Box>
                     <Typography color={alpha(theme.palette.text.third, 0.75)}>
-                      Location Name By Language
+                      Position Name By Language
                     </Typography>
                     {item.itemDescriptions.map((desc, id) => (
                       <Box key={id} display="flex" alignItems="center" gap={1}>
