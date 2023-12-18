@@ -43,7 +43,6 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
         });
       }
     } catch (e) {
-      console.log(e);
       setUpdate(false);
       setNotification({
         ...notification,
