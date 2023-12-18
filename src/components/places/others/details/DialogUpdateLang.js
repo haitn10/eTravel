@@ -42,6 +42,7 @@ const DialogUpdateLang = ({
   setNotification,
 }) => {
   const theme = useTheme();
+  const MAXIMUM_FILE_SIZE = 70 * 1024 * 1024;
 
   const getLanguage = (code) => {
     return languages.filter((language) => language.languageCode === code);
@@ -53,6 +54,9 @@ const DialogUpdateLang = ({
     for (const value of data) {
       if (value.voiceFile instanceof File) {
         if (voiceFile.has(value.voiceFile.name)) {
+          return false;
+        }
+        if (value.voiceFile?.size > MAXIMUM_FILE_SIZE) {
           return false;
         }
         voiceFile.add(value.voiceFile.name);
@@ -336,10 +340,10 @@ const DialogUpdateLang = ({
                     control={control}
                     rules={{
                       required: "Voice file is required!",
-                      validate: (value) => {
+                      validate: () => {
                         return (
-                          hasDuplicate(value.name) ||
-                          "This file has been duplicated!"
+                          hasDuplicate() ||
+                          "This file has been duplicated or this file size is larger than 70 MB!"
                         );
                       },
                     }}
