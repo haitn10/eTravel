@@ -294,7 +294,7 @@ const MultiLanguages = ({
                               validate: () => {
                                 return (
                                   checkVoiceFile() ||
-                                  "This file name has been duplicated!"
+                                  "This file name has been duplicated or this file size is larger than 70 MB!"
                                 );
                               },
                             }}
