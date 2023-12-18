@@ -71,7 +71,7 @@ const PlaceGeneral = ({
           } else {
             setValues({ ...values, placeImages: imagesList });
           }
-        } else {
+        } else if (item.image.trim() === "") {
           setError("placeImages", {
             message: "Please choose image file!",
           });
@@ -416,7 +416,7 @@ const PlaceGeneral = ({
                         {
                           imagesList.filter(
                             (item) => item.isPrimary === true
-                          )[0]?.image?.name
+                          )[0]?.image?.name || "Primary image is uploading..."
                         }
                       </Typography>
                     </Box>

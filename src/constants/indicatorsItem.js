@@ -10,7 +10,7 @@ const indicators = [
   {
     id: 2,
     icon: <Location width={24} />,
-    title: "Total Tours",
+    title: "Total Itineraries",
   },
   {
     id: 3,

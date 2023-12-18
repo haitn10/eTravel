@@ -210,7 +210,7 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
                       borderRadius: 10,
                     },
                   }}
-                  placeholder={`Type google placeID here`}
+                  placeholder={`Type google place ID here`}
                 />
               </Grid>
             </Grid>
@@ -262,7 +262,7 @@ const Coordinates = ({ values, setValues, setValue, errors, register }) => {
                     type="time"
                     name="endTime"
                     value={data.endTime}
-                    onChange={(event) => handleChangeTime(data.id, event)}
+                    onChange={(event) => handleChangeTime(index, event)}
                     InputProps={{
                       style: {
                         borderRadius: 10,
