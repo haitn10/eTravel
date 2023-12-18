@@ -43,11 +43,12 @@ const Actions = ({ id, status, getData, notification, setNotification }) => {
         });
       }
     } catch (e) {
+      console.log(e);
       setUpdate(false);
       setNotification({
         ...notification,
         errorState: true,
-        errorMessage: "Change state failed!",
+        errorMessage: e?.response?.data?.message || "Change state failed!",
         status: "error",
       });
     }
